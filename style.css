@@ -1,0 +1,27 @@
+body {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+}
+
+.leftBoard, .rightBoard {
+    display: inline-grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    width: 500px;
+    height: 500px;
+}
+
+.cell {
+    border: 3px solid gray;
+    display: flex;
+    align-items: center;
+}
+
+#cellWhite {
+    background-color: green;
+}
+
+#cellBlack {
+    background-color: black;
+}

@@ -4,7 +4,7 @@ Chess is a very popular game. She has many different types, and one of them is A
 
 This is an interesting attempt to do it on my own and a very necessary experience for me.
 ## To do 
-- [ ] Create skeleton of boards
+- [x] ~~Create skeleton of boards~~
 - [ ] Add chess pices and their placement
 - [ ] Add possibility to move pices
 - [ ] Add drag-and-drop for pices

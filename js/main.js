@@ -9,24 +9,12 @@ function createDiv(className, idName) {
 }
 
 for (let i = 0; i < 64; i++) {
-    if ((Math.floor(i/8))%2 === 0) {
-        if (i%2 === 0) {
-            leftBoard.appendChild(createDiv('cell', 'cellWhite'))
-            rightBoard.appendChild(createDiv('cell', 'cellWhite'))
-        }
-        else {
-            leftBoard.appendChild(createDiv('cell', 'cellBlack'))
-            rightBoard.appendChild(createDiv('cell', 'cellBlack'))
-        }
+    if (((Math.floor(i/8))%2 === 0) !== (i%2 === 0)) {
+    leftBoard.appendChild(createDiv('cell', 'cellWhite'))
+    rightBoard.appendChild(createDiv('cell', 'cellWhite'))
     }
     else {
-        if (i%2 === 0) {
-            leftBoard.appendChild(createDiv('cell', 'cellBlack'))
-            rightBoard.appendChild(createDiv('cell', 'cellBlack'))
-        }
-        else {
-            leftBoard.appendChild(createDiv('cell', 'cellWhite'))
-            rightBoard.appendChild(createDiv('cell', 'cellWhite'))
-        }
+        leftBoard.appendChild(createDiv('cell', 'cellBlack'))
+        rightBoard.appendChild(createDiv('cell', 'cellBlack'))
     }
 }

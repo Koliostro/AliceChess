@@ -8,13 +8,25 @@ function createDiv(className, idName) {
     return div
 }
 
-for (let i = 1; i <= 64; i++) {
-    if (i%2 === 0) {
-        leftBoard.appendChild(createDiv('cell', 'cellWhite'))
-        rightBoard.appendChild(createDiv('cell', 'cellWhite'))
+for (let i = 0; i < 64; i++) {
+    if ((Math.floor(i/8))%2 === 0) {
+        if (i%2 === 0) {
+            leftBoard.appendChild(createDiv('cell', 'cellWhite'))
+            rightBoard.appendChild(createDiv('cell', 'cellWhite'))
+        }
+        else {
+            leftBoard.appendChild(createDiv('cell', 'cellBlack'))
+            rightBoard.appendChild(createDiv('cell', 'cellBlack'))
+        }
     }
     else {
-        leftBoard.appendChild(createDiv('cell', 'cellBlack'))
-        rightBoard.appendChild(createDiv('cell', 'cellBlack'))
+        if (i%2 === 0) {
+            leftBoard.appendChild(createDiv('cell', 'cellBlack'))
+            rightBoard.appendChild(createDiv('cell', 'cellBlack'))
+        }
+        else {
+            leftBoard.appendChild(createDiv('cell', 'cellWhite'))
+            rightBoard.appendChild(createDiv('cell', 'cellWhite'))
+        }
     }
 }

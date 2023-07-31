@@ -23,14 +23,28 @@ function generationFieldList() {
     return field
 }
 
-// generation of visual fields
-for (let i = 0; i < 64; i++) {
-    if (((Math.floor(i/8))%2 === 0) !== (i%2 === 0)) {
-        leftBoard.appendChild(createDiv('cell', 'cellWhite'))
-        rightBoard.appendChild(createDiv('cell', 'cellWhite'))
-    }
-    else {
-        leftBoard.appendChild(createDiv('cell', 'cellBlack'))
-        rightBoard.appendChild(createDiv('cell', 'cellBlack'))
+// i and j it is a adress of cell in two dimensionla array last symbol it adress of board (l)eft or (r)ight
+for (let i = 0; i < 8; i++) {
+    for (let j = 0; j < 8; j++) {
+        if (i%2 === 0) {
+            if (j%2 === 0) {
+                leftBoard.appendChild(createDiv('cell cellWhite', [i,j,'l']))
+                rightBoard.appendChild(createDiv('cell cellWhite', [i,j,'r']))
+            }
+            else {
+                leftBoard.appendChild(createDiv('cell cellBlack', [i,j,'l']))
+                rightBoard.appendChild(createDiv('cell cellBlack', [i,j,'r']))
+            }
+        }
+        else {
+            if (j%2 !== 0) {
+                leftBoard.appendChild(createDiv('cell cellWhite', [i,j,'l']))
+                rightBoard.appendChild(createDiv('cell cellWhite', [i,j,'r']))
+            }
+            else {
+                leftBoard.appendChild(createDiv('cell cellBlack', [i,j,'l']))
+                rightBoard.appendChild(createDiv('cell cellBlack', [i,j,'r']))
+            }
+        }
     }
 }

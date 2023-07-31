@@ -4,7 +4,7 @@ body {
     justify-content: space-between;
 }
 
-.leftBoard, .rightBoard {
+.Board {
     display: inline-grid;
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
@@ -18,10 +18,10 @@ body {
     align-items: center;
 }
 
-#cellWhite {
+.cellWhite {
     background-color: green;
 }
 
-#cellBlack {
+.cellBlack {
     background-color: black;
 }

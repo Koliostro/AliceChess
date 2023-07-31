@@ -9,8 +9,8 @@ function createDiv(className, idName, draggable = false) {
     return div
 }
 
-let firstField = generationFieldList();
-let secondField = generationFieldList();
+let leftField = generationFieldList();
+let rightField = generationFieldList();
 
 function generationFieldList() {
     let field = []
@@ -48,3 +48,21 @@ for (let i = 0; i < 8; i++) {
         }
     }
 }
+for (let y= 0; y < 8; y++) {
+    addPice(0,y,'l','pawn black', `pawn_black${y}`)
+}
+    
+
+function addPice(x, y, board, pice_name, id) {
+    document.getElementById(`${x},${y},${board}`).appendChild(createDiv(pice_name, id, true))
+    if (board === 'l') {
+        leftField[x][y] = id
+    }
+    else {
+        rightField[x][y] = id
+    }
+}
+
+console.log(leftField)
+
+console.log(document.querySelector(`#pawn_black0`).id)

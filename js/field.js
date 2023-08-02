@@ -1,8 +1,8 @@
 export let leftField = generationFieldList();
 export let rightField = generationFieldList();
 
-export const leftBoard = document.querySelector('.leftBoard')
-export const rightBoard = document.querySelector('.rightBoard')
+const leftBoard = document.querySelector('.leftBoard')
+const rightBoard = document.querySelector('.rightBoard')
 
 export function createDiv(className, idName, draggable = false) {
     let div = document.createElement('div');

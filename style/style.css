@@ -1,0 +1,43 @@
+@import url(pice_style.css);
+
+body {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+}
+
+.Board {
+    display: inline-grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    width: 500px;
+    height: 500px;
+}
+
+.cell {
+    border: 3px solid gray;
+    display: flex;
+    align-items: center;
+}
+
+.lighttedCell {
+    border-color: gray;
+}
+
+.lighttedCell::before {
+    /* background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/LoCos_Point.svg/1024px-LoCos_Point.svg.png'); */
+    content: '';
+    width: 30px;
+    height: 30px;
+    background-color: aliceblue;
+    border-radius: 50%;
+    margin: 0 auto;
+}
+
+.cellWhite {
+    background-color: green;
+}
+
+.cellBlack {
+    background-color: black;
+}

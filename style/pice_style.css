@@ -1,0 +1,24 @@
+.pice {
+    border-radius: 50%;
+    height: 100%;
+    width: 100%;
+}
+
+.pawn_black, .pawn_white {
+    background-color: red;
+}
+.rock_black, .rock_white {
+    background-color: goldenrod;
+}
+.knight_black, .knight_white {
+    background-color: blue;
+}
+.bishop_black, .bishop_white {
+    background-color: olivedrab;
+}
+.queen_black, .queen_white {
+    background-color:fuchsia;
+}
+.king_black, .king_white {
+    background-color: indigo;
+}

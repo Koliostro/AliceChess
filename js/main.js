@@ -19,26 +19,20 @@ function moveingForPices (event) {
     const board = event.target.parentElement.id.charAt(4)
     let id = event.target.id
 
+    let boards = {
+        'l': field.update_field('l'),
+        'r': field.update_field('r')
+    }
+
     pice.clear()
 
     switch (id.charAt(2)) {
-        case 'p':
-            pice.pawnMovment(x,y,board, id)
-            break
-        case 'r':
-            pice.rockMovment(x,y,board, id)
-            break
         case 'b':
-            pice.bishopMovment(x,y,board, id)
-            break
-        case 'q':
-            pice.queenMovment(x, y, board, id)
-            break
-        case 'k':
-            pice.kingMovment(x, y, board, id)
-            break
-        case 'n':
-            pice.knightMovment(x, y, board, id)
-            break
+            pice.allBishopMoves(x, y, boards[board], board, id)
+            boards = {
+                'l': field.update_field('l'),
+                'r': field.update_field('r')
+            }
+            break;
     }
 }

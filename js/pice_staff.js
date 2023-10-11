@@ -45,6 +45,49 @@ export function allBishopMoves(x, y, board, visible_board, piceId) {
 
 }
 
+function isValidMoveRock(x, y, newX, newY, board) {
+  // Проверка, двигался ли слон по диагонали
+  if (x !== newX && y !== newY) {
+    return false;
+  }
+
+  if (x === newX) {
+    const yOffset = newY > y ? 1:-1;
+    let yPos = y + yOffset;
+    while (yPos !== newY) {
+      if (board[x][yPos] !== null) {
+        return false
+      }
+      yPos += yOffset
+    }
+  }
+
+  if (y === newY) {
+    const xOffset = newX > x ? 1:-1;
+    let xPos = x + xOffset;
+    while (xPos !== newX) {
+      if (board[xPos][y] !== null) {
+        return false
+      }
+      xPos += xOffset
+    }
+  }
+
+  return true;
+}
+
+export function allRockMoves(x, y, board, visible_board, piceId) {
+
+  for (let i = 0; i < 8; i++) {
+    for (let j = 0; j < 8; j++) {
+      if (isValidMoveRock(x, y, i, j, board)) {
+        lightMovableCells(i, j, visible_board, piceId)
+      }
+    }
+  }
+
+}
+
 function lightMovableCells(x, y, board, piceId) {
   const cell = document.getElementById(x + ',' + y + ',' + board);
   if (cell.hasChildNodes() !== true) {

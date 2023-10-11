@@ -27,6 +27,13 @@ function moveingForPices (event) {
     pice.clear()
 
     switch (id.charAt(2)) {
+        case 'r':
+            pice.allRockMoves(x, y, boards[board], board, id)
+            boards = {
+                'l': field.update_field('l'),
+                'r': field.update_field('r')
+            }
+            break;
         case 'b':
             pice.allBishopMoves(x, y, boards[board], board, id)
             boards = {

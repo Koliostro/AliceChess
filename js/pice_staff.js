@@ -129,6 +129,26 @@ export function allKingMoves(x, y, board, visible_board, piceId) {
 
 }
 
+function isValidMoveKnight(x, y, newX, newY) {
+  if ((Math.abs(newX - x) === 1 && Math.abs(newY - y) === 2) || (Math.abs(newX - x) === 2 && Math.abs(newY - y) === 1)) {
+    return true;
+  }
+
+  return false;
+}
+
+export function allKnightMoves(x, y, board, visible_board, piceId) {
+
+  for (let i = 0; i < 8; i++) {
+    for (let j = 0; j < 8; j++) {
+      if (isValidMoveKnight(x, y, i, j, board)) {
+        lightMovableCells(i, j, visible_board, piceId)
+      }
+    }
+  }
+
+}
+
 // technucal section
 
 //cell manipulation

@@ -1,5 +1,7 @@
 import * as field from './field.js'
 
+// movment section
+
 function isValidMoveBishop(x, y, newX, newY, board) {
   // Проверка, двигался ли слон по диагонали
   if (Math.abs(newX - x) !== Math.abs(newY - y)) {
@@ -107,19 +109,35 @@ export function allQueenMoves(x, y, board, visible_board, piceId) {
 
 }
 
+function isValidMoveKing(x, y, newX, newY) {
+  if ((Math.abs(newX - x) <= 1) && (Math.abs(newY - y) <= 1)) {
+    return true;
+  }
+
+  return false;
+}
+
+export function allKingMoves(x, y, board, visible_board, piceId) {
+
+  for (let i = 0; i < 8; i++) {
+    for (let j = 0; j < 8; j++) {
+      if (isValidMoveKing(x, y, i, j, board)) {
+        lightMovableCells(i, j, visible_board, piceId)
+      }
+    }
+  }
+
+}
+
+// technucal section
+
+//cell manipulation
+
 function lightMovableCells(x, y, board, piceId) {
   const cell = document.getElementById(x + ',' + y + ',' + board);
   if (cell.hasChildNodes() !== true) {
     cell.classList.add(`lighttedCell`);
     cell.addEventListener('click', (event) => movingOfPices(event, piceId));
-  }
-}
-
-function movingOfPices(e, piceId) {
-  const y = e.target.id.charAt(2)
-  const x = e.target.id.charAt(0)
-  if (e.target.classList.contains('lighttedCell')) {
-    move(piceId, x, y)
   }
 }
 
@@ -129,6 +147,16 @@ export function clear() {
     element.classList.remove('lighttedCell')
     element.removeEventListener('click', (event) => movingOfPices)
   });
+}
+
+// basic pice operations
+
+function movingOfPices(e, piceId) {
+  const y = e.target.id.charAt(2)
+  const x = e.target.id.charAt(0)
+  if (e.target.classList.contains('lighttedCell')) {
+    move(piceId, x, y)
+  }
 }
 
 export function move(idOfMovingPice, xEnd, yEnd) {

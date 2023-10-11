@@ -3,7 +3,7 @@ import * as field from './field.js'
 // movment section
 
 function isValidMoveBishop(x, y, newX, newY, board) {
-  // Проверка, двигался ли слон по диагонали
+  // Diagonal movement check
   if (Math.abs(newX - x) !== Math.abs(newY - y)) {
     return false;
   }
@@ -31,7 +31,7 @@ function isValidMoveBishop(x, y, newX, newY, board) {
 
   }
 
-  return true; // Позиция является валидным ходом
+  return true;
 
 }
 
@@ -48,13 +48,13 @@ export function allBishopMoves(x, y, board, visible_board, piceId) {
 }
 
 function isValidMoveRock(x, y, newX, newY, board) {
-  // Проверка, двигался ли слон по диагонали
+  // strait line movement check
   if (x !== newX && y !== newY) {
     return false;
   }
 
   if (x === newX) {
-    const yOffset = newY > y ? 1:-1;
+    const yOffset = newY > y ? 1 : -1;
     let yPos = y + yOffset;
     while (yPos !== newY) {
       if (board[x][yPos] !== null) {
@@ -65,7 +65,7 @@ function isValidMoveRock(x, y, newX, newY, board) {
   }
 
   if (y === newY) {
-    const xOffset = newX > x ? 1:-1;
+    const xOffset = newX > x ? 1 : -1;
     let xPos = x + xOffset;
     while (xPos !== newX) {
       if (board[xPos][y] !== null) {
@@ -91,7 +91,7 @@ export function allRockMoves(x, y, board, visible_board, piceId) {
 }
 
 function isValidMoveQueen(x, y, newX, newY, board) {
-  if (isValidMoveBishop(x,y,newX, newY, board) || isValidMoveRock(x, y, newX, newY, board) === true) {
+  if (isValidMoveBishop(x, y, newX, newY, board) || isValidMoveRock(x, y, newX, newY, board) === true) {
     return true;
   }
   return false;
@@ -117,11 +117,11 @@ function isValidMoveKing(x, y, newX, newY) {
   return false;
 }
 
-export function allKingMoves(x, y, board, visible_board, piceId) {
+export function allKingMoves(x, y, visible_board, piceId) {
 
   for (let i = 0; i < 8; i++) {
     for (let j = 0; j < 8; j++) {
-      if (isValidMoveKing(x, y, i, j, board)) {
+      if (isValidMoveKing(x, y, i, j)) {
         lightMovableCells(i, j, visible_board, piceId)
       }
     }
@@ -142,6 +142,46 @@ export function allKnightMoves(x, y, board, visible_board, piceId) {
   for (let i = 0; i < 8; i++) {
     for (let j = 0; j < 8; j++) {
       if (isValidMoveKnight(x, y, i, j, board)) {
+        lightMovableCells(i, j, visible_board, piceId)
+      }
+    }
+  }
+
+}
+
+function isValidMovePawn(x, y, newX, newY, piceId, board) {
+  const pawn_color = piceId.charAt(0)
+
+  if (pawn_color === 'w') {
+    if ((x === 1) && (board[2][y] === null)) {
+      if ((newY === y) && (newX - x ===  2)) {
+        return true;
+      }
+    }
+    if ((newY === y) && (newX - x === 1)) {
+      return true;
+    }
+  }
+
+  if (pawn_color === 'b') {
+    if ((x === 6) && (board[4][y] === null)) {
+      if ((newY === y) && (newX - x ===  -2)) {
+        return true;
+      }
+    }
+    if ((newY === y) && (newX - x === -1)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+export function allPawnMoves(x, y, visible_board, piceId, board) {
+
+  for (let i = 0; i < 8; i++) {
+    for (let j = 0; j < 8; j++) {
+      if (isValidMovePawn(x, y, i, j, piceId, board)) {
         lightMovableCells(i, j, visible_board, piceId)
       }
     }

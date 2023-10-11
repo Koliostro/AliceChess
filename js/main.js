@@ -6,6 +6,7 @@ field.visualFieldGeneration()
 pice.addPice(3,6, 'l', 'pice bishop_black', 'b_b_0')
 pice.addPice(1,4, 'l', 'pice rock_black', 'b_r_0')
 pice.addPice(1,7, 'l', 'pice knight_white', 'b_n_0')
+pice.addPice(2, 3, 'l', 'pice queen_white', 'w_q_0')
 
 const allPices = document.querySelectorAll('.pice')
 
@@ -27,6 +28,13 @@ function moveingForPices (event) {
     pice.clear()
 
     switch (id.charAt(2)) {
+        case 'q':
+            pice.allQueenMoves(x, y, boards[board], board, id)
+            boards = {
+                'l': field.update_field('l'),
+                'r': field.update_field('r')
+            }
+            break;
         case 'r':
             pice.allRockMoves(x, y, boards[board], board, id)
             boards = {

@@ -88,6 +88,25 @@ export function allRockMoves(x, y, board, visible_board, piceId) {
 
 }
 
+function isValidMoveQueen(x, y, newX, newY, board) {
+  if (isValidMoveBishop(x,y,newX, newY, board) || isValidMoveRock(x, y, newX, newY, board) === true) {
+    return true;
+  }
+  return false;
+}
+
+export function allQueenMoves(x, y, board, visible_board, piceId) {
+
+  for (let i = 0; i < 8; i++) {
+    for (let j = 0; j < 8; j++) {
+      if (isValidMoveQueen(x, y, i, j, board)) {
+        lightMovableCells(i, j, visible_board, piceId)
+      }
+    }
+  }
+
+}
+
 function lightMovableCells(x, y, board, piceId) {
   const cell = document.getElementById(x + ',' + y + ',' + board);
   if (cell.hasChildNodes() !== true) {

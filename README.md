@@ -8,8 +8,10 @@ This is an interesting attempt to do it on my own and a very necessary experienc
 - [x] ~~Add chess pices and their placement~~
 - [x] ~~Add possibility to move pices~~
 - [ ] Add drag-and-drop for pices
-- [ ] Add movement logic for pices
+- [x] ~~Add movement logic for pices~~
 - [ ] Add the rest of the chess logic
+- [ ] Add some choice for rules
+- [ ] Add UI
 - [ ] Add visual decoration 
 - [ ] Add animations 
 - [ ] Try to add multiplayer

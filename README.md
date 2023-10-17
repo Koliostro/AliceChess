@@ -1,4 +1,4 @@
-# AliceChes
+# AliceChess
 ## About project
 Chess is a very popular game. She has many different types, and one of them is Alice's chess. The main change is that the game is played on two boards between which the chess pieces move after each move. 
 

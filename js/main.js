@@ -1,23 +1,23 @@
 import * as field from './field.js'
-import * as pice from './pice_staff.js'
+import * as piece from './pice_staff.js'
 
 field.visualFieldGeneration()
 
-pice.addPice(3,6, 'l', 'pice bishop_black', 'b_b_0')
-pice.addPice(1,4, 'l', 'pice rock_black', 'b_r_0')
-pice.addPice(1,7, 'l', 'pice knight_white', 'b_n_0')
-pice.addPice(2, 3, 'l', 'pice queen_white', 'w_q_0')
-pice.addPice(1,1, 'l', 'pice king_black', 'b_k_0')
-pice.addPice(1,0, 'l', 'pice pawn_white', 'w_p_0')
-pice.addPice(6,0, 'l', 'pice pawn_black', 'b_p_0')
+piece.addpiece(3,6, 'l', 'piece bishop_black', 'b_b_0')
+piece.addpiece(1,4, 'l', 'piece rock_black', 'b_r_0')
+piece.addpiece(1,7, 'l', 'piece knight_white', 'b_n_0')
+piece.addpiece(2, 3, 'l', 'piece queen_white', 'w_q_0')
+piece.addpiece(1,1, 'l', 'piece king_black', 'b_k_0')
+piece.addpiece(1,0, 'l', 'piece pawn_white', 'w_p_0')
+piece.addpiece(6,0, 'l', 'piece pawn_black', 'b_p_0')
 
-const allPices = document.querySelectorAll('.pice')
+const allPeices = document.querySelectorAll('.piece')
 
-allPices.forEach( pice => {
-    pice.addEventListener('click', moveingForPices)
+allPeices.forEach( piece => {
+    piece.addEventListener('click', moveingForPieces)
 })
 
-function moveingForPices (event) {
+function moveingForPieces (event) {
     const y = Number(event.target.parentElement.id.charAt(2))
     const x = Number(event.target.parentElement.id.charAt(0))
     const board = event.target.parentElement.id.charAt(4)
@@ -28,46 +28,46 @@ function moveingForPices (event) {
         'r': field.update_field('r')
     }
 
-    pice.clear()
+    piece.clear()
 
     switch (id.charAt(2)) {
         case 'p':
-            pice.allPawnMoves(x, y, board, id, boards[board])
+            piece.allPawnMoves(x, y, board, id, boards[board])
             boards = {
                 'l': field.update_field('l'),
                 'r': field.update_field('r')
             }
             break;
         case 'n':
-            pice.allKnightMoves(x, y, boards[board], board, id)
+            piece.allKnightMoves(x, y, boards[board], board, id)
             boards = {
                 'l': field.update_field('l'),
                 'r': field.update_field('r')
             }
             break;
         case 'k':
-            pice.allKingMoves(x, y, board, id)
+            piece.allKingMoves(x, y, board, id)
             boards = {
                 'l': field.update_field('l'),
                 'r': field.update_field('r')
             }
             break;
         case 'q':
-            pice.allQueenMoves(x, y, boards[board], board, id)
+            piece.allQueenMoves(x, y, boards[board], board, id)
             boards = {
                 'l': field.update_field('l'),
                 'r': field.update_field('r')
             }
             break;
         case 'r':
-            pice.allRockMoves(x, y, boards[board], board, id)
+            piece.allRockMoves(x, y, boards[board], board, id)
             boards = {
                 'l': field.update_field('l'),
                 'r': field.update_field('r')
             }
             break;
         case 'b':
-            pice.allBishopMoves(x, y, boards[board], board, id)
+            piece.allBishopMoves(x, y, boards[board], board, id)
             boards = {
                 'l': field.update_field('l'),
                 'r': field.update_field('r')

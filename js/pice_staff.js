@@ -35,12 +35,12 @@ function isValidMoveBishop(x, y, newX, newY, board) {
 
 }
 
-export function allBishopMoves(x, y, board, visible_board, piceId) {
+export function allBishopMoves(x, y, board, visible_board, pieceId) {
 
   for (let i = 0; i < 8; i++) {
     for (let j = 0; j < 8; j++) {
       if (isValidMoveBishop(x, y, i, j, board)) {
-        lightMovableCells(i, j, visible_board, piceId)
+        lightMovableCells(i, j, visible_board, pieceId)
       }
     }
   }
@@ -78,12 +78,12 @@ function isValidMoveRock(x, y, newX, newY, board) {
   return true;
 }
 
-export function allRockMoves(x, y, board, visible_board, piceId) {
+export function allRockMoves(x, y, board, visible_board, pieceId) {
 
   for (let i = 0; i < 8; i++) {
     for (let j = 0; j < 8; j++) {
       if (isValidMoveRock(x, y, i, j, board)) {
-        lightMovableCells(i, j, visible_board, piceId)
+        lightMovableCells(i, j, visible_board, pieceId)
       }
     }
   }
@@ -97,12 +97,12 @@ function isValidMoveQueen(x, y, newX, newY, board) {
   return false;
 }
 
-export function allQueenMoves(x, y, board, visible_board, piceId) {
+export function allQueenMoves(x, y, board, visible_board, pieceId) {
 
   for (let i = 0; i < 8; i++) {
     for (let j = 0; j < 8; j++) {
       if (isValidMoveQueen(x, y, i, j, board)) {
-        lightMovableCells(i, j, visible_board, piceId)
+        lightMovableCells(i, j, visible_board, pieceId)
       }
     }
   }
@@ -117,12 +117,12 @@ function isValidMoveKing(x, y, newX, newY) {
   return false;
 }
 
-export function allKingMoves(x, y, visible_board, piceId) {
+export function allKingMoves(x, y, visible_board, pieceId) {
 
   for (let i = 0; i < 8; i++) {
     for (let j = 0; j < 8; j++) {
       if (isValidMoveKing(x, y, i, j)) {
-        lightMovableCells(i, j, visible_board, piceId)
+        lightMovableCells(i, j, visible_board, pieceId)
       }
     }
   }
@@ -137,20 +137,20 @@ function isValidMoveKnight(x, y, newX, newY) {
   return false;
 }
 
-export function allKnightMoves(x, y, board, visible_board, piceId) {
+export function allKnightMoves(x, y, board, visible_board, pieceId) {
 
   for (let i = 0; i < 8; i++) {
     for (let j = 0; j < 8; j++) {
       if (isValidMoveKnight(x, y, i, j, board)) {
-        lightMovableCells(i, j, visible_board, piceId)
+        lightMovableCells(i, j, visible_board, pieceId)
       }
     }
   }
 
 }
 
-function isValidMovePawn(x, y, newX, newY, piceId, board) {
-  const pawn_color = piceId.charAt(0)
+function isValidMovePawn(x, y, newX, newY, pieceId, board) {
+  const pawn_color = pieceId.charAt(0)
 
   if (pawn_color === 'w') {
     if ((x === 1) && (board[2][y] === null)) {
@@ -177,12 +177,12 @@ function isValidMovePawn(x, y, newX, newY, piceId, board) {
   return false;
 }
 
-export function allPawnMoves(x, y, visible_board, piceId, board) {
+export function allPawnMoves(x, y, visible_board, pieceId, board) {
 
   for (let i = 0; i < 8; i++) {
     for (let j = 0; j < 8; j++) {
-      if (isValidMovePawn(x, y, i, j, piceId, board)) {
-        lightMovableCells(i, j, visible_board, piceId)
+      if (isValidMovePawn(x, y, i, j, pieceId, board)) {
+        lightMovableCells(i, j, visible_board, pieceId)
       }
     }
   }
@@ -193,12 +193,13 @@ export function allPawnMoves(x, y, visible_board, piceId, board) {
 
 //cell manipulation
 var pieceid;
-function lightMovableCells(x, y, board, piceId) {
+
+function lightMovableCells(x, y, board, pieceId) {
   const cell = document.getElementById(x + ',' + y + ',' + board);
   if (cell.hasChildNodes() !== true) {
-    pieceid = piceId;
+    pieceid = pieceId;
     cell.classList.add(`lighttedCell`);
-    cell.addEventListener('click', movingOfPices);
+    cell.addEventListener('click', movingOfpieces);
   }
 }
 
@@ -206,50 +207,50 @@ export function clear() {
   const Cells = document.querySelectorAll('.cell');
   Cells.forEach(element => {
     element.classList.remove('lighttedCell')
-    element.removeEventListener('click', movingOfPices)
+    element.removeEventListener('click', movingOfpieces)
   });
 }
 
-// basic pice operations
+// basic piece operations
 
-function movingOfPices(e) {
-  let piceId = pieceid;
+function movingOfpieces(e) {
+  let pieceId = pieceid;
   const y = e.target.id.charAt(2)
   const x = e.target.id.charAt(0)
   if (e.target.classList.contains('lighttedCell')) {
-    move(piceId, x, y)
+    move(pieceId, x, y)
   }
 }
 
-export function move(idOfMovingPice, xEnd, yEnd) {
-  const positionOfSelectedPice = document.getElementById(idOfMovingPice).parentElement.id
-  const boardOfSelectedPice = positionOfSelectedPice.charAt(positionOfSelectedPice.length - 1)
+export function move(idOfMovingPiece, xEnd, yEnd) {
+  const positionOfSelectedPiece = document.getElementById(idOfMovingPiece).parentElement.id
+  const boardOfSelectedPiece = positionOfSelectedPiece.charAt(positionOfSelectedPiece.length - 1)
 
-  if (boardOfSelectedPice === 'l') {
-    document.getElementById(`${xEnd},${yEnd},` + 'r').appendChild(document.querySelector(`#${idOfMovingPice}`))
-    field.rightField[xEnd][yEnd] = idOfMovingPice
-    field.leftField[positionOfSelectedPice.charAt(0)][positionOfSelectedPice.charAt(2)] = ""
+  if (boardOfSelectedPiece === 'l') {
+    document.getElementById(`${xEnd},${yEnd},` + 'r').appendChild(document.querySelector(`#${idOfMovingPiece}`))
+    field.rightField[xEnd][yEnd] = idOfMovingPiece
+    field.leftField[positionOfSelectedPiece.charAt(0)][positionOfSelectedPiece.charAt(2)] = ""
     clear()
   }
   else {
-    document.getElementById(`${xEnd},${yEnd},` + 'l').appendChild(document.querySelector(`#${idOfMovingPice}`))
-    field.leftField[xEnd][yEnd] = idOfMovingPice
-    field.rightField[positionOfSelectedPice.charAt(0)][positionOfSelectedPice.charAt(2)] = ""
+    document.getElementById(`${xEnd},${yEnd},` + 'l').appendChild(document.querySelector(`#${idOfMovingPiece}`))
+    field.leftField[xEnd][yEnd] = idOfMovingPiece
+    field.rightField[positionOfSelectedPiece.charAt(0)][positionOfSelectedPiece.charAt(2)] = ""
     clear()
   }
 }
 
 /* 
  
-For pices I create some specific id : {(b)lack/(w)hite}_{(p)awn/(r)ock/k(n)ight/(b)ishop/(k)ing/(q)ueen}_{number}
+For pieces I create some specific id : {(b)lack/(w)hite}_{(p)awn/(r)ock/k(n)ight/(b)ishop/(k)ing/(q)ueen}_{number}
  
 for example: b_p_0 => black_pawn_0
              w_h_1 => white_knight_1
  
 */
 
-export function addPice(x, y, board, pice_class, id) {
-  document.getElementById(`${x},${y},${board}`).appendChild(field.createDiv(pice_class, id, true))
+export function addpiece(x, y, board, piece_class, id) {
+  document.getElementById(`${x},${y},${board}`).appendChild(field.createDiv(piece_class, id, true))
   if (board === 'l') {
     field.leftField[x][y] = id
   }

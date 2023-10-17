@@ -192,10 +192,11 @@ export function allPawnMoves(x, y, visible_board, piceId, board) {
 // technucal section
 
 //cell manipulation
-
+var pieceid;
 function lightMovableCells(x, y, board, piceId) {
   const cell = document.getElementById(x + ',' + y + ',' + board);
   if (cell.hasChildNodes() !== true) {
+    pieceid = piceId;
     cell.classList.add(`lighttedCell`);
     cell.addEventListener('click', (event) => movingOfPices(event, piceId));
   }
@@ -211,7 +212,8 @@ export function clear() {
 
 // basic pice operations
 
-function movingOfPices(e, piceId) {
+function movingOfPices(e) {
+  let piceId = pieceid;
   const y = e.target.id.charAt(2)
   const x = e.target.id.charAt(0)
   if (e.target.classList.contains('lighttedCell')) {

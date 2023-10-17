@@ -198,7 +198,7 @@ function lightMovableCells(x, y, board, piceId) {
   if (cell.hasChildNodes() !== true) {
     pieceid = piceId;
     cell.classList.add(`lighttedCell`);
-    cell.addEventListener('click', (event) => movingOfPices(event, piceId));
+    cell.addEventListener('click', movingOfPices);
   }
 }
 
@@ -206,7 +206,7 @@ export function clear() {
   const Cells = document.querySelectorAll('.cell');
   Cells.forEach(element => {
     element.classList.remove('lighttedCell')
-    element.removeEventListener('click', (event) => movingOfPices)
+    element.removeEventListener('click', movingOfPices)
   });
 }
 

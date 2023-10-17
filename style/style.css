@@ -22,16 +22,21 @@ body {
 
 .lighttedCell {
     border-color: gray;
+    position: relative;
 }
 
 .lighttedCell::before {
-    /* background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/LoCos_Point.svg/1024px-LoCos_Point.svg.png'); */
+    left: 25%;
+    position: absolute;
     content: '';
     width: 30px;
     height: 30px;
     background-color: aliceblue;
     border-radius: 50%;
-    margin: 0 auto;
+}
+
+.lighttedCell_eat::before {
+    background-color: red;
 }
 
 .cellWhite {

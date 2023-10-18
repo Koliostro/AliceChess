@@ -196,7 +196,34 @@ var pieceid;
 
 function lightMovableCells(x, y, board, pieceId) {
   const cell = document.getElementById(x + ',' + y + ',' + board);
-  if (cell.hasChildNodes() !== true) {
+
+  const oppositive_color = pieceId.charAt(0) === 'b' ? 'w' : 'b'
+  const oppositive_board = board === 'l' ? 'r' : 'l';
+
+  const oppositive_cell = document.getElementById(x + ',' + y + ',' + oppositive_board);
+
+  if ((cell.hasChildNodes() === true) || (oppositive_cell.hasChildNodes() === true)) {
+    pieceid = pieceId;
+    if (pieceId.charAt(2) !== 'p') {
+      try {
+        if ((cell.children[0].id !== pieceId) && (cell.children[0].id.charAt(0) === oppositive_color)) {
+          cell.classList.add(`lighttedCell`, `lighttedCell_eat`);
+          cell.addEventListener('click', movingOfpieces);
+        }
+      } catch (TypeError) {
+        if ((oppositive_cell.children[0].id !== pieceId) && (oppositive_cell.children[0].id.charAt(0) === oppositive_color)) {
+          cell.classList.add(`lighttedCell`, `lighttedCell_eat`);
+          cell.addEventListener('click', movingOfpieces);
+        }
+      }
+    }
+
+    else {
+// need algorith for pawn eating
+    }
+  }
+
+  if ((cell.hasChildNodes() !== true) && (oppositive_cell.hasChildNodes() !== true)) {
     pieceid = pieceId;
     cell.classList.add(`lighttedCell`);
     cell.addEventListener('click', movingOfpieces);
@@ -206,7 +233,7 @@ function lightMovableCells(x, y, board, pieceId) {
 export function clear() {
   const Cells = document.querySelectorAll('.cell');
   Cells.forEach(element => {
-    element.classList.remove('lighttedCell')
+    element.classList.remove('lighttedCell', `lighttedCell_eat`)
     element.removeEventListener('click', movingOfpieces)
   });
 }

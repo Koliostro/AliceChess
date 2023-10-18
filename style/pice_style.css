@@ -5,7 +5,7 @@
 }
 
 .pawn_black, .pawn_white {
-    background-color: red;
+    background-color: coral;
 }
 .rock_black, .rock_white {
     background-color: goldenrod;

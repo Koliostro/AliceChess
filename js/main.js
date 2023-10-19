@@ -5,7 +5,7 @@ field.visualFieldGeneration()
 
 piece.addpiece(3,6, 'l', 'piece bishop_black', 'b_b_0')
 piece.addpiece(1,4, 'l', 'piece rock_black', 'b_r_0')
-piece.addpiece(1,7, 'l', 'piece knight_white', 'b_n_0')
+piece.addpiece(1,7, 'l', 'piece knight_white', 'w_n_0')
 piece.addpiece(2, 3, 'l', 'piece queen_white', 'w_q_0')
 piece.addpiece(1,1, 'l', 'piece king_black', 'b_k_0')
 piece.addpiece(1,0, 'l', 'piece pawn_white', 'w_p_0')

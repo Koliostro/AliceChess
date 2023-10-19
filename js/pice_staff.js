@@ -154,7 +154,7 @@ function isValidMovePawn(x, y, newX, newY, pieceId, board) {
 
   if (pawn_color === 'w') {
     if ((x === 1) && (board[2][y] === null)) {
-      if ((newY === y) && (newX - x ===  2)) {
+      if ((newY === y) && (newX - x === 2)) {
         return true;
       }
     }
@@ -165,7 +165,7 @@ function isValidMovePawn(x, y, newX, newY, pieceId, board) {
 
   if (pawn_color === 'b') {
     if ((x === 6) && (board[4][y] === null)) {
-      if ((newY === y) && (newX - x ===  -2)) {
+      if ((newY === y) && (newX - x === -2)) {
         return true;
       }
     }
@@ -193,8 +193,10 @@ export function allPawnMoves(x, y, visible_board, pieceId, board) {
 
 //cell manipulation
 var pieceid;
+var selectedBoard;
 
 function lightMovableCells(x, y, board, pieceId) {
+  selectedBoard = board;
   const cell = document.getElementById(x + ',' + y + ',' + board);
 
   const oppositive_color = pieceId.charAt(0) === 'b' ? 'w' : 'b'
@@ -208,18 +210,18 @@ function lightMovableCells(x, y, board, pieceId) {
       try {
         if ((cell.children[0].id !== pieceId) && (cell.children[0].id.charAt(0) === oppositive_color)) {
           cell.classList.add(`lighttedCell`, `lighttedCell_eat`);
-          cell.addEventListener('click', movingOfpieces);
+          cell.addEventListener('click', eatingOfpiece);
         }
       } catch (TypeError) {
         if ((oppositive_cell.children[0].id !== pieceId) && (oppositive_cell.children[0].id.charAt(0) === oppositive_color)) {
           cell.classList.add(`lighttedCell`, `lighttedCell_eat`);
-          cell.addEventListener('click', movingOfpieces);
+          cell.addEventListener('click', eatingOfpiece);
         }
       }
     }
 
     else {
-// need algorith for pawn eating
+      // need algorith for pawn eating
     }
   }
 
@@ -235,16 +237,41 @@ export function clear() {
   Cells.forEach(element => {
     element.classList.remove('lighttedCell', `lighttedCell_eat`)
     element.removeEventListener('click', movingOfpieces)
+    element.removeEventListener('click', eatingOfpiece)
   });
 }
 
 // basic piece operations
 
 function movingOfpieces(e) {
+  
   let pieceId = pieceid;
+
   const y = e.target.id.charAt(2)
   const x = e.target.id.charAt(0)
+
   if (e.target.classList.contains('lighttedCell')) {
+    move(pieceId, x, y)
+  }
+}
+
+function eatingOfpiece(e) {
+  let pieceId = pieceid;
+
+  const y = e.target.id.charAt(2)
+  const x = e.target.id.charAt(0)
+
+  const oppositive_board = selectedBoard === 'l' ? 'r' : 'l';
+
+  const mainCell = document.getElementById(`${x},${y},${selectedBoard}`)
+  const secondCell = document.getElementById(`${x},${y},${oppositive_board}`)
+
+  if (e.target.classList.contains('lighttedCell_eat')) {
+    try {
+      mainCell.children[0].remove()
+    } catch (TypeError) {
+      secondCell.children[0].remove()
+    }
     move(pieceId, x, y)
   }
 }

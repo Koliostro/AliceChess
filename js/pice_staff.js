@@ -153,6 +153,16 @@ function isValidMovePawn(x, y, newX, newY, pieceId, board) {
   const pawn_color = pieceId.charAt(0)
 
   if (pawn_color === 'w') {
+
+    if ((newX - x === 1) && (newY - y === -1) || (newX - x === 1) && (newY - y === 1)) {
+      const leftBoardCell = document.getElementById(`${newX},${newY},l`)
+      const rightBoardCell = document.getElementById(`${newX},${newY},r`)
+
+      if ((rightBoardCell.hasChildNodes() === true) || (leftBoardCell.hasChildNodes() === true)) {
+        return true;
+      }
+    }
+
     if ((x === 1) && (board[2][y] === null)) {
       if ((newY === y) && (newX - x === 2)) {
         return true;
@@ -164,6 +174,16 @@ function isValidMovePawn(x, y, newX, newY, pieceId, board) {
   }
 
   if (pawn_color === 'b') {
+
+    if ((newX - x === -1) && (newY - y === 1) || (newX - x === -1) && (newY - y === -1)) {
+      const leftBoardCell = document.getElementById(`${newX},${newY},l`)
+      const rightBoardCell = document.getElementById(`${newX},${newY},r`)
+
+      if ((rightBoardCell.hasChildNodes() === true) || (leftBoardCell.hasChildNodes() === true)) {
+        return true;
+      }
+    }
+
     if ((x === 6) && (board[4][y] === null)) {
       if ((newY === y) && (newX - x === -2)) {
         return true;
@@ -206,22 +226,16 @@ function lightMovableCells(x, y, board, pieceId) {
 
   if ((cell.hasChildNodes() === true) || (oppositive_cell.hasChildNodes() === true)) {
     pieceid = pieceId;
-    if (pieceId.charAt(2) !== 'p') {
-      try {
-        if ((cell.children[0].id !== pieceId) && (cell.children[0].id.charAt(0) === oppositive_color)) {
-          cell.classList.add(`lighttedCell`, `lighttedCell_eat`);
-          cell.addEventListener('click', eatingOfpiece);
-        }
-      } catch (TypeError) {
-        if ((oppositive_cell.children[0].id !== pieceId) && (oppositive_cell.children[0].id.charAt(0) === oppositive_color)) {
-          cell.classList.add(`lighttedCell`, `lighttedCell_eat`);
-          cell.addEventListener('click', eatingOfpiece);
-        }
+    try {
+      if ((cell.children[0].id !== pieceId) && (cell.children[0].id.charAt(0) === oppositive_color)) {
+        cell.classList.add(`lighttedCell`, `lighttedCell_eat`);
+        cell.addEventListener('click', eatingOfpiece);
       }
-    }
-
-    else {
-      // need algorith for pawn eating
+    } catch (TypeError) {
+      if ((oppositive_cell.children[0].id !== pieceId) && (oppositive_cell.children[0].id.charAt(0) === oppositive_color)) {
+        cell.classList.add(`lighttedCell`, `lighttedCell_eat`);
+        cell.addEventListener('click', eatingOfpiece);
+      }
     }
   }
 
@@ -244,7 +258,7 @@ export function clear() {
 // basic piece operations
 
 function movingOfpieces(e) {
-  
+
   let pieceId = pieceid;
 
   const y = e.target.id.charAt(2)

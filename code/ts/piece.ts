@@ -42,16 +42,16 @@ export class Piece {
 
         if (startSide === 'L') {
             // Save piece`s class in variable  
-            const piece = ArrayBoards.L[startPosition[0]][startPosition[1]]
+            const piece = ArrayBoards.L[startPosition[1]][startPosition[0]]
 
             // Add selected piece to selected cell as child element
             oppositCell?.append(movedPiece)
 
             // Move piece in array to selected cell
-            ArrayBoards.R[clickPosition[0]][clickPosition[1]] = piece
+            ArrayBoards.R[clickPosition[1]][clickPosition[0]] = piece
 
             // Clear starting squere
-            ArrayBoards.L[startPosition[0]][startPosition[1]] = []
+            ArrayBoards.L[startPosition[1]][startPosition[0]] = []
 
             // Change coordinates for class
             piece[0].position = clickPosition
@@ -61,21 +61,26 @@ export class Piece {
             if ((piece[0].id.charAt(2) === 'k') || piece[0].id.charAt(2) === 'r') {
                 piece[0].isMoved = true
             }
+
+            if(piece[0].id.charAt(2) === 'q') {
+                piece[0].bishop.isLeft = false
+                piece[0].rock.isLeft = false
+            }
             
             Board.Clear()
         }
         else {
             // Save piece`s class in variable  
-            const piece = ArrayBoards.R[startPosition[0]][startPosition[1]]
+            const piece = ArrayBoards.R[startPosition[1]][startPosition[0]]
 
             // Add selected piece to selected cell as child element
             oppositCell?.append(movedPiece)
 
             // Move piece in array to selected cell
-            ArrayBoards.L[clickPosition[0]][clickPosition[1]] = piece
+            ArrayBoards.L[clickPosition[1]][clickPosition[0]] = piece
 
             // Clear starting squere
-            ArrayBoards.R[startPosition[0]][startPosition[1]] = []
+            ArrayBoards.R[startPosition[1]][startPosition[0]] = []
 
             // Change coordinates for class
             piece[0].position = clickPosition
@@ -84,6 +89,11 @@ export class Piece {
             // special flag for casteling realization
             if ((piece[0].id.charAt(2) === 'k') || piece[0].id.charAt(2) === 'r') {
                 piece[0].isMoved = true
+            }
+
+            if(piece[0].id.charAt(2) === 'q') {
+                piece[0].bishop.isLeft = true
+                piece[0].rock.isLeft = true
             }
 
             Board.Clear()
@@ -105,15 +115,14 @@ export class Piece {
     }
 
     movementOfPieces(event: Event & { target: HTMLElement }): void {
-        const positionStart: number[] = [Number(event.target.parentElement?.id.charAt(0)), Number(event.target.parentElement?.id.charAt(2))]
+        const positionStart: number[] = [Number(event.target.parentElement?.id.charAt(2)), Number(event.target.parentElement?.id.charAt(0))]
         const side = event.target.parentElement?.id.charAt(4);
 
         Board.Clear();
 
         if (side === 'L') {
-            let selected = ArrayBoards.L[positionStart[0]][positionStart[1]];
+            let selected = ArrayBoards.L[positionStart[0]][positionStart[1]];            
             if (!event.target.parentElement?.classList.contains(`selectedCell`)) {
-
                 selected[0].lightAllPossibleMove()
             }
             else {
@@ -160,7 +169,7 @@ export class King extends Piece {
     lightAllPossibleMove(): void {
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
-                if ((ArrayBoards.L[i][j].length === 0) && (ArrayBoards.R[i][j].length === 0)) {
+                if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
                     if (this.isVailedMove(this.position, [i, j])) {
                         if (i !== this.position[0] || j !== this.position[1]) {
                             Cell.lightMovableCell([i, j], this.isLeft)
@@ -172,7 +181,6 @@ export class King extends Piece {
         }
     }
 }
-
 export class Bishop extends Piece {
     public isLeft: boolean
 
@@ -200,13 +208,13 @@ export class Bishop extends Piece {
         while (xPos !== positionEnd[0] && yPos !== positionEnd[1]) {
 
             if (this.isLeft === true) {
-                if (ArrayBoards.L[xPos][yPos].length !== 0) {
+                if (ArrayBoards.L[yPos][xPos].length !== 0) {
                     return false
                 }
             }
 
             if (this.isLeft === false) {
-                if (ArrayBoards.R[xPos][yPos].length !== 0) {
+                if (ArrayBoards.R[yPos][xPos].length !== 0) {
                     return false
                 }
             }
@@ -222,7 +230,7 @@ export class Bishop extends Piece {
     lightAllPossibleMove(): void {
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
-                if ((ArrayBoards.L[i][j].length === 0) && (ArrayBoards.R[i][j].length === 0)) {
+                if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
                     if (this.isVailedMove(this.position, [i, j])) {
                         if (i !== this.position[0] || j !== this.position[1]) {
                             Cell.lightMovableCell([i, j], this.isLeft)
@@ -234,7 +242,6 @@ export class Bishop extends Piece {
         }
     }
 }
-
 export class Rock extends Piece {
     public isLeft: boolean
     private isMoved: boolean;
@@ -260,7 +267,7 @@ export class Rock extends Piece {
                 const yOffset = positionEnd[1] > positionStart[1] ? 1 : -1;
                 let yPos = positionStart[1] + yOffset;
                 while (yPos !== positionEnd[1]) {
-                  if (ArrayBoards.L[positionStart[0]][yPos].length !== 0) {
+                  if (ArrayBoards.L[yPos][positionStart[0]].length !== 0) {
                     return false
                   }
                   yPos += yOffset
@@ -271,7 +278,7 @@ export class Rock extends Piece {
                 const xOffset = positionEnd[0] > positionStart[0] ? 1 : -1;
                 let xPos = positionStart[0] + xOffset;
                 while (xPos !== positionEnd[0]) {
-                  if (ArrayBoards.L[xPos][positionStart[1]].length !== 0) {
+                  if (ArrayBoards.L[positionStart[1]][xPos].length !== 0) {
                     return false
                   }
                   xPos += xOffset
@@ -284,7 +291,7 @@ export class Rock extends Piece {
                 const yOffset = positionEnd[1] > positionStart[1] ? 1 : -1;
                 let yPos = positionStart[1] + yOffset;
                 while (yPos !== positionEnd[1]) {
-                  if (ArrayBoards.R[positionStart[0]][yPos].length !== 0) {
+                  if (ArrayBoards.R[yPos][positionStart[0]].length !== 0) {
                     return false
                   }
                   yPos += yOffset
@@ -295,7 +302,7 @@ export class Rock extends Piece {
                 const xOffset = positionEnd[0] > positionStart[0] ? 1 : -1;
                 let xPos = positionStart[0] + xOffset;
                 while (xPos !== positionEnd[0]) {
-                  if (ArrayBoards.R[xPos][positionStart[1]].length !== 0) {
+                  if (ArrayBoards.R[positionStart[1]][xPos].length !== 0) {
                     return false
                   }
                   xPos += xOffset
@@ -309,7 +316,82 @@ export class Rock extends Piece {
     lightAllPossibleMove(): void {
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
-                if ((ArrayBoards.L[i][j].length === 0) && (ArrayBoards.R[i][j].length === 0)) {
+                if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
+                    if (this.isVailedMove(this.position, [i, j])) {
+                        if (i !== this.position[0] || j !== this.position[1]) {
+                            Cell.lightMovableCell([i, j], this.isLeft)
+                        }
+                        Cell.lightStartCell(this.position, this.isLeft)
+                    }
+                }
+            }
+        }
+    }
+}
+export class Queen extends Piece {
+    public isLeft: boolean
+    private bishop : Bishop
+    private rock : Rock
+
+    constructor(id: string, position: number[], isLeft: boolean) {
+        super(id, position)
+        this.isLeft = isLeft
+        this.bishop = new Bishop(id, position, isLeft)
+        this.rock = new Rock(id, position, isLeft, true)
+    }
+
+    create(): void { // color = black/white
+        const color = this.id.charAt(0) === 'b' ? 'black' : 'white'
+        super.createPiece(`${color}_queen`, this.isLeft)
+    }
+
+    isVailedMove(positionStart: number[], positionEnd: number[]): boolean {
+        if (this.bishop.isVailedMove(positionStart, positionEnd) || (this.rock.isVailedMove(positionStart, positionEnd))) {
+            return true;
+        }
+        return false
+    }
+
+    lightAllPossibleMove(): void {
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
+                    if (this.isVailedMove(this.position, [i, j])) {
+                        if (i !== this.position[0] || j !== this.position[1]) {
+                            Cell.lightMovableCell([i, j], this.isLeft)
+                        }
+                        Cell.lightStartCell(this.position, this.isLeft)
+                    }
+                }
+            }
+        }
+    }
+}
+export class Knight extends Piece {
+    public isLeft: boolean
+
+    constructor(id: string, position: number[], isLeft: boolean) {
+        super(id, position)
+        this.isLeft = isLeft
+    }
+
+    create(): void { // color = black/white
+        const color = this.id.charAt(0) === 'b' ? 'black' : 'white'
+        super.createPiece(`${color}_knight`, this.isLeft)
+    }
+
+    isVailedMove(positionStart: number[], positionEnd: number[]): boolean {
+        if ((Math.abs(positionEnd[0] - positionStart[0]) === 1 && Math.abs(positionEnd[1] - positionStart[1]) === 2) || (Math.abs(positionEnd[0] - positionStart[0]) === 2 && Math.abs(positionEnd[1] - positionStart[1]) === 1)) {
+            return true;
+          }
+        
+          return false;
+    }
+
+    lightAllPossibleMove(): void {
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
                     if (this.isVailedMove(this.position, [i, j])) {
                         if (i !== this.position[0] || j !== this.position[1]) {
                             Cell.lightMovableCell([i, j], this.isLeft)

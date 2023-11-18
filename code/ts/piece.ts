@@ -3,7 +3,7 @@ import { Cell, Board } from './field.js'
 
 export class Piece {
     public id: string;
-    public position: number[] // y first, x second
+    public position: number[] // x first, y second
     public isBlack: boolean;
 
     protected constructor(id: string, position: number[]) {
@@ -415,7 +415,7 @@ export class Pawn extends Piece {
         const color = this.id.charAt(0) === 'b' ? 'black' : 'white'
         super.createPiece(`${color}_pawn`, this.isLeft)
     }
-    
+
     isVailedMove(positionStart: number[], positionEnd: number[]): boolean {
         if (this.isBlack) {
             if(positionStart[1] === 6) {

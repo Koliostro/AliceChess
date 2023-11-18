@@ -12,7 +12,7 @@ export class Piece {
         this.isBlack = id.charAt(0) === 'b' ? true : false;
     }
 
-    static lightEatableCells(e:Event):void {
+    static lightEatableCells(e: Event): void {
         // Piece can eat piece only on same board and if this cell on second board is possibly to move
     }
 
@@ -62,11 +62,11 @@ export class Piece {
                 piece[0].isMoved = true
             }
 
-            if(piece[0].id.charAt(2) === 'q') {
+            if (piece[0].id.charAt(2) === 'q') {
                 piece[0].bishop.isLeft = false
                 piece[0].rock.isLeft = false
             }
-            
+
             Board.Clear()
         }
         else {
@@ -91,7 +91,7 @@ export class Piece {
                 piece[0].isMoved = true
             }
 
-            if(piece[0].id.charAt(2) === 'q') {
+            if (piece[0].id.charAt(2) === 'q') {
                 piece[0].bishop.isLeft = true
                 piece[0].rock.isLeft = true
             }
@@ -121,7 +121,7 @@ export class Piece {
         Board.Clear();
 
         if (side === 'L') {
-            let selected = ArrayBoards.L[positionStart[0]][positionStart[1]];            
+            let selected = ArrayBoards.L[positionStart[0]][positionStart[1]];
             if (!event.target.parentElement?.classList.contains(`selectedCell`)) {
                 selected[0].lightAllPossibleMove()
             }
@@ -260,55 +260,55 @@ export class Rock extends Piece {
     isVailedMove(positionStart: number[], positionEnd: number[]): boolean {
         if (positionStart[0] !== positionEnd[0] && positionStart[1] !== positionEnd[1]) {
             return false;
-          }
-        
-          if(this.isLeft === true) {
-            if (positionStart[0] === positionEnd[0]) {
-                const yOffset = positionEnd[1] > positionStart[1] ? 1 : -1;
-                let yPos = positionStart[1] + yOffset;
-                while (yPos !== positionEnd[1]) {
-                  if (ArrayBoards.L[yPos][positionStart[0]].length !== 0) {
-                    return false
-                  }
-                  yPos += yOffset
-                }
-              }
-            
-              if (positionStart[1] === positionEnd[1]) {
-                const xOffset = positionEnd[0] > positionStart[0] ? 1 : -1;
-                let xPos = positionStart[0] + xOffset;
-                while (xPos !== positionEnd[0]) {
-                  if (ArrayBoards.L[positionStart[1]][xPos].length !== 0) {
-                    return false
-                  }
-                  xPos += xOffset
-                }
-              }
-          }
+        }
 
-          if(this.isLeft === false) {
+        if (this.isLeft === true) {
             if (positionStart[0] === positionEnd[0]) {
                 const yOffset = positionEnd[1] > positionStart[1] ? 1 : -1;
                 let yPos = positionStart[1] + yOffset;
                 while (yPos !== positionEnd[1]) {
-                  if (ArrayBoards.R[yPos][positionStart[0]].length !== 0) {
-                    return false
-                  }
-                  yPos += yOffset
+                    if (ArrayBoards.L[yPos][positionStart[0]].length !== 0) {
+                        return false
+                    }
+                    yPos += yOffset
                 }
-              }
-            
-              if (positionStart[1] === positionEnd[1]) {
+            }
+
+            if (positionStart[1] === positionEnd[1]) {
                 const xOffset = positionEnd[0] > positionStart[0] ? 1 : -1;
                 let xPos = positionStart[0] + xOffset;
                 while (xPos !== positionEnd[0]) {
-                  if (ArrayBoards.R[positionStart[1]][xPos].length !== 0) {
-                    return false
-                  }
-                  xPos += xOffset
+                    if (ArrayBoards.L[positionStart[1]][xPos].length !== 0) {
+                        return false
+                    }
+                    xPos += xOffset
                 }
-              }
-          }
+            }
+        }
+
+        if (this.isLeft === false) {
+            if (positionStart[0] === positionEnd[0]) {
+                const yOffset = positionEnd[1] > positionStart[1] ? 1 : -1;
+                let yPos = positionStart[1] + yOffset;
+                while (yPos !== positionEnd[1]) {
+                    if (ArrayBoards.R[yPos][positionStart[0]].length !== 0) {
+                        return false
+                    }
+                    yPos += yOffset
+                }
+            }
+
+            if (positionStart[1] === positionEnd[1]) {
+                const xOffset = positionEnd[0] > positionStart[0] ? 1 : -1;
+                let xPos = positionStart[0] + xOffset;
+                while (xPos !== positionEnd[0]) {
+                    if (ArrayBoards.R[positionStart[1]][xPos].length !== 0) {
+                        return false
+                    }
+                    xPos += xOffset
+                }
+            }
+        }
 
         return true
     }
@@ -330,8 +330,8 @@ export class Rock extends Piece {
 }
 export class Queen extends Piece {
     public isLeft: boolean
-    private bishop : Bishop
-    private rock : Rock
+    private bishop: Bishop
+    private rock: Rock
 
     constructor(id: string, position: number[], isLeft: boolean) {
         super(id, position)
@@ -383,9 +383,65 @@ export class Knight extends Piece {
     isVailedMove(positionStart: number[], positionEnd: number[]): boolean {
         if ((Math.abs(positionEnd[0] - positionStart[0]) === 1 && Math.abs(positionEnd[1] - positionStart[1]) === 2) || (Math.abs(positionEnd[0] - positionStart[0]) === 2 && Math.abs(positionEnd[1] - positionStart[1]) === 1)) {
             return true;
-          }
-        
-          return false;
+        }
+
+        return false;
+    }
+
+    lightAllPossibleMove(): void {
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
+                    if (this.isVailedMove(this.position, [i, j])) {
+                        if (i !== this.position[0] || j !== this.position[1]) {
+                            Cell.lightMovableCell([i, j], this.isLeft)
+                        }
+                        Cell.lightStartCell(this.position, this.isLeft)
+                    }
+                }
+            }
+        }
+    }
+}
+export class Pawn extends Piece {
+    public isLeft: boolean
+
+    constructor(id: string, position: number[], isLeft: boolean) {
+        super(id, position)
+        this.isLeft = isLeft
+    }
+
+    create(): void { // color = black/white
+        const color = this.id.charAt(0) === 'b' ? 'black' : 'white'
+        super.createPiece(`${color}_pawn`, this.isLeft)
+    }
+    
+    isVailedMove(positionStart: number[], positionEnd: number[]): boolean {
+        if (this.isBlack) {
+            if(positionStart[1] === 6) {
+                if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -2) || (positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -1)) {
+                    return true;
+                }
+            }
+            else {
+                if((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -1)) {
+                    return true
+                }
+            }
+        }
+        else {
+            if(positionStart[1] === 1) {
+                if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 2) || (positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 1)) {
+                    return true;
+                }
+            }
+            else {
+                if((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 1)) {
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     lightAllPossibleMove(): void {

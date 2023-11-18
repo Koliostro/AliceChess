@@ -357,3 +357,58 @@ var Knight = /** @class */ (function (_super) {
     return Knight;
 }(Piece));
 export { Knight };
+var Pawn = /** @class */ (function (_super) {
+    __extends(Pawn, _super);
+    function Pawn(id, position, isLeft) {
+        var _this = _super.call(this, id, position) || this;
+        _this.isLeft = isLeft;
+        return _this;
+    }
+    Pawn.prototype.create = function () {
+        var color = this.id.charAt(0) === 'b' ? 'black' : 'white';
+        _super.prototype.createPiece.call(this, "".concat(color, "_pawn"), this.isLeft);
+    };
+    Pawn.prototype.isVailedMove = function (positionStart, positionEnd) {
+        if (this.isBlack) {
+            if (positionStart[1] === 6) {
+                if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -2) || (positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -1)) {
+                    return true;
+                }
+            }
+            else {
+                if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -1)) {
+                    return true;
+                }
+            }
+        }
+        else {
+            if (positionStart[1] === 1) {
+                if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 2) || (positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 1)) {
+                    return true;
+                }
+            }
+            else {
+                if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 1)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
+    Pawn.prototype.lightAllPossibleMove = function () {
+        for (var i = 0; i < 8; i++) {
+            for (var j = 0; j < 8; j++) {
+                if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
+                    if (this.isVailedMove(this.position, [i, j])) {
+                        if (i !== this.position[0] || j !== this.position[1]) {
+                            Cell.lightMovableCell([i, j], this.isLeft);
+                        }
+                        Cell.lightStartCell(this.position, this.isLeft);
+                    }
+                }
+            }
+        }
+    };
+    return Pawn;
+}(Piece));
+export { Pawn };

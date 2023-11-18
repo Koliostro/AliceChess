@@ -4,21 +4,21 @@
     width: 100%;
 }
 
-.pawn_black, .pawn_white {
-    background-color: red;
+.black_pawn, .white_pawn {
+    background-color: coral;
 }
-.rock_black, .rock_white {
+.black_rock, .white_rock {
     background-color: goldenrod;
 }
-.knight_black, .knight_white {
+.black_knight, .white_knight {
     background-color: blue;
 }
-.bishop_black, .bishop_white {
+.black_bishop, .white_bishop {
     background-color: lime;
 }
-.queen_black, .queen_white {
+.black_queen, .white_queen {
     background-color:fuchsia;
 }
-.king_black, .king_white {
+.black_king, .white_king {
     background-color: indigo;
 }

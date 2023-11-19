@@ -43,6 +43,12 @@ export class Piece {
             // Add selected piece to selected cell as child element
             oppositCell?.append(movedPiece)
 
+            // remove piece (eating)
+            if (target.classList.contains(`lighttedCell_eat`)) {
+                target.firstChild?.remove()
+                ArrayBoards.L[clickPosition[1]][clickPosition[0]] = []
+            }
+
             // Move piece in array to selected cell
             ArrayBoards.R[clickPosition[1]][clickPosition[0]] = piece
 
@@ -71,6 +77,12 @@ export class Piece {
 
             // Add selected piece to selected cell as child element
             oppositCell?.append(movedPiece)
+
+            // remove piece (eating)
+            if (target.classList.contains(`lighttedCell_eat`)) {
+                target.firstChild?.remove()
+                ArrayBoards.R[clickPosition[1]][clickPosition[0]] = []
+            }
 
             // Move piece in array to selected cell
             ArrayBoards.L[clickPosition[1]][clickPosition[0]] = piece
@@ -165,18 +177,31 @@ export class King extends Piece {
     lightAllPossibleMove(): void {
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
-                if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
-                    if (this.isVailedMove(this.position, [i, j])) {
+                if (this.isVailedMove(this.position, [i, j])) {
+                    if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
                         if (i !== this.position[0] || j !== this.position[1]) {
                             Cell.lightMovableCell([i, j], this.isLeft)
                         }
                         Cell.lightStartCell(this.position, this.isLeft)
+                    }
+                    if (this.position[0] !== i || this.position[1] !== j) {
+                        if (this.isLeft === true) {
+                            if (ArrayBoards.L[j][i].length !== 0 && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
+                                Cell.lightEatableCell([i, j], this.isLeft)
+                            }
+                        }
+                        else {
+                            if (ArrayBoards.R[j][i].length !== 0 && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
+                                Cell.lightEatableCell([i, j], this.isLeft)
+                            }
+                        }
                     }
                 }
             }
         }
     }
 }
+
 export class Bishop extends Piece {
     public isLeft: boolean
 
@@ -226,13 +251,29 @@ export class Bishop extends Piece {
     lightAllPossibleMove(): void {
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
-                if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
+                try {
                     if (this.isVailedMove(this.position, [i, j])) {
-                        if (i !== this.position[0] || j !== this.position[1]) {
-                            Cell.lightMovableCell([i, j], this.isLeft)
+                        if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
+                            if (i !== this.position[0] || j !== this.position[1]) {
+                                Cell.lightMovableCell([i, j], this.isLeft)
+                            }
+                            Cell.lightStartCell(this.position, this.isLeft)
                         }
-                        Cell.lightStartCell(this.position, this.isLeft)
+                        if (this.position[0] !== i || this.position[1] !== j) {
+                            if (this.isLeft === true) {
+                                if (ArrayBoards.L[j][i].length !== 0 && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
+                                    Cell.lightEatableCell([i, j], this.isLeft)
+                                }
+                            }
+                            else {
+                                if (ArrayBoards.R[j][i].length !== 0 && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
+                                    Cell.lightEatableCell([i, j], this.isLeft)
+                                }
+                            }
+                        }
                     }
+                } catch (TypeError) {
+                    
                 }
             }
         }
@@ -312,13 +353,29 @@ export class Rock extends Piece {
     lightAllPossibleMove(): void {
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
-                if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
+                try {
                     if (this.isVailedMove(this.position, [i, j])) {
-                        if (i !== this.position[0] || j !== this.position[1]) {
-                            Cell.lightMovableCell([i, j], this.isLeft)
+                        if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
+                            if (i !== this.position[0] || j !== this.position[1]) {
+                                Cell.lightMovableCell([i, j], this.isLeft)
+                            }
+                            Cell.lightStartCell(this.position, this.isLeft)
                         }
-                        Cell.lightStartCell(this.position, this.isLeft)
+                        if (this.position[0] !== i || this.position[1] !== j) {
+                            if (this.isLeft === true) {
+                                if (ArrayBoards.L[j][i].length !== 0 && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
+                                    Cell.lightEatableCell([i, j], this.isLeft)
+                                }
+                            }
+                            else {
+                                if (ArrayBoards.R[j][i].length !== 0 && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
+                                    Cell.lightEatableCell([i, j], this.isLeft)
+                                }
+                            }
+                        }
                     }
+                } catch (TypeError) {
+                    
                 }
             }
         }
@@ -351,13 +408,29 @@ export class Queen extends Piece {
     lightAllPossibleMove(): void {
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
-                if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
+                try {
                     if (this.isVailedMove(this.position, [i, j])) {
-                        if (i !== this.position[0] || j !== this.position[1]) {
-                            Cell.lightMovableCell([i, j], this.isLeft)
+                        if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
+                            if (i !== this.position[0] || j !== this.position[1]) {
+                                Cell.lightMovableCell([i, j], this.isLeft)
+                            }
+                            Cell.lightStartCell(this.position, this.isLeft)
                         }
-                        Cell.lightStartCell(this.position, this.isLeft)
+                        if (this.position[0] !== i || this.position[1] !== j) {
+                            if (this.isLeft === true) {
+                                if (ArrayBoards.L[j][i].length !== 0 && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
+                                    Cell.lightEatableCell([i, j], this.isLeft)
+                                }
+                            }
+                            else {
+                                if (ArrayBoards.R[j][i].length !== 0 && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
+                                    Cell.lightEatableCell([i, j], this.isLeft)
+                                }
+                            }
+                        }
                     }
+                } catch (TypeError) {
+                    
                 }
             }
         }
@@ -387,13 +460,29 @@ export class Knight extends Piece {
     lightAllPossibleMove(): void {
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
-                if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
+                try {
                     if (this.isVailedMove(this.position, [i, j])) {
-                        if (i !== this.position[0] || j !== this.position[1]) {
-                            Cell.lightMovableCell([i, j], this.isLeft)
+                        if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
+                            if (i !== this.position[0] || j !== this.position[1]) {
+                                Cell.lightMovableCell([i, j], this.isLeft)
+                            }
+                            Cell.lightStartCell(this.position, this.isLeft)
                         }
-                        Cell.lightStartCell(this.position, this.isLeft)
+                        if (this.position[0] !== i || this.position[1] !== j) {
+                            if (this.isLeft === true) {
+                                if (ArrayBoards.L[j][i].length !== 0 && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
+                                    Cell.lightEatableCell([i, j], this.isLeft)
+                                }
+                            }
+                            else {
+                                if (ArrayBoards.R[j][i].length !== 0 && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
+                                    Cell.lightEatableCell([i, j], this.isLeft)
+                                }
+                            }
+                        }
                     }
+                } catch (TypeError) {
+                    
                 }
             }
         }
@@ -413,28 +502,28 @@ export class Pawn extends Piece {
     }
 
     isVailedMove(positionStart: number[], positionEnd: number[]): boolean {
-        if(this.isLeft) {
+        if (this.isLeft) {
             if (this.isBlack) {
                 if (positionStart[1] === 6) {
-                    if(ArrayBoards.L[positionStart[1]-1][positionStart[0]].length === 0) {
-                        if((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -2)) {
+                    if (ArrayBoards.L[positionStart[1] - 1][positionStart[0]].length === 0) {
+                        if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -2)) {
                             return true
                         }
                     }
                 }
-                if((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -1)) {
+                if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -1)) {
                     return true
                 }
             }
             else {
                 if (positionStart[1] === 1) {
-                    if(ArrayBoards.L[positionStart[1]+1][positionStart[0]].length === 0) {
-                        if((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 2)) {
+                    if (ArrayBoards.L[positionStart[1] + 1][positionStart[0]].length === 0) {
+                        if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 2)) {
                             return true
                         }
                     }
                 }
-                if((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 1)) {
+                if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 1)) {
                     return true
                 }
             }
@@ -442,30 +531,43 @@ export class Pawn extends Piece {
         else {
             if (this.isBlack) {
                 if (positionStart[1] === 6) {
-                    if(ArrayBoards.L[positionStart[1]-1][positionStart[0]].length === 0) {
-                        if((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -2)) {
+                    if (ArrayBoards.L[positionStart[1] - 1][positionStart[0]].length === 0) {
+                        if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -2)) {
                             return true
                         }
                     }
                 }
-                if((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -1)) {
+                if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -1)) {
                     return true
                 }
             }
             else {
                 if (positionStart[1] === 1) {
-                    if(ArrayBoards.L[positionStart[1]+1][positionStart[0]].length === 0) {
-                        if((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 2)) {
+                    if (ArrayBoards.L[positionStart[1] + 1][positionStart[0]].length === 0) {
+                        if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 2)) {
                             return true
                         }
                     }
                 }
-                if((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 1)) {
+                if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 1)) {
                     return true
                 }
             }
         }
 
+        return false
+    }
+    isVailedEating(positionStart: number[], positionEnd: number[]): boolean {
+        if (this.isBlack === true) {
+            if((positionEnd[0] - positionStart[0] === 1 || positionEnd[0] - positionStart[0] === -1) && (positionEnd[1] - positionStart[1] === -1)) {
+                return true
+            }
+        }
+        else {
+            if((positionEnd[0] - positionStart[0] === 1 || positionEnd[0] - positionStart[0] === -1) && (positionEnd[1] - positionStart[1] === 1)) {
+                return true
+            }
+        }
         return false
     }
 
@@ -478,6 +580,17 @@ export class Pawn extends Piece {
                             Cell.lightMovableCell([i, j], this.isLeft)
                         }
                         Cell.lightStartCell(this.position, this.isLeft)
+                    }
+                }
+                if (i === this.position[0] && j === this.position[1]) {
+                    Cell.lightStartCell(this.position, this.isLeft)
+                }
+                if (this.isVailedEating(this.position, [i,j])) {
+                    if (this.isLeft && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i].length !== 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
+                        Cell.lightEatableCell([i,j], this.isLeft)
+                    }
+                    else if (!this.isLeft && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i].length !== 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
+                        Cell.lightEatableCell([i,j], this.isLeft)
                     }
                 }
             }

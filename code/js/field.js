@@ -53,7 +53,7 @@ var Board = /** @class */ (function () {
     Board.Clear = function () {
         var allLightedCells = document.querySelectorAll(".lighttedCell");
         var SelectedCell = document.querySelectorAll(".selectedCell");
-        allLightedCells.forEach(function (cell) { return cell.classList.remove("lighttedCell"); });
+        allLightedCells.forEach(function (cell) { return cell.classList.remove("lighttedCell", "lighttedCell_eat"); });
         allLightedCells.forEach(function (cell) { return cell.removeEventListener('click', Piece.move); });
         SelectedCell === null || SelectedCell === void 0 ? void 0 : SelectedCell.forEach(function (cell) { return cell.classList.remove("selectedCell"); });
     };
@@ -85,6 +85,12 @@ var Cell = /** @class */ (function (_super) {
         var side = isLeft === true ? 'L' : 'R';
         var selectedCell = document.getElementById("".concat(position[0], ",").concat(position[1], ",").concat(side));
         selectedCell === null || selectedCell === void 0 ? void 0 : selectedCell.classList.add("selectedCell");
+    };
+    Cell.lightEatableCell = function (position, isLeft) {
+        var side = isLeft === true ? 'L' : 'R';
+        var selectedCell = document.getElementById("".concat(position[0], ",").concat(position[1], ",").concat(side));
+        selectedCell === null || selectedCell === void 0 ? void 0 : selectedCell.classList.add("lighttedCell", "lighttedCell_eat");
+        selectedCell === null || selectedCell === void 0 ? void 0 : selectedCell.addEventListener('click', Piece.move);
     };
     return Cell;
 }(Board));

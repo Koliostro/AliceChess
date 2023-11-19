@@ -12,10 +12,6 @@ export class Piece {
         this.isBlack = id.charAt(0) === 'b' ? true : false;
     }
 
-    static lightEatableCells(e: Event): void {
-        // Piece can eat piece only on same board and if this cell on second board is possibly to move
-    }
-
     static move(e: Event): void {
         // on which HTML element user click
         const target = e.target as HTMLInputElement
@@ -417,30 +413,59 @@ export class Pawn extends Piece {
     }
 
     isVailedMove(positionStart: number[], positionEnd: number[]): boolean {
-        if (this.isBlack) {
-            if(positionStart[1] === 6) {
-                if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -2) || (positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -1)) {
-                    return true;
+        if(this.isLeft) {
+            if (this.isBlack) {
+                if (positionStart[1] === 6) {
+                    if(ArrayBoards.L[positionStart[1]-1][positionStart[0]].length === 0) {
+                        if((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -2)) {
+                            return true
+                        }
+                    }
                 }
-            }
-            else {
                 if((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -1)) {
                     return true
                 }
             }
-        }
-        else {
-            if(positionStart[1] === 1) {
-                if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 2) || (positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 1)) {
-                    return true;
-                }
-            }
             else {
+                if (positionStart[1] === 1) {
+                    if(ArrayBoards.L[positionStart[1]+1][positionStart[0]].length === 0) {
+                        if((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 2)) {
+                            return true
+                        }
+                    }
+                }
                 if((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 1)) {
                     return true
                 }
             }
         }
+        else {
+            if (this.isBlack) {
+                if (positionStart[1] === 6) {
+                    if(ArrayBoards.L[positionStart[1]-1][positionStart[0]].length === 0) {
+                        if((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -2)) {
+                            return true
+                        }
+                    }
+                }
+                if((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -1)) {
+                    return true
+                }
+            }
+            else {
+                if (positionStart[1] === 1) {
+                    if(ArrayBoards.L[positionStart[1]+1][positionStart[0]].length === 0) {
+                        if((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 2)) {
+                            return true
+                        }
+                    }
+                }
+                if((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 1)) {
+                    return true
+                }
+            }
+        }
+
         return false
     }
 

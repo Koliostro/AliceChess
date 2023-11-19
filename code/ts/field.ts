@@ -45,10 +45,13 @@ export class Board {
 
     static Clear():void {
         const allLightedCells = document.querySelectorAll(`.lighttedCell`)
+        
         const SelectedCell = document.querySelectorAll(`.selectedCell`);
         
-        allLightedCells.forEach(cell => cell.classList.remove(`lighttedCell`))
+        allLightedCells.forEach(cell => cell.classList.remove(`lighttedCell`, `lighttedCell_eat`))
+
         allLightedCells.forEach(cell => cell.removeEventListener('click', (<EventListener>Piece.move)))
+
         SelectedCell?.forEach(cell => cell.classList.remove(`selectedCell`))
     }
 }
@@ -83,5 +86,13 @@ export class Cell extends Board {
         const selectedCell:HTMLElement|null = document.getElementById(`${position[0]},${position[1]},${side}`)
 
         selectedCell?.classList.add(`selectedCell`)
+    }
+
+    static lightEatableCell(position:number[], isLeft:boolean) {
+        const side = isLeft === true ? 'L':'R'
+        const selectedCell:HTMLElement|null = document.getElementById(`${position[0]},${position[1]},${side}`)
+
+        selectedCell?.classList.add(`lighttedCell` ,`lighttedCell_eat`)
+        selectedCell?.addEventListener('click', (<EventListener>Piece.move))
     }
 }

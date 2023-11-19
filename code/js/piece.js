@@ -21,9 +21,6 @@ var Piece = /** @class */ (function () {
         this.position = position;
         this.isBlack = id.charAt(0) === 'b' ? true : false;
     }
-    Piece.lightEatableCells = function (e) {
-        // Piece can eat piece only on same board and if this cell on second board is possibly to move
-    };
     Piece.move = function (e) {
         // on which HTML element user click
         var target = e.target;
@@ -369,25 +366,53 @@ var Pawn = /** @class */ (function (_super) {
         _super.prototype.createPiece.call(this, "".concat(color, "_pawn"), this.isLeft);
     };
     Pawn.prototype.isVailedMove = function (positionStart, positionEnd) {
-        if (this.isBlack) {
-            if (positionStart[1] === 6) {
-                if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -2) || (positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -1)) {
+        if (this.isLeft) {
+            if (this.isBlack) {
+                if (positionStart[1] === 6) {
+                    if (ArrayBoards.L[positionStart[1] - 1][positionStart[0]].length === 0) {
+                        if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -2)) {
+                            return true;
+                        }
+                    }
+                }
+                if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -1)) {
                     return true;
                 }
             }
             else {
-                if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -1)) {
+                if (positionStart[1] === 1) {
+                    if (ArrayBoards.L[positionStart[1] + 1][positionStart[0]].length === 0) {
+                        if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 2)) {
+                            return true;
+                        }
+                    }
+                }
+                if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 1)) {
                     return true;
                 }
             }
         }
         else {
-            if (positionStart[1] === 1) {
-                if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 2) || (positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 1)) {
+            if (this.isBlack) {
+                if (positionStart[1] === 6) {
+                    if (ArrayBoards.L[positionStart[1] - 1][positionStart[0]].length === 0) {
+                        if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -2)) {
+                            return true;
+                        }
+                    }
+                }
+                if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -1)) {
                     return true;
                 }
             }
             else {
+                if (positionStart[1] === 1) {
+                    if (ArrayBoards.L[positionStart[1] + 1][positionStart[0]].length === 0) {
+                        if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 2)) {
+                            return true;
+                        }
+                    }
+                }
                 if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === 1)) {
                     return true;
                 }

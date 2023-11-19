@@ -8,7 +8,7 @@ VisualBoard.fieldGeneration();
 let BK = new King('b_k_0', [3,4], true, false)
 BK.create()
 
-let WB0 = new Bishop('w_b_0', [0,1], true)
+let WB0 = new Bishop('w_b_0', [0,0], true)
 WB0.create()
 
 let BR0 = new Rock('b_r_0', [2,3], true, false)
@@ -28,8 +28,8 @@ WP0.create()
 
 export let ArrayBoards : any = {
     'L' : [
-        [[],[],[],[],[],[],[],[]],
-        [[WB0],[WP0],[],[BQ],[],[],[],[]],
+        [[WB0],[],[],[],[],[],[],[]],
+        [[],[WP0],[],[BQ],[],[],[],[]],
         [[],[],[],[],[],[],[],[]],
         [[],[BN0],[BR0],[],[],[],[],[]],
         [[],[],[],[BK],[],[],[],[]],

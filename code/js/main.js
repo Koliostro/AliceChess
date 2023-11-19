@@ -4,7 +4,7 @@ var VisualBoard = new Board(true);
 VisualBoard.fieldGeneration();
 var BK = new King('b_k_0', [3, 4], true, false);
 BK.create();
-var WB0 = new Bishop('w_b_0', [0, 1], true);
+var WB0 = new Bishop('w_b_0', [0, 0], true);
 WB0.create();
 var BR0 = new Rock('b_r_0', [2, 3], true, false);
 BR0.create();
@@ -18,8 +18,8 @@ var WP0 = new Pawn('w_p_0', [1, 1], true);
 WP0.create();
 export var ArrayBoards = {
     'L': [
-        [[], [], [], [], [], [], [], []],
-        [[WB0], [WP0], [], [BQ], [], [], [], []],
+        [[WB0], [], [], [], [], [], [], []],
+        [[], [WP0], [], [BQ], [], [], [], []],
         [[], [], [], [], [], [], [], []],
         [[], [BN0], [BR0], [], [], [], [], []],
         [[], [], [], [BK], [], [], [], []],

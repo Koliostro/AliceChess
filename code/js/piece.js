@@ -22,6 +22,7 @@ var Piece = /** @class */ (function () {
         this.isBlack = id.charAt(0) === 'b' ? true : false;
     }
     Piece.move = function (e) {
+        var _a, _b;
         // on which HTML element user click
         var target = e.target;
         var oppositeSide = target.id.charAt(4) === 'L' ? 'R' : 'L';
@@ -42,6 +43,11 @@ var Piece = /** @class */ (function () {
             var piece = ArrayBoards.L[startPosition[1]][startPosition[0]];
             // Add selected piece to selected cell as child element
             oppositCell === null || oppositCell === void 0 ? void 0 : oppositCell.append(movedPiece);
+            // remove piece (eating)
+            if (target.classList.contains("lighttedCell_eat")) {
+                (_a = target.firstChild) === null || _a === void 0 ? void 0 : _a.remove();
+                ArrayBoards.L[clickPosition[1]][clickPosition[0]] = [];
+            }
             // Move piece in array to selected cell
             ArrayBoards.R[clickPosition[1]][clickPosition[0]] = piece;
             // Clear starting squere
@@ -64,6 +70,11 @@ var Piece = /** @class */ (function () {
             var piece = ArrayBoards.R[startPosition[1]][startPosition[0]];
             // Add selected piece to selected cell as child element
             oppositCell === null || oppositCell === void 0 ? void 0 : oppositCell.append(movedPiece);
+            // remove piece (eating)
+            if (target.classList.contains("lighttedCell_eat")) {
+                (_b = target.firstChild) === null || _b === void 0 ? void 0 : _b.remove();
+                ArrayBoards.R[clickPosition[1]][clickPosition[0]] = [];
+            }
             // Move piece in array to selected cell
             ArrayBoards.L[clickPosition[1]][clickPosition[0]] = piece;
             // Clear starting squere
@@ -139,12 +150,24 @@ var King = /** @class */ (function (_super) {
     King.prototype.lightAllPossibleMove = function () {
         for (var i = 0; i < 8; i++) {
             for (var j = 0; j < 8; j++) {
-                if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
-                    if (this.isVailedMove(this.position, [i, j])) {
+                if (this.isVailedMove(this.position, [i, j])) {
+                    if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
                         if (i !== this.position[0] || j !== this.position[1]) {
                             Cell.lightMovableCell([i, j], this.isLeft);
                         }
                         Cell.lightStartCell(this.position, this.isLeft);
+                    }
+                    if (this.position[0] !== i || this.position[1] !== j) {
+                        if (this.isLeft === true) {
+                            if (ArrayBoards.L[j][i].length !== 0 && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
+                                Cell.lightEatableCell([i, j], this.isLeft);
+                            }
+                        }
+                        else {
+                            if (ArrayBoards.R[j][i].length !== 0 && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
+                                Cell.lightEatableCell([i, j], this.isLeft);
+                            }
+                        }
                     }
                 }
             }
@@ -191,13 +214,29 @@ var Bishop = /** @class */ (function (_super) {
     Bishop.prototype.lightAllPossibleMove = function () {
         for (var i = 0; i < 8; i++) {
             for (var j = 0; j < 8; j++) {
-                if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
+                try {
                     if (this.isVailedMove(this.position, [i, j])) {
-                        if (i !== this.position[0] || j !== this.position[1]) {
-                            Cell.lightMovableCell([i, j], this.isLeft);
+                        if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
+                            if (i !== this.position[0] || j !== this.position[1]) {
+                                Cell.lightMovableCell([i, j], this.isLeft);
+                            }
+                            Cell.lightStartCell(this.position, this.isLeft);
                         }
-                        Cell.lightStartCell(this.position, this.isLeft);
+                        if (this.position[0] !== i || this.position[1] !== j) {
+                            if (this.isLeft === true) {
+                                if (ArrayBoards.L[j][i].length !== 0 && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
+                                    Cell.lightEatableCell([i, j], this.isLeft);
+                                }
+                            }
+                            else {
+                                if (ArrayBoards.R[j][i].length !== 0 && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
+                                    Cell.lightEatableCell([i, j], this.isLeft);
+                                }
+                            }
+                        }
                     }
+                }
+                catch (TypeError) {
                 }
             }
         }
@@ -270,13 +309,29 @@ var Rock = /** @class */ (function (_super) {
     Rock.prototype.lightAllPossibleMove = function () {
         for (var i = 0; i < 8; i++) {
             for (var j = 0; j < 8; j++) {
-                if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
+                try {
                     if (this.isVailedMove(this.position, [i, j])) {
-                        if (i !== this.position[0] || j !== this.position[1]) {
-                            Cell.lightMovableCell([i, j], this.isLeft);
+                        if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
+                            if (i !== this.position[0] || j !== this.position[1]) {
+                                Cell.lightMovableCell([i, j], this.isLeft);
+                            }
+                            Cell.lightStartCell(this.position, this.isLeft);
                         }
-                        Cell.lightStartCell(this.position, this.isLeft);
+                        if (this.position[0] !== i || this.position[1] !== j) {
+                            if (this.isLeft === true) {
+                                if (ArrayBoards.L[j][i].length !== 0 && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
+                                    Cell.lightEatableCell([i, j], this.isLeft);
+                                }
+                            }
+                            else {
+                                if (ArrayBoards.R[j][i].length !== 0 && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
+                                    Cell.lightEatableCell([i, j], this.isLeft);
+                                }
+                            }
+                        }
                     }
+                }
+                catch (TypeError) {
                 }
             }
         }
@@ -306,13 +361,29 @@ var Queen = /** @class */ (function (_super) {
     Queen.prototype.lightAllPossibleMove = function () {
         for (var i = 0; i < 8; i++) {
             for (var j = 0; j < 8; j++) {
-                if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
+                try {
                     if (this.isVailedMove(this.position, [i, j])) {
-                        if (i !== this.position[0] || j !== this.position[1]) {
-                            Cell.lightMovableCell([i, j], this.isLeft);
+                        if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
+                            if (i !== this.position[0] || j !== this.position[1]) {
+                                Cell.lightMovableCell([i, j], this.isLeft);
+                            }
+                            Cell.lightStartCell(this.position, this.isLeft);
                         }
-                        Cell.lightStartCell(this.position, this.isLeft);
+                        if (this.position[0] !== i || this.position[1] !== j) {
+                            if (this.isLeft === true) {
+                                if (ArrayBoards.L[j][i].length !== 0 && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
+                                    Cell.lightEatableCell([i, j], this.isLeft);
+                                }
+                            }
+                            else {
+                                if (ArrayBoards.R[j][i].length !== 0 && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
+                                    Cell.lightEatableCell([i, j], this.isLeft);
+                                }
+                            }
+                        }
                     }
+                }
+                catch (TypeError) {
                 }
             }
         }
@@ -340,13 +411,29 @@ var Knight = /** @class */ (function (_super) {
     Knight.prototype.lightAllPossibleMove = function () {
         for (var i = 0; i < 8; i++) {
             for (var j = 0; j < 8; j++) {
-                if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
+                try {
                     if (this.isVailedMove(this.position, [i, j])) {
-                        if (i !== this.position[0] || j !== this.position[1]) {
-                            Cell.lightMovableCell([i, j], this.isLeft);
+                        if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
+                            if (i !== this.position[0] || j !== this.position[1]) {
+                                Cell.lightMovableCell([i, j], this.isLeft);
+                            }
+                            Cell.lightStartCell(this.position, this.isLeft);
                         }
-                        Cell.lightStartCell(this.position, this.isLeft);
+                        if (this.position[0] !== i || this.position[1] !== j) {
+                            if (this.isLeft === true) {
+                                if (ArrayBoards.L[j][i].length !== 0 && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
+                                    Cell.lightEatableCell([i, j], this.isLeft);
+                                }
+                            }
+                            else {
+                                if (ArrayBoards.R[j][i].length !== 0 && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
+                                    Cell.lightEatableCell([i, j], this.isLeft);
+                                }
+                            }
+                        }
                     }
+                }
+                catch (TypeError) {
                 }
             }
         }
@@ -420,6 +507,19 @@ var Pawn = /** @class */ (function (_super) {
         }
         return false;
     };
+    Pawn.prototype.isVailedEating = function (positionStart, positionEnd) {
+        if (this.isBlack === true) {
+            if ((positionEnd[0] - positionStart[0] === 1 || positionEnd[0] - positionStart[0] === -1) && (positionEnd[1] - positionStart[1] === -1)) {
+                return true;
+            }
+        }
+        else {
+            if ((positionEnd[0] - positionStart[0] === 1 || positionEnd[0] - positionStart[0] === -1) && (positionEnd[1] - positionStart[1] === 1)) {
+                return true;
+            }
+        }
+        return false;
+    };
     Pawn.prototype.lightAllPossibleMove = function () {
         for (var i = 0; i < 8; i++) {
             for (var j = 0; j < 8; j++) {
@@ -429,6 +529,17 @@ var Pawn = /** @class */ (function (_super) {
                             Cell.lightMovableCell([i, j], this.isLeft);
                         }
                         Cell.lightStartCell(this.position, this.isLeft);
+                    }
+                }
+                if (i === this.position[0] && j === this.position[1]) {
+                    Cell.lightStartCell(this.position, this.isLeft);
+                }
+                if (this.isVailedEating(this.position, [i, j])) {
+                    if (this.isLeft && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i].length !== 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
+                        Cell.lightEatableCell([i, j], this.isLeft);
+                    }
+                    else if (!this.isLeft && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i].length !== 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
+                        Cell.lightEatableCell([i, j], this.isLeft);
                     }
                 }
             }

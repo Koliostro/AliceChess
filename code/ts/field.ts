@@ -1,3 +1,4 @@
+import { ArrayBoards } from './main.js';
 import {Piece} from './piece.js'
 
 const leftBoardHTML: HTMLElement | null = document.querySelector(`.leftBoard`);
@@ -50,7 +51,7 @@ export class Board {
         
         allLightedCells.forEach(cell => cell.classList.remove(`lighttedCell`, `lighttedCell_eat`))
 
-        allLightedCells.forEach(cell => cell.removeEventListener('click', (<EventListener>Piece.move)))
+        allLightedCells.forEach(cell => cell.removeEventListener('click', (<EventListener>Piece.movment)))
 
         SelectedCell?.forEach(cell => cell.classList.remove(`selectedCell`))
     }
@@ -73,12 +74,39 @@ export class Cell extends Board {
         return div
     }
 
+    static isEmpty (position:number[], isLeft:boolean):boolean {
+        if (isLeft) {
+            if(ArrayBoards.L[position[1]][position[0]].length !== 0) {
+                return false
+            }
+            else {
+                return true;
+            }
+        }
+        else {
+            if(ArrayBoards.R[position[1]][position[0]].length !== 0) {
+                return false
+            }
+            else {
+                return true;
+            }
+        }
+    }
+
+    static lightCastelingCell(position:number[], isLeft:boolean) {
+        const side = isLeft === true ? 'L':'R'
+        const selectedCell:HTMLElement|null = document.getElementById(`${position[0]},${position[1]},${side}`)
+
+        selectedCell?.classList.add(`lighttedCell`,`lighttedCell_casteling`)
+        selectedCell?.addEventListener('click', (<EventListener>Piece.movment))
+    }
+
     static lightMovableCell(position:number[], isLeft:boolean) {
         const side = isLeft === true ? 'L':'R'
         const selectedCell:HTMLElement|null = document.getElementById(`${position[0]},${position[1]},${side}`)
 
         selectedCell?.classList.add(`lighttedCell`)
-        selectedCell?.addEventListener('click', (<EventListener>Piece.move))
+        selectedCell?.addEventListener('click', (<EventListener>Piece.movment))
     }
 
     static lightStartCell(position:number[], isLeft:boolean) {
@@ -93,6 +121,6 @@ export class Cell extends Board {
         const selectedCell:HTMLElement|null = document.getElementById(`${position[0]},${position[1]},${side}`)
 
         selectedCell?.classList.add(`lighttedCell` ,`lighttedCell_eat`)
-        selectedCell?.addEventListener('click', (<EventListener>Piece.move))
+        selectedCell?.addEventListener('click', (<EventListener>Piece.movment))
     }
 }

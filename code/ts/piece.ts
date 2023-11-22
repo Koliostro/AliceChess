@@ -12,17 +12,92 @@ export class Piece {
         this.isBlack = id.charAt(0) === 'b' ? true : false;
     }
 
-    static move(e: Event): void {
-        // on which HTML element user click
+    static move(e: Event, startPosition: number[], endPosition: number[], startSide: string, movedPiece: HTMLElement) {
         const target = e.target as HTMLInputElement
 
         const oppositeSide = target.id.charAt(4) === 'L' ? 'R' : 'L'
 
+        // Get opposite cell from clicked
+        const oppositCell = document.getElementById(`${endPosition[0]},${endPosition[1]},${oppositeSide}`)
+
+        if (startSide === 'L') {
+            // Save piece`s class in variable  
+            const piece = ArrayBoards.L[startPosition[1]][startPosition[0]];
+
+            // Add selected piece to selected cell as child element
+            oppositCell?.append(movedPiece);
+
+            // remove piece (eating)
+            if (target.classList.contains(`lighttedCell_eat`)) {
+                target.firstChild?.remove();
+                ArrayBoards.L[endPosition[1]][endPosition[0]] = [];
+            }
+
+            // Move piece in array to selected cell
+            ArrayBoards.R[endPosition[1]][endPosition[0]] = piece;
+
+            // Clear starting squere
+            ArrayBoards.L[startPosition[1]][startPosition[0]] = [];
+
+            // Change coordinates for class
+            piece[0].position = endPosition;
+            piece[0].isLeft = false;
+
+            // special flag for casteling realization
+            if ((piece[0].id.charAt(2) === 'k') || piece[0].id.charAt(2) === 'r') {
+                piece[0].isMoved = true;
+            }
+
+            if (piece[0].id.charAt(2) === 'q') {
+                piece[0].bishop.isLeft = false;
+                piece[0].rock.isLeft = false;
+            }
+
+            Board.Clear();
+        }
+        else {
+            // Save piece`s class in variable  
+            const piece = ArrayBoards.R[startPosition[1]][startPosition[0]];
+
+            // Add selected piece to selected cell as child element
+            oppositCell?.append(movedPiece);
+
+            // remove piece (eating)
+            if (target.classList.contains(`lighttedCell_eat`)) {
+                target.firstChild?.remove();
+                ArrayBoards.R[endPosition[1]][endPosition[0]] = [];
+            }
+
+            // Move piece in array to selected cell
+            ArrayBoards.L[endPosition[1]][endPosition[0]] = piece;
+
+            // Clear starting squere
+            ArrayBoards.R[startPosition[1]][startPosition[0]] = [];
+
+            // Change coordinates for class
+            piece[0].position = endPosition;
+            piece[0].isLeft = true;
+
+            // special flag for casteling realization
+            if ((piece[0].id.charAt(2) === 'k') || piece[0].id.charAt(2) === 'r') {
+                piece[0].isMoved = true;
+            }
+
+            if (piece[0].id.charAt(2) === 'q') {
+                piece[0].bishop.isLeft = true;
+                piece[0].rock.isLeft = true;
+            }
+
+            Board.Clear();
+        }
+    }
+
+    static movment(e: Event): void {
+        // on which HTML element user click
+        const target = e.target as HTMLInputElement
+
         // make an array of 2 coordinates for position of click
         const clickPosition = [Number(target.id.charAt(0)), Number(target.id.charAt(2))]
-
-        // Get opposite cell from clicked
-        const oppositCell = document.getElementById(`${clickPosition[0]},${clickPosition[1]},${oppositeSide}`)
 
         // Importing HTML element of starting cell
         const startCell = document.querySelector(`.selectedCell`) as HTMLElement
@@ -36,75 +111,31 @@ export class Piece {
         // get starting cell
         const startSide = startCell?.id.charAt(4)
 
-        if (startSide === 'L') {
-            // Save piece`s class in variable  
-            const piece = ArrayBoards.L[startPosition[1]][startPosition[0]]
-
-            // Add selected piece to selected cell as child element
-            oppositCell?.append(movedPiece)
-
-            // remove piece (eating)
-            if (target.classList.contains(`lighttedCell_eat`)) {
-                target.firstChild?.remove()
-                ArrayBoards.L[clickPosition[1]][clickPosition[0]] = []
+        if (target.classList.contains(`lighttedCell_casteling`)) {
+            Piece.move(e, startPosition, clickPosition, startSide, movedPiece)          
+            if (movedPiece.id.charAt(0) === 'w') {                
+                if (clickPosition[0] === 2) {
+                    const movedRock = document.getElementById(`${0},${clickPosition[1]},${startSide}`)?.firstChild as HTMLElement
+                    Piece.move(e, [0,clickPosition[1]], [3,clickPosition[1]], startSide, movedRock)
+                }
+                else if (clickPosition[0] === 6) {
+                    const movedRock = document.getElementById(`${7},${clickPosition[1]},${startSide}`)?.firstChild as HTMLElement
+                    Piece.move(e, [7,clickPosition[1]], [5,clickPosition[1]], startSide, movedRock)
+                }
             }
-
-            // Move piece in array to selected cell
-            ArrayBoards.R[clickPosition[1]][clickPosition[0]] = piece
-
-            // Clear starting squere
-            ArrayBoards.L[startPosition[1]][startPosition[0]] = []
-
-            // Change coordinates for class
-            piece[0].position = clickPosition
-            piece[0].isLeft = false
-
-            // special flag for casteling realization
-            if ((piece[0].id.charAt(2) === 'k') || piece[0].id.charAt(2) === 'r') {
-                piece[0].isMoved = true
+            else {
+                if (clickPosition[0] === 5) {
+                    const movedRock = document.getElementById(`${7},${clickPosition[1]},${startSide}`)?.firstChild as HTMLElement
+                    Piece.move(e, [7,clickPosition[1]], [4,clickPosition[1]], startSide, movedRock)
+                }
+                else if (clickPosition[0] === 1) {
+                    const movedRock = document.getElementById(`${0},${clickPosition[1]},${startSide}`)?.firstChild as HTMLElement
+                    Piece.move(e, [0,clickPosition[1]], [2,clickPosition[1]], startSide, movedRock)
+                }
             }
-
-            if (piece[0].id.charAt(2) === 'q') {
-                piece[0].bishop.isLeft = false
-                piece[0].rock.isLeft = false
-            }
-
-            Board.Clear()
         }
         else {
-            // Save piece`s class in variable  
-            const piece = ArrayBoards.R[startPosition[1]][startPosition[0]]
-
-            // Add selected piece to selected cell as child element
-            oppositCell?.append(movedPiece)
-
-            // remove piece (eating)
-            if (target.classList.contains(`lighttedCell_eat`)) {
-                target.firstChild?.remove()
-                ArrayBoards.R[clickPosition[1]][clickPosition[0]] = []
-            }
-
-            // Move piece in array to selected cell
-            ArrayBoards.L[clickPosition[1]][clickPosition[0]] = piece
-
-            // Clear starting squere
-            ArrayBoards.R[startPosition[1]][startPosition[0]] = []
-
-            // Change coordinates for class
-            piece[0].position = clickPosition
-            piece[0].isLeft = true
-
-            // special flag for casteling realization
-            if ((piece[0].id.charAt(2) === 'k') || piece[0].id.charAt(2) === 'r') {
-                piece[0].isMoved = true
-            }
-
-            if (piece[0].id.charAt(2) === 'q') {
-                piece[0].bishop.isLeft = true
-                piece[0].rock.isLeft = true
-            }
-
-            Board.Clear()
+            Piece.move(e, startPosition, clickPosition, startSide, movedPiece)     
         }
     }
 
@@ -174,15 +205,55 @@ export class King extends Piece {
         return false
     }
 
+    isVailedCasteling(positionStart: number[], positionEnd: number[], isLeft:boolean, isBlack:boolean): boolean {
+        if (!isBlack) {
+            if (!this.isMoved && (positionEnd[0] === 2 || positionEnd[0] === 6)) {
+                if (positionStart[1] === positionEnd[1]) {
+                    if (positionEnd[0] === 2 && !Cell.isEmpty([0, positionStart[1]], isLeft)) {
+                        if ((Cell.isEmpty([1, positionStart[1]], isLeft) && Cell.isEmpty([2, positionStart[1]], isLeft) && Cell.isEmpty([3, positionStart[1]], isLeft)) && (Cell.isEmpty([1, positionStart[1]], !isLeft) && Cell.isEmpty([2, positionStart[1]], !isLeft) && Cell.isEmpty([3, positionStart[1]], !isLeft))) {
+                            return true
+                        }
+                    }
+                    if (positionEnd[0] === 6 && !Cell.isEmpty([7, positionStart[1]], isLeft)) {
+                        if ((Cell.isEmpty([5, positionStart[1]], isLeft) && Cell.isEmpty([6, positionStart[1]], isLeft)) && (Cell.isEmpty([5, positionStart[1]], !isLeft) && Cell.isEmpty([6, positionStart[1]], !isLeft))) {
+                            return true
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            if (!this.isMoved && (positionEnd[0] === 1 || positionEnd[0] === 5)) {
+                if (positionStart[1] === positionEnd[1]) {
+                    if (positionEnd[0] === 5 && !Cell.isEmpty([0, positionStart[1]], isLeft)) {
+                        if ((Cell.isEmpty([4, positionStart[1]], isLeft) && Cell.isEmpty([5, positionStart[1]], isLeft) && Cell.isEmpty([6, positionStart[1]], isLeft)) && (Cell.isEmpty([4, positionStart[1]], !isLeft) && Cell.isEmpty([5, positionStart[1]], !isLeft) && Cell.isEmpty([6, positionStart[1]], !isLeft))) {
+                            return true
+                        }
+                    }
+                    if (positionEnd[0] === 1 && !Cell.isEmpty([7, positionStart[1]], isLeft)) {
+                        if ((Cell.isEmpty([1, positionStart[1]], isLeft) && Cell.isEmpty([2, positionStart[1]], isLeft)) && (Cell.isEmpty([1, positionStart[1]], !isLeft) && Cell.isEmpty([2, positionStart[1]], !isLeft))) {
+                            return true
+                        }
+                    }
+                }
+            }
+        }
+        return false
+    }
+
     lightAllPossibleMove(): void {
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
+                Cell.lightStartCell(this.position, this.isLeft)
+                if (this.isVailedCasteling(this.position, [i, j], this.isLeft, this.isBlack)) {
+                    Cell.lightMovableCell([i, j], this.isLeft)
+                    Cell.lightCastelingCell([i,j], this.isLeft)
+                }
                 if (this.isVailedMove(this.position, [i, j])) {
                     if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
                         if (i !== this.position[0] || j !== this.position[1]) {
                             Cell.lightMovableCell([i, j], this.isLeft)
                         }
-                        Cell.lightStartCell(this.position, this.isLeft)
                     }
                     if (this.position[0] !== i || this.position[1] !== j) {
                         if (this.isLeft === true) {
@@ -201,7 +272,6 @@ export class King extends Piece {
         }
     }
 }
-
 export class Bishop extends Piece {
     public isLeft: boolean
 
@@ -273,7 +343,7 @@ export class Bishop extends Piece {
                         }
                     }
                 } catch (TypeError) {
-                    
+
                 }
             }
         }
@@ -375,7 +445,7 @@ export class Rock extends Piece {
                         }
                     }
                 } catch (TypeError) {
-                    
+
                 }
             }
         }
@@ -430,7 +500,7 @@ export class Queen extends Piece {
                         }
                     }
                 } catch (TypeError) {
-                    
+
                 }
             }
         }
@@ -482,7 +552,7 @@ export class Knight extends Piece {
                         }
                     }
                 } catch (TypeError) {
-                    
+
                 }
             }
         }
@@ -503,7 +573,7 @@ export class Pawn extends Piece {
 
     isVailedMove(positionStart: number[], positionEnd: number[]): boolean {
         if (this.isLeft) {
-            if (this.isBlack) {
+            if (!this.isBlack) {
                 if (positionStart[1] === 6) {
                     if (ArrayBoards.L[positionStart[1] - 1][positionStart[0]].length === 0) {
                         if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -2)) {
@@ -529,7 +599,7 @@ export class Pawn extends Piece {
             }
         }
         else {
-            if (this.isBlack) {
+            if (!this.isBlack) {
                 if (positionStart[1] === 6) {
                     if (ArrayBoards.L[positionStart[1] - 1][positionStart[0]].length === 0) {
                         if ((positionEnd[0] === positionStart[0]) && (positionEnd[1] - positionStart[1] === -2)) {
@@ -557,14 +627,15 @@ export class Pawn extends Piece {
 
         return false
     }
+
     isVailedEating(positionStart: number[], positionEnd: number[]): boolean {
-        if (this.isBlack === true) {
-            if((positionEnd[0] - positionStart[0] === 1 || positionEnd[0] - positionStart[0] === -1) && (positionEnd[1] - positionStart[1] === -1)) {
+        if (!this.isBlack) {
+            if ((positionEnd[0] - positionStart[0] === 1 || positionEnd[0] - positionStart[0] === -1) && (positionEnd[1] - positionStart[1] === -1)) {
                 return true
             }
         }
         else {
-            if((positionEnd[0] - positionStart[0] === 1 || positionEnd[0] - positionStart[0] === -1) && (positionEnd[1] - positionStart[1] === 1)) {
+            if ((positionEnd[0] - positionStart[0] === 1 || positionEnd[0] - positionStart[0] === -1) && (positionEnd[1] - positionStart[1] === 1)) {
                 return true
             }
         }
@@ -585,12 +656,12 @@ export class Pawn extends Piece {
                 if (i === this.position[0] && j === this.position[1]) {
                     Cell.lightStartCell(this.position, this.isLeft)
                 }
-                if (this.isVailedEating(this.position, [i,j])) {
+                if (this.isVailedEating(this.position, [i, j])) {
                     if (this.isLeft && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i].length !== 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
-                        Cell.lightEatableCell([i,j], this.isLeft)
+                        Cell.lightEatableCell([i, j], this.isLeft)
                     }
                     else if (!this.isLeft && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i].length !== 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
-                        Cell.lightEatableCell([i,j], this.isLeft)
+                        Cell.lightEatableCell([i, j], this.isLeft)
                     }
                 }
             }

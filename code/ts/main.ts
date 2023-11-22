@@ -5,14 +5,8 @@ const VisualBoard = new Board(true)
 
 VisualBoard.fieldGeneration();  
 
-let BK = new King('b_k_0', [3,4], true, false)
+let BK = new King('b_k_0', [3,0], false, false)
 BK.create()
-
-let WB0 = new Bishop('w_b_0', [0,0], true)
-WB0.create()
-
-let BR0 = new Rock('b_r_0', [2,3], true, false)
-BR0.create()
 
 let BQ = new Queen('b_q_0', [3,1], true)
 BQ.create()
@@ -20,25 +14,28 @@ BQ.create()
 let BN0 = new Knight('b_n_0', [1,3], true)
 BN0.create()
 
-let BP0 = new Pawn('b_p_0', [1,6], true)
-BP0.create()
-
-let WP0 = new Pawn('w_p_0', [1,1], true)
+let WP0 = new Pawn('w_p_0', [1,6], true)
 WP0.create()
+
+let BR0 = new Rock('b_r_0', [0,0], false, false)
+BR0.create()
+
+let BR1 = new Rock('b_r_1', [7,0], false, false)
+BR1.create()
 
 export let ArrayBoards : any = {
     'L' : [
-        [[WB0],[],[],[],[],[],[],[]],
-        [[],[WP0],[],[BQ],[],[],[],[]],
         [[],[],[],[],[],[],[],[]],
-        [[],[BN0],[BR0],[],[],[],[],[]],
-        [[],[],[],[BK],[],[],[],[]],
+        [[],[],[],[BQ],[],[],[],[]],
         [[],[],[],[],[],[],[],[]],
-        [[],[BP0],[],[],[],[],[],[]],
+        [[],[BN0],[],[],[],[],[],[]],
+        [[],[],[],[],[],[],[],[]],
+        [[],[],[],[],[],[],[],[]],
+        [[],[WP0],[],[],[],[],[],[]],
         [[],[],[],[],[],[],[],[]]
     ],
     'R' : [
-        [[],[],[],[],[],[],[],[]],
+        [[BR0],[],[],[BK],[],[],[],[BR1]],
         [[],[],[],[],[],[],[],[]],
         [[],[],[],[],[],[],[],[]],
         [[],[],[],[],[],[],[],[]],

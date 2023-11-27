@@ -1,4 +1,4 @@
-import { Board } from "./field.js";
+import { Board, Cell } from "./field.js";
 import { Bishop, King, Knight, Pawn, Queen, Rock } from "./piece.js";
 
 const VisualBoard = new Board(true)
@@ -23,6 +23,9 @@ BR0.create()
 let BR1 = new Rock('b_r_1', [7,0], false, false)
 BR1.create()
 
+let BB0 = new Bishop('b_b_0', [0,6], false)
+BB0.create()
+
 export let ArrayBoards : any = {
     'L' : [
         [[],[],[],[],[],[],[],[]],
@@ -41,7 +44,7 @@ export let ArrayBoards : any = {
         [[],[],[],[],[],[],[],[]],
         [[],[],[],[],[],[],[],[]],
         [[],[],[],[],[],[],[],[]],
-        [[],[],[],[],[],[],[],[]],
+        [[BB0],[],[],[],[],[],[],[]],
         [[],[],[],[],[],[],[],[]]
     ]
 }

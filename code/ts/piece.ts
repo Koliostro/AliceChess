@@ -182,7 +182,6 @@ export class Piece {
         }
     }
 }
-
 export class King extends Piece {
     public isLeft: boolean
     private isMoved: boolean;
@@ -369,7 +368,7 @@ export class Rock extends Piece {
             return false;
         }
 
-        if (this.isLeft === true) {
+        if (this.isLeft) {
             if (positionStart[0] === positionEnd[0]) {
                 const yOffset = positionEnd[1] > positionStart[1] ? 1 : -1;
                 let yPos = positionStart[1] + yOffset;
@@ -393,7 +392,7 @@ export class Rock extends Piece {
             }
         }
 
-        if (this.isLeft === false) {
+        if (this.isLeft) {
             if (positionStart[0] === positionEnd[0]) {
                 const yOffset = positionEnd[1] > positionStart[1] ? 1 : -1;
                 let yPos = positionStart[1] + yOffset;

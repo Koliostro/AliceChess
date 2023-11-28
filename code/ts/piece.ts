@@ -112,30 +112,30 @@ export class Piece {
         const startSide = startCell?.id.charAt(4)
 
         if (target.classList.contains(`lighttedCell_casteling`)) {
-            Piece.move(e, startPosition, clickPosition, startSide, movedPiece)          
-            if (movedPiece.id.charAt(0) === 'w') {                
+            Piece.move(e, startPosition, clickPosition, startSide, movedPiece)
+            if (movedPiece.id.charAt(0) === 'w') {
                 if (clickPosition[0] === 2) {
                     const movedRock = document.getElementById(`${0},${clickPosition[1]},${startSide}`)?.firstChild as HTMLElement
-                    Piece.move(e, [0,clickPosition[1]], [3,clickPosition[1]], startSide, movedRock)
+                    Piece.move(e, [0, clickPosition[1]], [3, clickPosition[1]], startSide, movedRock)
                 }
                 else if (clickPosition[0] === 6) {
                     const movedRock = document.getElementById(`${7},${clickPosition[1]},${startSide}`)?.firstChild as HTMLElement
-                    Piece.move(e, [7,clickPosition[1]], [5,clickPosition[1]], startSide, movedRock)
+                    Piece.move(e, [7, clickPosition[1]], [5, clickPosition[1]], startSide, movedRock)
                 }
             }
             else {
                 if (clickPosition[0] === 5) {
                     const movedRock = document.getElementById(`${7},${clickPosition[1]},${startSide}`)?.firstChild as HTMLElement
-                    Piece.move(e, [7,clickPosition[1]], [4,clickPosition[1]], startSide, movedRock)
+                    Piece.move(e, [7, clickPosition[1]], [4, clickPosition[1]], startSide, movedRock)
                 }
                 else if (clickPosition[0] === 1) {
                     const movedRock = document.getElementById(`${0},${clickPosition[1]},${startSide}`)?.firstChild as HTMLElement
-                    Piece.move(e, [0,clickPosition[1]], [2,clickPosition[1]], startSide, movedRock)
+                    Piece.move(e, [0, clickPosition[1]], [2, clickPosition[1]], startSide, movedRock)
                 }
             }
         }
         else {
-            Piece.move(e, startPosition, clickPosition, startSide, movedPiece)     
+            Piece.move(e, startPosition, clickPosition, startSide, movedPiece)
         }
     }
 
@@ -199,18 +199,20 @@ export class King extends Piece {
 
     isVailedMove(positionStart: number[], positionEnd: number[]): boolean {
         if ((Math.abs(positionEnd[0] - positionStart[0]) <= 1 && (Math.abs(positionStart[1] - positionEnd[1]) <= 1))) {
-            return true
+            if (!Cell.isUnderAttack(positionEnd, !this.isBlack, this.isLeft)) {
+                return true
+            }
         }
         return false
     }
 
-    isVailedCasteling(positionStart: number[], positionEnd: number[], isLeft:boolean, isBlack:boolean): boolean {
+    isVailedCasteling(positionStart: number[], positionEnd: number[], isLeft: boolean, isBlack: boolean): boolean {
         if (!isBlack) {
             if (!this.isMoved && (positionEnd[0] === 2 || positionEnd[0] === 6)) {
                 if (positionStart[1] === positionEnd[1]) {
                     if (positionEnd[0] === 2 && !Cell.isEmpty([0, positionStart[1]], isLeft)) {
                         if ((Cell.isEmpty([1, positionStart[1]], isLeft) && Cell.isEmpty([2, positionStart[1]], isLeft) && Cell.isEmpty([3, positionStart[1]], isLeft)) && (Cell.isEmpty([1, positionStart[1]], !isLeft) && Cell.isEmpty([2, positionStart[1]], !isLeft) && Cell.isEmpty([3, positionStart[1]], !isLeft))) {
-                            return true
+                                return true
                         }
                     }
                     if (positionEnd[0] === 6 && !Cell.isEmpty([7, positionStart[1]], isLeft)) {
@@ -224,12 +226,12 @@ export class King extends Piece {
         else {
             if (!this.isMoved && (positionEnd[0] === 1 || positionEnd[0] === 5)) {
                 if (positionStart[1] === positionEnd[1]) {
-                    if (positionEnd[0] === 5 && !Cell.isEmpty([0, positionStart[1]], isLeft)) {
+                    if (positionEnd[0] === 1 && !Cell.isEmpty([0, positionStart[1]], isLeft)) {
                         if ((Cell.isEmpty([4, positionStart[1]], isLeft) && Cell.isEmpty([5, positionStart[1]], isLeft) && Cell.isEmpty([6, positionStart[1]], isLeft)) && (Cell.isEmpty([4, positionStart[1]], !isLeft) && Cell.isEmpty([5, positionStart[1]], !isLeft) && Cell.isEmpty([6, positionStart[1]], !isLeft))) {
                             return true
                         }
                     }
-                    if (positionEnd[0] === 1 && !Cell.isEmpty([7, positionStart[1]], isLeft)) {
+                    if (positionEnd[0] === 5 && !Cell.isEmpty([7, positionStart[1]], isLeft)) {
                         if ((Cell.isEmpty([1, positionStart[1]], isLeft) && Cell.isEmpty([2, positionStart[1]], isLeft)) && (Cell.isEmpty([1, positionStart[1]], !isLeft) && Cell.isEmpty([2, positionStart[1]], !isLeft))) {
                             return true
                         }
@@ -246,7 +248,7 @@ export class King extends Piece {
                 Cell.lightStartCell(this.position, this.isLeft)
                 if (this.isVailedCasteling(this.position, [i, j], this.isLeft, this.isBlack)) {
                     Cell.lightMovableCell([i, j], this.isLeft)
-                    Cell.lightCastelingCell([i,j], this.isLeft)
+                    Cell.lightCastelingCell([i, j], this.isLeft)
                 }
                 if (this.isVailedMove(this.position, [i, j])) {
                     if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
@@ -368,86 +370,72 @@ export class Rock extends Piece {
             return false;
         }
 
-        if (this.isLeft) {
-            if (positionStart[0] === positionEnd[0]) {
-                const yOffset = positionEnd[1] > positionStart[1] ? 1 : -1;
-                let yPos = positionStart[1] + yOffset;
-                while (yPos !== positionEnd[1]) {
+        if (positionStart[0] === positionEnd[0]) {
+            const yOffset = positionEnd[1] > positionStart[1] ? 1 : -1;
+            let yPos = positionStart[1] + yOffset;
+            while (yPos !== positionEnd[1]) {
+                if (this.isLeft) {
                     if (ArrayBoards.L[yPos][positionStart[0]].length !== 0) {
                         return false
                     }
-                    yPos += yOffset
                 }
-            }
-
-            if (positionStart[1] === positionEnd[1]) {
-                const xOffset = positionEnd[0] > positionStart[0] ? 1 : -1;
-                let xPos = positionStart[0] + xOffset;
-                while (xPos !== positionEnd[0]) {
-                    if (ArrayBoards.L[positionStart[1]][xPos].length !== 0) {
-                        return false
-                    }
-                    xPos += xOffset
-                }
-            }
-        }
-
-        if (this.isLeft) {
-            if (positionStart[0] === positionEnd[0]) {
-                const yOffset = positionEnd[1] > positionStart[1] ? 1 : -1;
-                let yPos = positionStart[1] + yOffset;
-                while (yPos !== positionEnd[1]) {
+                else {
                     if (ArrayBoards.R[yPos][positionStart[0]].length !== 0) {
                         return false
                     }
-                    yPos += yOffset
                 }
+                yPos += yOffset
             }
+        }
 
-            if (positionStart[1] === positionEnd[1]) {
-                const xOffset = positionEnd[0] > positionStart[0] ? 1 : -1;
-                let xPos = positionStart[0] + xOffset;
-                while (xPos !== positionEnd[0]) {
+        else if (positionStart[1] === positionEnd[1]) {
+            const xOffset = positionEnd[0] > positionStart[0] ? 1 : -1;
+            let xPos = positionStart[0] + xOffset;
+            while (xPos !== positionEnd[0]) {
+                if (this.isLeft) {
+                    if (ArrayBoards.L[positionStart[1]][xPos].length !== 0) {
+                        return false
+                    }
+                }
+                else {
                     if (ArrayBoards.R[positionStart[1]][xPos].length !== 0) {
                         return false
                     }
-                    xPos += xOffset
                 }
+                xPos += xOffset
             }
         }
-
         return true
+
     }
 
-    lightAllPossibleMove(): void {
-        for (let i = 0; i < 8; i++) {
-            for (let j = 0; j < 8; j++) {
-                try {
-                    if (this.isVailedMove(this.position, [i, j])) {
-                        if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
-                            if (i !== this.position[0] || j !== this.position[1]) {
-                                Cell.lightMovableCell([i, j], this.isLeft)
-                            }
-                            Cell.lightStartCell(this.position, this.isLeft)
-                        }
-                        if (this.position[0] !== i || this.position[1] !== j) {
-                            if (this.isLeft === true) {
-                                if (ArrayBoards.L[j][i].length !== 0 && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
-                                    Cell.lightEatableCell([i, j], this.isLeft)
-                                }
-                            }
-                            else {
-                                if (ArrayBoards.R[j][i].length !== 0 && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
-                                    Cell.lightEatableCell([i, j], this.isLeft)
-                                }
-                            }
+lightAllPossibleMove(): void {
+    Cell.lightStartCell(this.position, this.isLeft)
+        for(let i = 0; i < 8; i++) {
+    for (let j = 0; j < 8; j++) {
+        try {
+            if (this.isVailedMove(this.position, [i, j])) {
+                if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
+                    if (i !== this.position[0] || j !== this.position[1]) {
+                        Cell.lightMovableCell([i, j], this.isLeft)
+                    }
+                }
+                if (this.position[0] !== i || this.position[1] !== j) {
+                    if (this.isLeft) {
+                        if (ArrayBoards.L[j][i].length !== 0 && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
+                            Cell.lightEatableCell([i, j], this.isLeft)
                         }
                     }
-                } catch (TypeError) {
-
+                    else {
+                        if (ArrayBoards.R[j][i].length !== 0 && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
+                            Cell.lightEatableCell([i, j], this.isLeft)
+                        }
+                    }
                 }
             }
-        }
+        } catch (TypeError) { }
+    }
+}
     }
 }
 export class Queen extends Piece {

@@ -140,11 +140,12 @@ export class Cell extends Board {
             if (position[0] !== positionEnd[0] && position[1] !== positionEnd[1]) {
                 return false;
             }
-            try {
-                if (position[0] === positionEnd[0]) {
-                    const yOffset = positionEnd[1] > position[1] ? 1 : -1;
-                    let yPos = position[1] + yOffset;
-                    while (yPos !== positionEnd[1]) {
+
+            if (position[0] === positionEnd[0]) {
+                const yOffset = positionEnd[1] > position[1] ? 1 : -1;
+                let yPos = position[1] + yOffset;
+                while (yPos !== positionEnd[1]) {
+                    try {
                         if (isLeft) {
                             if (ArrayBoards.L[yPos][position[0]].length !== 0) {
                                 return false
@@ -155,14 +156,16 @@ export class Cell extends Board {
                                 return false
                             }
                         }
-                        yPos += yOffset
-                    }
+                    } catch (TypeError) {return false}
+                    yPos += yOffset
                 }
+            }
 
-                if (position[1] === positionEnd[1]) {
-                    const xOffset = positionEnd[0] > position[0] ? 1 : -1;
-                    let xPos = position[0] + xOffset;
-                    while (xPos !== positionEnd[0]) {
+            else if (position[1] === positionEnd[1]) {
+                const xOffset = positionEnd[0] > position[0] ? 1 : -1;
+                let xPos = position[0] + xOffset;
+                while (xPos !== positionEnd[0]) {
+                    try {
                         if (isLeft) {
                             if (ArrayBoards.L[position[1]][xPos].length !== 0) {
                                 return false
@@ -173,13 +176,13 @@ export class Cell extends Board {
                                 return false
                             }
                         }
-                        xPos += xOffset
-                    }
+                    } catch (TypeError) {return false}
+                    xPos += xOffset
                 }
-            } catch (TypeError) { }
-
+            }
             return true
         }
+
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
                 if (isVailedMove([i, j])) {
@@ -234,62 +237,73 @@ export class Cell extends Board {
     }
 
     static isUnderPawnAttack(position: number[], isBlack: boolean, isLeft: boolean) {
-        if (isLeft) {
-            if (isBlack) {
-                try {
-                    if (ArrayBoards.L[position[1] - 1][position[0] - 1].length !== 0 && ArrayBoards.L[position[1] - 1][position[0] - 1][0].isBlack === isBlack) {
-                        return true
-                    }
-                } catch (TypeError) {
-                    if (ArrayBoards.L[position[1] - 1][position[0] + 1].length !== 0 && ArrayBoards.L[position[1] - 1][position[0] + 1][0].isBlack === isBlack) {
-                        return true
-                    }
+        function isVailedEating(positionEnd: number[]): boolean {
+            if (!isBlack) {
+                if ((positionEnd[0] - position[0] === 1 || positionEnd[0] - position[0] === -1) && (positionEnd[1] - position[1] === -1)) {
+                    return true
                 }
-                return false
             }
             else {
-                try {
-                    if (ArrayBoards.L[position[1] + 1][position[0] - 1].length !== 0 && ArrayBoards.L[position[1] + 1][position[0] - 1][0].isBlack === isBlack) {
-                        return true
-                    }
-                } catch (TypeError) {
-                    if (ArrayBoards.L[position[1] + 1][position[0] + 1].length !== 0 && ArrayBoards.L[position[1] + 1][position[0] + 1][0].isBlack === isBlack) {
-                        return true
-                    }
+                if ((positionEnd[0] - position[0] === 1 || positionEnd[0] - position[0] === -1) && (positionEnd[1] - position[1] === 1)) {
+                    return true
                 }
-                return false
             }
+            return false
         }
-        else {
-            if (isBlack) {
-                try {
-                    if (ArrayBoards.R[position[1] - 1][position[0] - 1].length !== 0 && ArrayBoards.R[position[1] - 1][position[0] - 1][0].isBlack === isBlack) {
-                        return true
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                if (isVailedEating([i, j])) {
+                    if (isLeft && ArrayBoards.L[j][i].length !== 0) {
+                        if (ArrayBoards.L[j][i][0].id.charAt(2) === 'p') {
+                            if (ArrayBoards.L[j][i][0].isBlack === isBlack) {
+                                return true
+                            }
+                        }
                     }
-                } catch (TypeError) {
-                    if (ArrayBoards.R[position[1] - 1][position[0] + 1].length !== 0 && ArrayBoards.R[position[1] - 1][position[0] + 1][0].isBlack === isBlack) {
-                        return true
-                    }
-                }
-                return false
-            }
-            else {
-                try {
-                    if (ArrayBoards.R[position[1] + 1][position[0] - 1].length !== 0 && ArrayBoards.R[position[1] + 1][position[0] - 1][0].isBlack === isBlack) {
-                        return true
-                    }
-                } catch (TypeError) {
-                    if (ArrayBoards.R[position[1] + 1][position[0] + 1].length !== 0 && ArrayBoards.R[position[1] + 1][position[0] + 1][0].isBlack === isBlack) {
-                        return true
+                    if (!isLeft && ArrayBoards.R[j][i].length !== 0) {
+                        if (ArrayBoards.R[j][i][0].id.charAt(2) === 'p') {
+                            if (ArrayBoards.R[j][i][0].isBlack === isBlack) {
+                                return true
+                            }
+                        }
                     }
                 }
-                return false
             }
         }
     }
 
-    static isUnderAttack(position:number[], isBlack:boolean, isLeft:boolean):boolean {
-        if(this.isUnderDioganalAttack(position, isBlack, isLeft) || this.isUnderDioganalAttack(position, isBlack, isLeft) || this.isUnderKnightAttack(position, isBlack, isLeft) || this.isUnderPawnAttack(position, isBlack, isLeft)) {
+    static isUnderKingAttack(position: number[], isBlack: boolean, isLeft: boolean): boolean {
+        function isVailedMove(positionEnd: number[]): boolean {
+            if ((Math.abs(positionEnd[0] - position[0]) <= 1 && (Math.abs(position[1] - positionEnd[1]) <= 1))) {
+                return true
+            }
+            return false
+        }
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                if (isVailedMove([i, j])) {
+                    if (isLeft && ArrayBoards.L[j][i].length !== 0) {
+                        if (ArrayBoards.L[j][i][0].id.charAt(2) === 'k') {
+                            if (ArrayBoards.L[j][i][0].isBlack === isBlack) {
+                                return true
+                            }
+                        }
+                    }
+                    if (!isLeft && ArrayBoards.R[j][i].length !== 0) {
+                        if (ArrayBoards.R[j][i][0].id.charAt(2) === 'k') {
+                            if (ArrayBoards.R[j][i][0].isBlack === isBlack) {
+                                return true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false
+    }
+
+    static isUnderAttack(position: number[], isBlack: boolean, isLeft: boolean): boolean {
+        if (this.isUnderLineAttack(position, isBlack, isLeft) || this.isUnderDioganalAttack(position, isBlack, isLeft) || this.isUnderKnightAttack(position, isBlack, isLeft) || this.isUnderPawnAttack(position, isBlack, isLeft) || this.isUnderKingAttack(position, isBlack, isLeft)) {
             return true
         }
         return false

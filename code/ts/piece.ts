@@ -211,13 +211,17 @@ export class King extends Piece {
             if (!this.isMoved && (positionEnd[0] === 2 || positionEnd[0] === 6)) {
                 if (positionStart[1] === positionEnd[1]) {
                     if (positionEnd[0] === 2 && !Cell.isEmpty([0, positionStart[1]], isLeft)) {
-                        if ((Cell.isEmpty([1, positionStart[1]], isLeft) && Cell.isEmpty([2, positionStart[1]], isLeft) && Cell.isEmpty([3, positionStart[1]], isLeft)) && (Cell.isEmpty([1, positionStart[1]], !isLeft) && Cell.isEmpty([2, positionStart[1]], !isLeft) && Cell.isEmpty([3, positionStart[1]], !isLeft))) {
+                        if ((Cell.isEmpty([1, positionStart[1]], isLeft) && Cell.isEmpty([2, positionStart[1]], isLeft) && Cell.isEmpty([3, positionStart[1]], isLeft)) && Cell.isEmpty([2, positionStart[1]], !isLeft) && Cell.isEmpty([3, positionStart[1]], !isLeft)) {
+                            if (!Cell.isUnderAttack([1, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([2,positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([3, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([2,positionStart[1]], !isBlack, !isLeft)) {
                                 return true
+                            }
                         }
                     }
                     if (positionEnd[0] === 6 && !Cell.isEmpty([7, positionStart[1]], isLeft)) {
                         if ((Cell.isEmpty([5, positionStart[1]], isLeft) && Cell.isEmpty([6, positionStart[1]], isLeft)) && (Cell.isEmpty([5, positionStart[1]], !isLeft) && Cell.isEmpty([6, positionStart[1]], !isLeft))) {
-                            return true
+                            if (!Cell.isUnderAttack([5, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([6,positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([6, positionStart[1]], !isBlack, !isLeft)) {
+                                return true
+                            }
                         }
                     }
                 }
@@ -226,14 +230,18 @@ export class King extends Piece {
         else {
             if (!this.isMoved && (positionEnd[0] === 1 || positionEnd[0] === 5)) {
                 if (positionStart[1] === positionEnd[1]) {
-                    if (positionEnd[0] === 1 && !Cell.isEmpty([0, positionStart[1]], isLeft)) {
-                        if ((Cell.isEmpty([4, positionStart[1]], isLeft) && Cell.isEmpty([5, positionStart[1]], isLeft) && Cell.isEmpty([6, positionStart[1]], isLeft)) && (Cell.isEmpty([4, positionStart[1]], !isLeft) && Cell.isEmpty([5, positionStart[1]], !isLeft) && Cell.isEmpty([6, positionStart[1]], !isLeft))) {
-                            return true
+                    if (positionEnd[0] === 5 && !Cell.isEmpty([7, positionStart[1]], isLeft)) {
+                        if ((Cell.isEmpty([4, positionStart[1]], isLeft) && Cell.isEmpty([5, positionStart[1]], isLeft) && Cell.isEmpty([6, positionStart[1]], isLeft)) && (Cell.isEmpty([4, positionStart[1]], !isLeft) && Cell.isEmpty([5, positionStart[1]], !isLeft))) {
+                            if (!Cell.isUnderAttack([4, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([5,positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([6, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([5,positionStart[1]], !isBlack, !isLeft)) {
+                                return true
+                            }
                         }
                     }
-                    if (positionEnd[0] === 5 && !Cell.isEmpty([7, positionStart[1]], isLeft)) {
+                    if (positionEnd[0] === 1 && !Cell.isEmpty([0, positionStart[1]], isLeft)) {
                         if ((Cell.isEmpty([1, positionStart[1]], isLeft) && Cell.isEmpty([2, positionStart[1]], isLeft)) && (Cell.isEmpty([1, positionStart[1]], !isLeft) && Cell.isEmpty([2, positionStart[1]], !isLeft))) {
-                            return true
+                            if (!Cell.isUnderAttack([1, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([2,positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([1, positionStart[1]], !isBlack, !isLeft)) {
+                                return true
+                            }
                         }
                     }
                 }
@@ -409,33 +417,33 @@ export class Rock extends Piece {
 
     }
 
-lightAllPossibleMove(): void {
-    Cell.lightStartCell(this.position, this.isLeft)
-        for(let i = 0; i < 8; i++) {
-    for (let j = 0; j < 8; j++) {
-        try {
-            if (this.isVailedMove(this.position, [i, j])) {
-                if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
-                    if (i !== this.position[0] || j !== this.position[1]) {
-                        Cell.lightMovableCell([i, j], this.isLeft)
-                    }
-                }
-                if (this.position[0] !== i || this.position[1] !== j) {
-                    if (this.isLeft) {
-                        if (ArrayBoards.L[j][i].length !== 0 && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
-                            Cell.lightEatableCell([i, j], this.isLeft)
+    lightAllPossibleMove(): void {
+        Cell.lightStartCell(this.position, this.isLeft)
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                try {
+                    if (this.isVailedMove(this.position, [i, j])) {
+                        if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
+                            if (i !== this.position[0] || j !== this.position[1]) {
+                                Cell.lightMovableCell([i, j], this.isLeft)
+                            }
+                        }
+                        if (this.position[0] !== i || this.position[1] !== j) {
+                            if (this.isLeft) {
+                                if (ArrayBoards.L[j][i].length !== 0 && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
+                                    Cell.lightEatableCell([i, j], this.isLeft)
+                                }
+                            }
+                            else {
+                                if (ArrayBoards.R[j][i].length !== 0 && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
+                                    Cell.lightEatableCell([i, j], this.isLeft)
+                                }
+                            }
                         }
                     }
-                    else {
-                        if (ArrayBoards.R[j][i].length !== 0 && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
-                            Cell.lightEatableCell([i, j], this.isLeft)
-                        }
-                    }
-                }
+                } catch (TypeError) { }
             }
-        } catch (TypeError) { }
-    }
-}
+        }
     }
 }
 export class Queen extends Piece {

@@ -1,13 +1,14 @@
 import { ArrayBoards } from './main.js';
-import { Piece } from './piece.js'
+import { Chess, Piece } from './piece.js'
 
 const leftBoardHTML: HTMLElement | null = document.querySelector(`.leftBoard`);
 const rightBoardHTML: HTMLElement | null = document.querySelector(`.rightBoard`);
 
-export class Board {
+export class Board extends Chess{
     public isLeft: boolean;
 
-    constructor(isLeft: boolean) {
+    constructor(isLeft: boolean = true) {
+        super()
         this.isLeft = isLeft;
     }
 

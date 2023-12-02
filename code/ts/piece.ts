@@ -1,12 +1,23 @@
-import { ArrayBoards } from "./main.js"
+import { ArrayBoards, CheckSystem } from "./main.js"
 import { Cell, Board } from './field.js'
 
-export class Piece {
+export class Chess {
+    isBlackTurn : boolean
+    isChechireChess : boolean
+
+    constructor(isBlackTurn : boolean = false, isChechireChess : boolean = false) {
+        this.isBlackTurn = isBlackTurn;
+        this.isChechireChess = isChechireChess
+    }
+}
+
+export class Piece extends Chess{
     public id: string;
     public position: number[] // x first, y second
     public isBlack: boolean;
 
     protected constructor(id: string, position: number[]) {
+        super()
         this.id = id;
         this.position = position
         this.isBlack = id.charAt(0) === 'b' ? true : false;
@@ -44,7 +55,7 @@ export class Piece {
             piece[0].isLeft = false;
 
             // special flag for casteling realization
-            if ((piece[0].id.charAt(2) === 'k') || piece[0].id.charAt(2) === 'r') {
+            if (piece[0].id.charAt(2) === 'k' || piece[0].id.charAt(2) === 'r') {
                 piece[0].isMoved = true;
             }
 
@@ -186,7 +197,7 @@ export class King extends Piece {
     public isLeft: boolean
     private isMoved: boolean;
 
-    constructor(id: string, position: number[], isLeft: boolean, isMoved: boolean) {
+    constructor(id: string, position: number[], isLeft: boolean, isMoved: boolean = false) {
         super(id, position)
         this.isLeft = isLeft
         this.isMoved = isMoved
@@ -212,14 +223,14 @@ export class King extends Piece {
                 if (positionStart[1] === positionEnd[1]) {
                     if (positionEnd[0] === 2 && !Cell.isEmpty([0, positionStart[1]], isLeft)) {
                         if ((Cell.isEmpty([1, positionStart[1]], isLeft) && Cell.isEmpty([2, positionStart[1]], isLeft) && Cell.isEmpty([3, positionStart[1]], isLeft)) && Cell.isEmpty([2, positionStart[1]], !isLeft) && Cell.isEmpty([3, positionStart[1]], !isLeft)) {
-                            if (!Cell.isUnderAttack([1, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([2,positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([3, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([2,positionStart[1]], !isBlack, !isLeft)) {
+                            if (!Cell.isUnderAttack([1, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([2, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([3, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([2, positionStart[1]], !isBlack, !isLeft)) {
                                 return true
                             }
                         }
                     }
                     if (positionEnd[0] === 6 && !Cell.isEmpty([7, positionStart[1]], isLeft)) {
                         if ((Cell.isEmpty([5, positionStart[1]], isLeft) && Cell.isEmpty([6, positionStart[1]], isLeft)) && (Cell.isEmpty([5, positionStart[1]], !isLeft) && Cell.isEmpty([6, positionStart[1]], !isLeft))) {
-                            if (!Cell.isUnderAttack([5, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([6,positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([6, positionStart[1]], !isBlack, !isLeft)) {
+                            if (!Cell.isUnderAttack([5, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([6, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([6, positionStart[1]], !isBlack, !isLeft)) {
                                 return true
                             }
                         }
@@ -232,14 +243,14 @@ export class King extends Piece {
                 if (positionStart[1] === positionEnd[1]) {
                     if (positionEnd[0] === 5 && !Cell.isEmpty([7, positionStart[1]], isLeft)) {
                         if ((Cell.isEmpty([4, positionStart[1]], isLeft) && Cell.isEmpty([5, positionStart[1]], isLeft) && Cell.isEmpty([6, positionStart[1]], isLeft)) && (Cell.isEmpty([4, positionStart[1]], !isLeft) && Cell.isEmpty([5, positionStart[1]], !isLeft))) {
-                            if (!Cell.isUnderAttack([4, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([5,positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([6, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([5,positionStart[1]], !isBlack, !isLeft)) {
+                            if (!Cell.isUnderAttack([4, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([5, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([6, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([5, positionStart[1]], !isBlack, !isLeft)) {
                                 return true
                             }
                         }
                     }
                     if (positionEnd[0] === 1 && !Cell.isEmpty([0, positionStart[1]], isLeft)) {
                         if ((Cell.isEmpty([1, positionStart[1]], isLeft) && Cell.isEmpty([2, positionStart[1]], isLeft)) && (Cell.isEmpty([1, positionStart[1]], !isLeft) && Cell.isEmpty([2, positionStart[1]], !isLeft))) {
-                            if (!Cell.isUnderAttack([1, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([2,positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([1, positionStart[1]], !isBlack, !isLeft)) {
+                            if (!Cell.isUnderAttack([1, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([2, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([1, positionStart[1]], !isBlack, !isLeft)) {
                                 return true
                             }
                         }
@@ -362,7 +373,7 @@ export class Rock extends Piece {
     public isLeft: boolean
     private isMoved: boolean;
 
-    constructor(id: string, position: number[], isLeft: boolean, isMoved: boolean) {
+    constructor(id: string, position: number[], isLeft: boolean, isMoved: boolean = false) {
         super(id, position)
         this.isLeft = isLeft
         this.isMoved = isMoved

@@ -4,13 +4,16 @@ import { Cell, Board } from './field.js'
 export class Chess {
     isBlackTurn : boolean
     isChechireChess : boolean
+    currentMove : string
 
-    constructor(isBlackTurn : boolean = false, isChechireChess : boolean = false) {
+    constructor(isBlackTurn : boolean = false, isChechireChess : boolean = false, currentMove:string = 'w') {
         this.isBlackTurn = isBlackTurn;
         this.isChechireChess = isChechireChess
+        this.currentMove = currentMove
     }
 }
 
+const Game = new Chess()
 export class Piece extends Chess{
     public id: string;
     public position: number[] // x first, y second
@@ -27,6 +30,7 @@ export class Piece extends Chess{
         const target = e.target as HTMLInputElement
 
         const oppositeSide = target.id.charAt(4) === 'L' ? 'R' : 'L'
+        Game.currentMove = Game.currentMove === 'w' ? 'b' : 'w'
 
         // Get opposite cell from clicked
         const oppositCell = document.getElementById(`${endPosition[0]},${endPosition[1]},${oppositeSide}`)
@@ -106,16 +110,16 @@ export class Piece extends Chess{
     static movment(e: Event): void {
         // on which HTML element user click
         const target = e.target as HTMLInputElement
-
+        
         // make an array of 2 coordinates for position of click
         const clickPosition = [Number(target.id.charAt(0)), Number(target.id.charAt(2))]
-
+        
         // Importing HTML element of starting cell
         const startCell = document.querySelector(`.selectedCell`) as HTMLElement
-
+        
         // Calculate start position
         const startPosition: number[] = [Number(startCell.id.charAt(0)), Number(startCell.id.charAt(2))]
-
+        
         // Take HTML element of piece from starting cell
         const movedPiece = startCell?.firstChild as HTMLElement
 
@@ -165,6 +169,10 @@ export class Piece extends Chess{
     }
 
     movementOfPieces(event: Event & { target: HTMLElement }): void {
+        if (event.target.id.charAt(0) !== Game.currentMove) {
+            return
+        }
+
         const positionStart: number[] = [Number(event.target.parentElement?.id.charAt(2)), Number(event.target.parentElement?.id.charAt(0))]
         const side = event.target.parentElement?.id.charAt(4);
 

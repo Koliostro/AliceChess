@@ -62,10 +62,60 @@ export class Piece extends Chess{
             if (piece[0].id.charAt(2) === 'k' || piece[0].id.charAt(2) === 'r') {
                 piece[0].isMoved = true;
             }
+            
+            if (piece[0].id.charAt(2) === 'k') {
+                if (piece[0].id.charAt(0) === 'b') {
+                    CheckSystem.BKingPos = piece[0].position
+                    CheckSystem.BKingBoard = piece[0].isLeft
+                }
+                else {
+                    CheckSystem.WKingPos = piece[0].position
+                    CheckSystem.WKingBoard = piece[0].isLeft
+                }
+            }
 
             if (piece[0].id.charAt(2) === 'q') {
                 piece[0].bishop.isLeft = false;
                 piece[0].rock.isLeft = false;
+            }
+
+            if (piece[0].id.charAt(2) !== 'k') {
+                if (piece[0].isBlack) {
+                    if(CheckSystem.WKingBoard === piece[0].isLeft) {
+                        if (piece[0].id.charAt(2) !== 'p') {
+                            if(piece[0].isVailedMove(piece[0].position, CheckSystem.WKingPos)) {
+                                CheckSystem.AttackingPiecePos = piece[0].position
+                                CheckSystem.IsBlackAttacked = false
+                                CheckSystem.IsLeftAttackingPieceSide = piece[0].isLeft
+                            }
+                        }
+                        else {
+                            if (piece[0].isVailedEating(piece[0].position, CheckSystem.WKingPos)) {
+                                CheckSystem.AttackingPiecePos = piece[0].position
+                                CheckSystem.IsBlackAttacked = false
+                                CheckSystem.IsLeftAttackingPieceSide = piece[0].isLeft
+                            }
+                        }
+                    }
+                }
+                else {
+                    if(CheckSystem.BKingBoard === piece[0].isLeft) {
+                        if (piece[0].id.charAt(2) !== 'p') {
+                            if(piece[0].isVailedMove(piece[0].position, CheckSystem.BKingPos)) {
+                                CheckSystem.AttackingPiecePos = piece[0].position
+                                CheckSystem.IsBlackAttacked = false
+                                CheckSystem.IsLeftAttackingPieceSide = piece[0].isLeft
+                            }
+                        }
+                        else {
+                            if (piece[0].isVailedEating(piece[0].position, CheckSystem.BKingPos)) {
+                                CheckSystem.AttackingPiecePos = piece[0].position
+                                CheckSystem.IsBlackAttacked = false
+                                CheckSystem.IsLeftAttackingPieceSide = piece[0].isLeft
+                            }
+                        }
+                    }
+                }
             }
 
             Board.Clear();
@@ -101,6 +151,56 @@ export class Piece extends Chess{
             if (piece[0].id.charAt(2) === 'q') {
                 piece[0].bishop.isLeft = true;
                 piece[0].rock.isLeft = true;
+            }
+
+            if (piece[0].id.charAt(2) === 'k') {
+                if (piece[0].id.charAt(0) === 'b') {
+                    CheckSystem.BKingPos = piece[0].position
+                    CheckSystem.BKingBoard = piece[0].isLeft
+                }
+                else {
+                    CheckSystem.WKingPos = piece[0].position
+                    CheckSystem.WKingBoard = piece[0].isLeft
+                }
+            }
+
+            if (piece[0].id.charAt(2) !== 'k') {
+                if (piece[0].isBlack) {
+                    if(CheckSystem.WKingBoard === piece[0].isLeft) {
+                        if (piece[0].id.charAt(2) !== 'p') {
+                            if(piece[0].isVailedMove(piece[0].position, CheckSystem.WKingPos)) {
+                                CheckSystem.AttackingPiecePos = piece[0].position
+                                CheckSystem.IsBlackAttacked = false
+                                CheckSystem.IsLeftAttackingPieceSide = piece[0].isLeft
+                            }
+                        }
+                        else {
+                            if (piece[0].isVailedEating(piece[0].position, CheckSystem.WKingPos)) {
+                                CheckSystem.AttackingPiecePos = piece[0].position
+                                CheckSystem.IsBlackAttacked = false
+                                CheckSystem.IsLeftAttackingPieceSide = piece[0].isLeft
+                            }
+                        }
+                    }
+                }
+                else {
+                    if(CheckSystem.BKingBoard === piece[0].isLeft) {
+                        if (piece[0].id.charAt(2) !== 'p') {
+                            if(piece[0].isVailedMove(piece[0].position, CheckSystem.BKingPos)) {
+                                CheckSystem.AttackingPiecePos = piece[0].position
+                                CheckSystem.IsBlackAttacked = false
+                                CheckSystem.IsLeftAttackingPieceSide = piece[0].isLeft
+                            }
+                        }
+                        else {
+                            if (piece[0].isVailedEating(piece[0].position, CheckSystem.BKingPos)) {
+                                CheckSystem.AttackingPiecePos = piece[0].position
+                                CheckSystem.IsBlackAttacked = false
+                                CheckSystem.IsLeftAttackingPieceSide = piece[0].isLeft
+                            }
+                        }
+                    }
+                }
             }
 
             Board.Clear();
@@ -169,6 +269,8 @@ export class Piece extends Chess{
     }
 
     movementOfPieces(event: Event & { target: HTMLElement }): void {
+        console.log(CheckSystem)
+
         if (event.target.id.charAt(0) !== Game.currentMove) {
             return
         }
@@ -218,7 +320,7 @@ export class King extends Piece {
 
     isVailedMove(positionStart: number[], positionEnd: number[]): boolean {
         if ((Math.abs(positionEnd[0] - positionStart[0]) <= 1 && (Math.abs(positionStart[1] - positionEnd[1]) <= 1))) {
-            if (!Cell.isUnderAttack(positionEnd, !this.isBlack, this.isLeft)) {
+            if (!Cell.isUnderAttack(positionEnd, !this.isBlack, this.isLeft) && !Cell.isUnderAttack(positionEnd, !this.isBlack, !this.isLeft)) {
                 return true
             }
         }

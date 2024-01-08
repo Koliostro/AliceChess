@@ -60,7 +60,9 @@ console.log(ArrayBoards);
 
 interface CheckLibrary {
     BKingPos : number[]
+    BKingBoard : boolean
     WKingPos : number[]
+    WKingBoard : boolean
     AttackingPiecePos : number[] | null
     IsLeftAttackingPieceSide : boolean | null
     IsBlackAttacked : boolean | null
@@ -68,7 +70,9 @@ interface CheckLibrary {
 
 export let CheckSystem : CheckLibrary = {
     BKingPos : BK.position,
+    BKingBoard : BK.isLeft,
     WKingPos : WK.position,
+    WKingBoard : WK.isLeft,
     AttackingPiecePos : null,
     IsLeftAttackingPieceSide : null,
     IsBlackAttacked : null

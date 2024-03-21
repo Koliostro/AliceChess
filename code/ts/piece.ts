@@ -2,11 +2,11 @@ import { ArrayBoards, CheckSystem } from "./main.js"
 import { Cell, Board } from './field.js'
 
 export class Chess {
-    isBlackTurn : boolean
-    isChechireChess : boolean
-    currentMove : string
+    isBlackTurn: boolean
+    isChechireChess: boolean
+    currentMove: string
 
-    constructor(isBlackTurn : boolean = false, isChechireChess : boolean = false, currentMove:string = 'w') {
+    constructor(isBlackTurn: boolean = false, isChechireChess: boolean = false, currentMove: string = 'w') {
         this.isBlackTurn = isBlackTurn;
         this.isChechireChess = isChechireChess
         this.currentMove = currentMove
@@ -14,7 +14,7 @@ export class Chess {
 }
 
 const Game = new Chess()
-export class Piece extends Chess{
+export class Piece extends Chess {
     public id: string;
     public position: number[] // x first, y second
     public isBlack: boolean;
@@ -28,6 +28,8 @@ export class Piece extends Chess{
 
     static move(e: Event, startPosition: number[], endPosition: number[], startSide: string, movedPiece: HTMLElement) {
         const target = e.target as HTMLInputElement
+
+        console.log(CheckSystem);
 
         const oppositeSide = target.id.charAt(4) === 'L' ? 'R' : 'L'
         Game.currentMove = Game.currentMove === 'w' ? 'b' : 'w'
@@ -62,7 +64,7 @@ export class Piece extends Chess{
             if (piece[0].id.charAt(2) === 'k' || piece[0].id.charAt(2) === 'r') {
                 piece[0].isMoved = true;
             }
-            
+
             if (piece[0].id.charAt(2) === 'k') {
                 if (piece[0].id.charAt(0) === 'b') {
                     CheckSystem.BKingPos = piece[0].position
@@ -77,45 +79,6 @@ export class Piece extends Chess{
             if (piece[0].id.charAt(2) === 'q') {
                 piece[0].bishop.isLeft = false;
                 piece[0].rock.isLeft = false;
-            }
-
-            if (piece[0].id.charAt(2) !== 'k') {
-                if (piece[0].isBlack) {
-                    if(CheckSystem.WKingBoard === piece[0].isLeft) {
-                        if (piece[0].id.charAt(2) !== 'p') {
-                            if(piece[0].isVailedMove(piece[0].position, CheckSystem.WKingPos)) {
-                                CheckSystem.AttackingPiecePos = piece[0].position
-                                CheckSystem.IsBlackAttacked = false
-                                CheckSystem.IsLeftAttackingPieceSide = piece[0].isLeft
-                            }
-                        }
-                        else {
-                            if (piece[0].isVailedEating(piece[0].position, CheckSystem.WKingPos)) {
-                                CheckSystem.AttackingPiecePos = piece[0].position
-                                CheckSystem.IsBlackAttacked = false
-                                CheckSystem.IsLeftAttackingPieceSide = piece[0].isLeft
-                            }
-                        }
-                    }
-                }
-                else {
-                    if(CheckSystem.BKingBoard === piece[0].isLeft) {
-                        if (piece[0].id.charAt(2) !== 'p') {
-                            if(piece[0].isVailedMove(piece[0].position, CheckSystem.BKingPos)) {
-                                CheckSystem.AttackingPiecePos = piece[0].position
-                                CheckSystem.IsBlackAttacked = false
-                                CheckSystem.IsLeftAttackingPieceSide = piece[0].isLeft
-                            }
-                        }
-                        else {
-                            if (piece[0].isVailedEating(piece[0].position, CheckSystem.BKingPos)) {
-                                CheckSystem.AttackingPiecePos = piece[0].position
-                                CheckSystem.IsBlackAttacked = false
-                                CheckSystem.IsLeftAttackingPieceSide = piece[0].isLeft
-                            }
-                        }
-                    }
-                }
             }
 
             Board.Clear();
@@ -166,12 +129,13 @@ export class Piece extends Chess{
 
             if (piece[0].id.charAt(2) !== 'k') {
                 if (piece[0].isBlack) {
-                    if(CheckSystem.WKingBoard === piece[0].isLeft) {
+                    if (CheckSystem.WKingBoard === piece[0].isLeft) {
                         if (piece[0].id.charAt(2) !== 'p') {
-                            if(piece[0].isVailedMove(piece[0].position, CheckSystem.WKingPos)) {
+                            if (piece[0].isVailedMove(piece[0].position, CheckSystem.WKingPos)) {
                                 CheckSystem.AttackingPiecePos = piece[0].position
                                 CheckSystem.IsBlackAttacked = false
                                 CheckSystem.IsLeftAttackingPieceSide = piece[0].isLeft
+                                CheckSystem.AttackingPiece = piece[0].id.charAt(2)
                             }
                         }
                         else {
@@ -179,24 +143,27 @@ export class Piece extends Chess{
                                 CheckSystem.AttackingPiecePos = piece[0].position
                                 CheckSystem.IsBlackAttacked = false
                                 CheckSystem.IsLeftAttackingPieceSide = piece[0].isLeft
+                                CheckSystem.AttackingPiece = piece[0].id.charAt(2)
                             }
                         }
                     }
                 }
                 else {
-                    if(CheckSystem.BKingBoard === piece[0].isLeft) {
+                    if (CheckSystem.BKingBoard === piece[0].isLeft) {
                         if (piece[0].id.charAt(2) !== 'p') {
-                            if(piece[0].isVailedMove(piece[0].position, CheckSystem.BKingPos)) {
+                            if (piece[0].isVailedMove(piece[0].position, CheckSystem.BKingPos)) {
                                 CheckSystem.AttackingPiecePos = piece[0].position
-                                CheckSystem.IsBlackAttacked = false
+                                CheckSystem.IsBlackAttacked = true
                                 CheckSystem.IsLeftAttackingPieceSide = piece[0].isLeft
+                                CheckSystem.AttackingPiece = piece[0].id.charAt(2)
                             }
                         }
                         else {
                             if (piece[0].isVailedEating(piece[0].position, CheckSystem.BKingPos)) {
                                 CheckSystem.AttackingPiecePos = piece[0].position
-                                CheckSystem.IsBlackAttacked = false
+                                CheckSystem.IsBlackAttacked = true
                                 CheckSystem.IsLeftAttackingPieceSide = piece[0].isLeft
+                                CheckSystem.AttackingPiece = piece[0].id.charAt(2)
                             }
                         }
                     }
@@ -210,16 +177,16 @@ export class Piece extends Chess{
     static movment(e: Event): void {
         // on which HTML element user click
         const target = e.target as HTMLInputElement
-        
+
         // make an array of 2 coordinates for position of click
         const clickPosition = [Number(target.id.charAt(0)), Number(target.id.charAt(2))]
-        
+
         // Importing HTML element of starting cell
         const startCell = document.querySelector(`.selectedCell`) as HTMLElement
-        
+
         // Calculate start position
         const startPosition: number[] = [Number(startCell.id.charAt(0)), Number(startCell.id.charAt(2))]
-        
+
         // Take HTML element of piece from starting cell
         const movedPiece = startCell?.firstChild as HTMLElement
 
@@ -449,6 +416,85 @@ export class Bishop extends Piece {
     }
 
     lightAllPossibleMove(): void {
+        Cell.lightStartCell(this.position, this.isLeft)
+        // --------------------------------------------------------------------------------------
+        // check is our king under attack
+        if (this.isBlack && CheckSystem.IsBlackAttacked && CheckSystem.AttackingPiecePos != null) {
+            // if we're on a same side only legal move it to eat attacking piece or block their way
+            // Save king position of our team
+            let kingUnderAttack = this.isBlack ? CheckSystem.BKingPos : CheckSystem.WKingPos
+            switch (CheckSystem.AttackingPiece) {
+                // Check is it movment by straight line
+                case 'r' || 'q':
+                    // Check is king and piece on same or not board
+                    if ((CheckSystem.IsBlackAttacked === this.isBlack) && (CheckSystem.IsLeftAttackingPieceSide !== this.isLeft)) {
+                        if (CheckSystem.AttackingPiecePos[0] === kingUnderAttack[0]) {
+                            let start = CheckSystem.AttackingPiecePos[1] < kingUnderAttack[1] ? CheckSystem.AttackingPiecePos[1] : kingUnderAttack[1]
+
+                            let end = CheckSystem.AttackingPiecePos[1] < kingUnderAttack[1] ? kingUnderAttack[1] : CheckSystem.AttackingPiecePos[1]
+
+                            for (let Y_i = start; Y_i < end; Y_i++) {
+                                if (this.isVailedMove(this.position, [CheckSystem.AttackingPiecePos[0], Y_i])) {
+                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos[0], Y_i], this.isLeft)
+                                }
+                            }
+                            return
+                        }
+                        if (CheckSystem.AttackingPiecePos[1] === kingUnderAttack[1]) {
+                            let start = CheckSystem.AttackingPiecePos[0] < kingUnderAttack[0] ? CheckSystem.AttackingPiecePos[0] : kingUnderAttack[0]
+
+                            let end = CheckSystem.AttackingPiecePos[0] < kingUnderAttack[0] ? kingUnderAttack[0] : CheckSystem.AttackingPiecePos[0]
+
+                            for (let X_i = start; X_i < end; X_i++) {
+                                if (this.isVailedMove(this.position, [CheckSystem.AttackingPiecePos[0], X_i])) {
+                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos[0], X_i], this.isLeft)
+                                }
+                            }
+                            return
+                        }
+                    }
+                    // Separtly check is this piece can eat attacker
+                    if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos)) {
+                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                    }
+                    break;
+                case 'b' || 'q':
+                    // Check is king and piece on same or not board
+                    if ((CheckSystem.IsBlackAttacked === this.isBlack) && (CheckSystem.IsLeftAttackingPieceSide !== this.isLeft)) {
+                        let start = CheckSystem.AttackingPiecePos < kingUnderAttack ? CheckSystem.AttackingPiecePos : kingUnderAttack
+
+                        let end = CheckSystem.AttackingPiecePos < kingUnderAttack ? kingUnderAttack : CheckSystem.AttackingPiecePos
+
+                        for (let X_i = start[0]; X_i < end[0]; X_i++) {
+                            for (let Y_i = start[1]; Y_i < end[1]; Y_i++) {
+                                if (this.isVailedMove(this.position, [X_i, Y_i])) {
+                                    Cell.lightMovableCell([X_i, Y_i], this.isLeft)
+                                }
+                            }
+                            return
+                        }
+                    }
+                    // Separtly check is this piece can eat attacker
+                    if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos)) {
+                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                    }
+                    break;
+
+                default:
+                    if (CheckSystem.IsLeftAttackingPieceSide === this.isLeft) {
+                        if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos)) {
+                            Cell.lightMovableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                            Cell.lightEatableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                        }
+                    }
+                    break;
+
+            }
+            return
+        }
+        // -------------------------------------------------------------------------------------------------------
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
                 try {
@@ -457,7 +503,6 @@ export class Bishop extends Piece {
                             if (i !== this.position[0] || j !== this.position[1]) {
                                 Cell.lightMovableCell([i, j], this.isLeft)
                             }
-                            Cell.lightStartCell(this.position, this.isLeft)
                         }
                         if (this.position[0] !== i || this.position[1] !== j) {
                             if (this.isLeft === true) {
@@ -539,7 +584,85 @@ export class Rock extends Piece {
     }
 
     lightAllPossibleMove(): void {
-        Cell.lightStartCell(this.position, this.isLeft)
+                Cell.lightStartCell(this.position, this.isLeft)
+        // --------------------------------------------------------------------------------------
+        // check is our king under attack
+        if (this.isBlack && CheckSystem.IsBlackAttacked && CheckSystem.AttackingPiecePos != null) {
+            // if we're on a same side only legal move it to eat attacking piece or block their way
+            // Save king position of our team
+            let kingUnderAttack = this.isBlack ? CheckSystem.BKingPos : CheckSystem.WKingPos
+            switch (CheckSystem.AttackingPiece) {
+                // Check is it movment by straight line
+                case 'r' || 'q':
+                    // Check is king and piece on same or not board
+                    if ((CheckSystem.IsBlackAttacked === this.isBlack) && (CheckSystem.IsLeftAttackingPieceSide !== this.isLeft)) {
+                        if (CheckSystem.AttackingPiecePos[0] === kingUnderAttack[0]) {
+                            let start = CheckSystem.AttackingPiecePos[1] < kingUnderAttack[1] ? CheckSystem.AttackingPiecePos[1] : kingUnderAttack[1]
+
+                            let end = CheckSystem.AttackingPiecePos[1] < kingUnderAttack[1] ? kingUnderAttack[1] : CheckSystem.AttackingPiecePos[1]
+
+                            for (let Y_i = start; Y_i < end; Y_i++) {
+                                if (this.isVailedMove(this.position, [CheckSystem.AttackingPiecePos[0], Y_i])) {
+                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos[0], Y_i], this.isLeft)
+                                }
+                            }
+                            return
+                        }
+                        if (CheckSystem.AttackingPiecePos[1] === kingUnderAttack[1]) {
+                            let start = CheckSystem.AttackingPiecePos[0] < kingUnderAttack[0] ? CheckSystem.AttackingPiecePos[0] : kingUnderAttack[0]
+
+                            let end = CheckSystem.AttackingPiecePos[0] < kingUnderAttack[0] ? kingUnderAttack[0] : CheckSystem.AttackingPiecePos[0]
+
+                            for (let X_i = start; X_i < end; X_i++) {
+                                if (this.isVailedMove(this.position, [CheckSystem.AttackingPiecePos[0], X_i])) {
+                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos[0], X_i], this.isLeft)
+                                }
+                            }
+                            return
+                        }
+                    }
+                    // Separtly check is this piece can eat attacker
+                    if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos)) {
+                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                    }
+                    break;
+                case 'b' || 'q':
+                    // Check is king and piece on same or not board
+                    if ((CheckSystem.IsBlackAttacked === this.isBlack) && (CheckSystem.IsLeftAttackingPieceSide !== this.isLeft)) {
+                        let start = CheckSystem.AttackingPiecePos < kingUnderAttack ? CheckSystem.AttackingPiecePos : kingUnderAttack
+
+                        let end = CheckSystem.AttackingPiecePos < kingUnderAttack ? kingUnderAttack : CheckSystem.AttackingPiecePos
+
+                        for (let X_i = start[0]; X_i < end[0]; X_i++) {
+                            for (let Y_i = start[1]; Y_i < end[1]; Y_i++) {
+                                if (this.isVailedMove(this.position, [X_i, Y_i])) {
+                                    Cell.lightMovableCell([X_i, Y_i], this.isLeft)
+                                }
+                            }
+                            return
+                        }
+                    }
+                    // Separtly check is this piece can eat attacker
+                    if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos)) {
+                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                    }
+                    break;
+
+                default:
+                    if (CheckSystem.IsLeftAttackingPieceSide === this.isLeft) {
+                        if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos)) {
+                            Cell.lightMovableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                            Cell.lightEatableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                        }
+                    }
+                    break;
+
+            }
+            return
+        }
+        // -------------------------------------------------------------------------------------------------------
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
                 try {
@@ -592,6 +715,85 @@ export class Queen extends Piece {
     }
 
     lightAllPossibleMove(): void {
+                Cell.lightStartCell(this.position, this.isLeft)
+        // --------------------------------------------------------------------------------------
+        // check is our king under attack
+        if (this.isBlack && CheckSystem.IsBlackAttacked && CheckSystem.AttackingPiecePos != null) {
+            // if we're on a same side only legal move it to eat attacking piece or block their way
+            // Save king position of our team
+            let kingUnderAttack = this.isBlack ? CheckSystem.BKingPos : CheckSystem.WKingPos
+            switch (CheckSystem.AttackingPiece) {
+                // Check is it movment by straight line
+                case 'r' || 'q':
+                    // Check is king and piece on same or not board
+                    if ((CheckSystem.IsBlackAttacked === this.isBlack) && (CheckSystem.IsLeftAttackingPieceSide !== this.isLeft)) {
+                        if (CheckSystem.AttackingPiecePos[0] === kingUnderAttack[0]) {
+                            let start = CheckSystem.AttackingPiecePos[1] < kingUnderAttack[1] ? CheckSystem.AttackingPiecePos[1] : kingUnderAttack[1]
+
+                            let end = CheckSystem.AttackingPiecePos[1] < kingUnderAttack[1] ? kingUnderAttack[1] : CheckSystem.AttackingPiecePos[1]
+
+                            for (let Y_i = start; Y_i < end; Y_i++) {
+                                if (this.isVailedMove(this.position, [CheckSystem.AttackingPiecePos[0], Y_i])) {
+                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos[0], Y_i], this.isLeft)
+                                }
+                            }
+                            return
+                        }
+                        if (CheckSystem.AttackingPiecePos[1] === kingUnderAttack[1]) {
+                            let start = CheckSystem.AttackingPiecePos[0] < kingUnderAttack[0] ? CheckSystem.AttackingPiecePos[0] : kingUnderAttack[0]
+
+                            let end = CheckSystem.AttackingPiecePos[0] < kingUnderAttack[0] ? kingUnderAttack[0] : CheckSystem.AttackingPiecePos[0]
+
+                            for (let X_i = start; X_i < end; X_i++) {
+                                if (this.isVailedMove(this.position, [CheckSystem.AttackingPiecePos[0], X_i])) {
+                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos[0], X_i], this.isLeft)
+                                }
+                            }
+                            return
+                        }
+                    }
+                    // Separtly check is this piece can eat attacker
+                    if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos)) {
+                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                    }
+                    break;
+                case 'b' || 'q':
+                    // Check is king and piece on same or not board
+                    if ((CheckSystem.IsBlackAttacked === this.isBlack) && (CheckSystem.IsLeftAttackingPieceSide !== this.isLeft)) {
+                        let start = CheckSystem.AttackingPiecePos < kingUnderAttack ? CheckSystem.AttackingPiecePos : kingUnderAttack
+
+                        let end = CheckSystem.AttackingPiecePos < kingUnderAttack ? kingUnderAttack : CheckSystem.AttackingPiecePos
+
+                        for (let X_i = start[0]; X_i < end[0]; X_i++) {
+                            for (let Y_i = start[1]; Y_i < end[1]; Y_i++) {
+                                if (this.isVailedMove(this.position, [X_i, Y_i])) {
+                                    Cell.lightMovableCell([X_i, Y_i], this.isLeft)
+                                }
+                            }
+                            return
+                        }
+                    }
+                    // Separtly check is this piece can eat attacker
+                    if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos)) {
+                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                    }
+                    break;
+
+                default:
+                    if (CheckSystem.IsLeftAttackingPieceSide === this.isLeft) {
+                        if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos)) {
+                            Cell.lightMovableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                            Cell.lightEatableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                        }
+                    }
+                    break;
+
+            }
+            return
+        }
+        // -------------------------------------------------------------------------------------------------------
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
                 try {
@@ -600,7 +802,6 @@ export class Queen extends Piece {
                             if (i !== this.position[0] || j !== this.position[1]) {
                                 Cell.lightMovableCell([i, j], this.isLeft)
                             }
-                            Cell.lightStartCell(this.position, this.isLeft)
                         }
                         if (this.position[0] !== i || this.position[1] !== j) {
                             if (this.isLeft === true) {
@@ -644,6 +845,85 @@ export class Knight extends Piece {
     }
 
     lightAllPossibleMove(): void {
+        Cell.lightStartCell(this.position, this.isLeft)
+        // --------------------------------------------------------------------------------------
+        // check is our king under attack
+        if (this.isBlack && CheckSystem.IsBlackAttacked && CheckSystem.AttackingPiecePos != null) {
+            // if we're on a same side only legal move it to eat attacking piece or block their way
+            // Save king position of our team
+            let kingUnderAttack = this.isBlack ? CheckSystem.BKingPos : CheckSystem.WKingPos
+            switch (CheckSystem.AttackingPiece) {
+                // Check is it movment by straight line
+                case 'r' || 'q':
+                    // Check is king and piece on same or not board
+                    if ((CheckSystem.IsBlackAttacked === this.isBlack) && (CheckSystem.IsLeftAttackingPieceSide !== this.isLeft)) {
+                        if (CheckSystem.AttackingPiecePos[0] === kingUnderAttack[0]) {
+                            let start = CheckSystem.AttackingPiecePos[1] < kingUnderAttack[1] ? CheckSystem.AttackingPiecePos[1] : kingUnderAttack[1]
+
+                            let end = CheckSystem.AttackingPiecePos[1] < kingUnderAttack[1] ? kingUnderAttack[1] : CheckSystem.AttackingPiecePos[1]
+
+                            for (let Y_i = start; Y_i < end; Y_i++) {
+                                if (this.isVailedMove(this.position, [CheckSystem.AttackingPiecePos[0], Y_i])) {
+                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos[0], Y_i], this.isLeft)
+                                }
+                            }
+                            return
+                        }
+                        if (CheckSystem.AttackingPiecePos[1] === kingUnderAttack[1]) {
+                            let start = CheckSystem.AttackingPiecePos[0] < kingUnderAttack[0] ? CheckSystem.AttackingPiecePos[0] : kingUnderAttack[0]
+
+                            let end = CheckSystem.AttackingPiecePos[0] < kingUnderAttack[0] ? kingUnderAttack[0] : CheckSystem.AttackingPiecePos[0]
+
+                            for (let X_i = start; X_i < end; X_i++) {
+                                if (this.isVailedMove(this.position, [CheckSystem.AttackingPiecePos[0], X_i])) {
+                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos[0], X_i], this.isLeft)
+                                }
+                            }
+                            return
+                        }
+                    }
+                    // Separtly check is this piece can eat attacker
+                    if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos)) {
+                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                    }
+                    break;
+                case 'b' || 'q':
+                    // Check is king and piece on same or not board
+                    if ((CheckSystem.IsBlackAttacked === this.isBlack) && (CheckSystem.IsLeftAttackingPieceSide !== this.isLeft)) {
+                        let start = CheckSystem.AttackingPiecePos < kingUnderAttack ? CheckSystem.AttackingPiecePos : kingUnderAttack
+
+                        let end = CheckSystem.AttackingPiecePos < kingUnderAttack ? kingUnderAttack : CheckSystem.AttackingPiecePos
+
+                        for (let X_i = start[0]; X_i < end[0]; X_i++) {
+                            for (let Y_i = start[1]; Y_i < end[1]; Y_i++) {
+                                if (this.isVailedMove(this.position, [X_i, Y_i])) {
+                                    Cell.lightMovableCell([X_i, Y_i], this.isLeft)
+                                }
+                            }
+                            return
+                        }
+                    }
+                    // Separtly check is this piece can eat attacker
+                    if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos)) {
+                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                    }
+                    break;
+
+                default:
+                    if (CheckSystem.IsLeftAttackingPieceSide === this.isLeft) {
+                        if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos)) {
+                            Cell.lightMovableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                            Cell.lightEatableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                        }
+                    }
+                    break;
+
+            }
+            return
+        }
+        // -------------------------------------------------------------------------------------------------------
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
                 try {
@@ -652,7 +932,6 @@ export class Knight extends Piece {
                             if (i !== this.position[0] || j !== this.position[1]) {
                                 Cell.lightMovableCell([i, j], this.isLeft)
                             }
-                            Cell.lightStartCell(this.position, this.isLeft)
                         }
                         if (this.position[0] !== i || this.position[1] !== j) {
                             if (this.isLeft === true) {
@@ -759,6 +1038,85 @@ export class Pawn extends Piece {
     }
 
     lightAllPossibleMove(): void {
+        Cell.lightStartCell(this.position, this.isLeft)
+        // --------------------------------------------------------------------------------------
+        // check is our king under attack
+        if (this.isBlack && CheckSystem.IsBlackAttacked && CheckSystem.AttackingPiecePos != null) {
+            // if we're on a same side only legal move it to eat attacking piece or block their way
+            // Save king position of our team
+            let kingUnderAttack = this.isBlack ? CheckSystem.BKingPos : CheckSystem.WKingPos
+            switch (CheckSystem.AttackingPiece) {
+                // Check is it movment by straight line
+                case 'r' || 'q':
+                    // Check is king and piece on same or not board
+                    if ((CheckSystem.IsBlackAttacked === this.isBlack) && (CheckSystem.IsLeftAttackingPieceSide !== this.isLeft)) {
+                        if (CheckSystem.AttackingPiecePos[0] === kingUnderAttack[0]) {
+                            let start = CheckSystem.AttackingPiecePos[1] < kingUnderAttack[1] ? CheckSystem.AttackingPiecePos[1] : kingUnderAttack[1]
+
+                            let end = CheckSystem.AttackingPiecePos[1] < kingUnderAttack[1] ? kingUnderAttack[1] : CheckSystem.AttackingPiecePos[1]
+
+                            for (let Y_i = start; Y_i < end; Y_i++) {
+                                if (this.isVailedMove(this.position, [CheckSystem.AttackingPiecePos[0], Y_i])) {
+                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos[0], Y_i], this.isLeft)
+                                }
+                            }
+                            return
+                        }
+                        if (CheckSystem.AttackingPiecePos[1] === kingUnderAttack[1]) {
+                            let start = CheckSystem.AttackingPiecePos[0] < kingUnderAttack[0] ? CheckSystem.AttackingPiecePos[0] : kingUnderAttack[0]
+
+                            let end = CheckSystem.AttackingPiecePos[0] < kingUnderAttack[0] ? kingUnderAttack[0] : CheckSystem.AttackingPiecePos[0]
+
+                            for (let X_i = start; X_i < end; X_i++) {
+                                if (this.isVailedMove(this.position, [CheckSystem.AttackingPiecePos[0], X_i])) {
+                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos[0], X_i], this.isLeft)
+                                }
+                            }
+                            return
+                        }
+                    }
+                    // Separtly check is this piece can eat attacker
+                    if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos)) {
+                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                    }
+                    break;
+                case 'b' || 'q':
+                    // Check is king and piece on same or not board
+                    if ((CheckSystem.IsBlackAttacked === this.isBlack) && (CheckSystem.IsLeftAttackingPieceSide !== this.isLeft)) {
+                        let start = CheckSystem.AttackingPiecePos < kingUnderAttack ? CheckSystem.AttackingPiecePos : kingUnderAttack
+
+                        let end = CheckSystem.AttackingPiecePos < kingUnderAttack ? kingUnderAttack : CheckSystem.AttackingPiecePos
+
+                        for (let X_i = start[0]; X_i < end[0]; X_i++) {
+                            for (let Y_i = start[1]; Y_i < end[1]; Y_i++) {
+                                if (this.isVailedMove(this.position, [X_i, Y_i])) {
+                                    Cell.lightMovableCell([X_i, Y_i], this.isLeft)
+                                }
+                            }
+                            return
+                        }
+                    }
+                    // Separtly check is this piece can eat attacker
+                    if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos)) {
+                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                    }
+                    break;
+
+                default:
+                    if (CheckSystem.IsLeftAttackingPieceSide === this.isLeft) {
+                        if (this.isVailedEating(this.position, CheckSystem.AttackingPiecePos)) {
+                            Cell.lightMovableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                            Cell.lightEatableCell(CheckSystem.AttackingPiecePos, this.isLeft)
+                        }
+                    }
+                    break;
+
+            }
+            return
+        }
+        // -------------------------------------------------------------------------------------------------------
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
                 if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
@@ -766,7 +1124,6 @@ export class Pawn extends Piece {
                         if (i !== this.position[0] || j !== this.position[1]) {
                             Cell.lightMovableCell([i, j], this.isLeft)
                         }
-                        Cell.lightStartCell(this.position, this.isLeft)
                     }
                 }
                 if (i === this.position[0] && j === this.position[1]) {

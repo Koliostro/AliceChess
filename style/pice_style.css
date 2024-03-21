@@ -4,21 +4,41 @@
     width: 100%;
 }
 
-.black_pawn, .white_pawn {
+.black_pawn {
+    background-color: rgba(255, 127, 80, 0.5);
+} 
+.white_pawn {
     background-color: coral;
 }
-.black_rock, .white_rock {
+.black_rock {
+    background-color: rgba(218, 165, 32, 0.5);
+}
+
+.white_rock {
     background-color: goldenrod;
 }
-.black_knight, .white_knight {
+.black_knight{
+    background-color: rgba(0, 0, 255, 0.5);
+} 
+.white_knight {
     background-color: blue;
 }
-.black_bishop, .white_bishop {
+.black_bishop {
+    background-color: rgba(0, 255, 0, 0.5);
+} 
+.white_bishop {
     background-color: lime;
 }
-.black_queen, .white_queen {
+.black_queen
+{
+    background-color:rgba(255, 0, 255, 0.5);
+}
+.white_queen {
     background-color:fuchsia;
 }
-.black_king, .white_king {
+.black_king{
+    background-color: rgba(76, 0, 130, 0.5);
+} 
+.white_king {
     background-color: indigo;
 }

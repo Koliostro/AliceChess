@@ -26,10 +26,17 @@ export class Piece extends Chess {
         this.isBlack = id.charAt(0) === 'b' ? true : false;
     }
 
+    static resetCheck() : void {
+        CheckSystem.AttackingPiece = null
+        CheckSystem.AttackingPiecePos = null
+        CheckSystem.IsBlackAttacked = null
+        CheckSystem.IsLeftAttackingPieceSide = null
+    }
+
     static move(e: Event, startPosition: number[], endPosition: number[], startSide: string, movedPiece: HTMLElement) {
         const target = e.target as HTMLInputElement
 
-        console.log(CheckSystem);
+        this.resetCheck()
 
         const oppositeSide = target.id.charAt(4) === 'L' ? 'R' : 'L'
         Game.currentMove = Game.currentMove === 'w' ? 'b' : 'w'
@@ -339,9 +346,9 @@ export class King extends Piece {
     }
 
     lightAllPossibleMove(): void {
+        Cell.lightStartCell(this.position, this.isLeft)
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
-                Cell.lightStartCell(this.position, this.isLeft)
                 if (this.isVailedCasteling(this.position, [i, j], this.isLeft, this.isBlack)) {
                     Cell.lightMovableCell([i, j], this.isLeft)
                     Cell.lightCastelingCell([i, j], this.isLeft)

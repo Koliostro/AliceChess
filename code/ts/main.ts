@@ -14,7 +14,7 @@ WK.create()
 let WR0 = new Rock('w_r_0', [0,4], false)
 WR0.create()
 
-let BB0 = new Bishop('b_b_0', [1,5], true)
+let BB0 = new Bishop('b_b_0', [1,1], true)
 BB0.create()
 
 let WB0 = new Bishop('w_b_0', [2,0], false)
@@ -23,11 +23,11 @@ WB0.create()
 export let ArrayBoards : any = {
     'L' : [
         [[BK],[],[],[],[],[],[],[]],
-        [[],[],[],[],[],[],[],[]],
-        [[],[],[],[],[],[],[],[]],
-        [[],[],[],[],[],[],[],[]],
-        [[],[],[],[],[],[],[],[]],
         [[],[BB0],[],[],[],[],[],[]],
+        [[],[],[],[],[],[],[],[]],
+        [[],[],[],[],[],[],[],[]],
+        [[],[],[],[],[],[],[],[]],
+        [[],[],[],[],[],[],[],[]],
         [[],[],[],[],[],[],[],[]],
         [[],[],[],[],[],[],[],[]]
     ],
@@ -45,24 +45,23 @@ export let ArrayBoards : any = {
 
 console.log(ArrayBoards)
 
+export type picePos = {
+    pos : number[];
+    side : boolean;
+}
+
 interface CheckLibrary {
-    BKingPos : number[]
-    BKingBoard : boolean
-    WKingPos : number[]
-    WKingBoard : boolean
-    AttackingPiecePos : number[] | null
-    IsLeftAttackingPieceSide : boolean | null
-    IsBlackAttacked : boolean | null
+    BKingPos : picePos
+    WKingPos : picePos
+    AttackingPiecePos : picePos | null
     AttackingPiece : string | null
+    IsBlackAttacked : boolean | null
 }
 
 export let CheckSystem : CheckLibrary = {
-    BKingPos : BK.position,
-    BKingBoard : BK.isLeft,
-    WKingPos : WK.position,
-    WKingBoard : WK.isLeft,
+    BKingPos : {pos:BK.position, side:BK.isLeft}, 
+    WKingPos : {pos:WK.position, side:WK.isLeft},
     AttackingPiecePos : null,
-    IsLeftAttackingPieceSide : null,
+    AttackingPiece : null,
     IsBlackAttacked : null,
-    AttackingPiece : null
 }

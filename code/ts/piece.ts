@@ -26,10 +26,112 @@ export class Piece extends Chess {
         this.isBlack = id.charAt(0) === 'b' ? true : false;
     }
 
-    static resetCheck() : void {
+    static resetCheck(): void {
         CheckSystem.AttackingPiece = null
         CheckSystem.AttackingPiecePos = null
         CheckSystem.IsBlackAttacked = null
+    }
+
+    // TODO:
+    /* 
+        Need to take some pice of code into general functions
+        1) Move under King check
+
+        Others I don`t see, so only that. But only after mate logic maybe.
+
+        Idea: 
+        Store movable cells for cheaper cpu count. We generate once use it multiple times. 
+        I`ll do this after mate logic. 
+    */
+
+    protected isPinned(isLeft: boolean): boolean {
+        if (this.isBlack) {
+            if (CheckSystem.BKingPos.side === isLeft) {
+                if (Cell.isUnderAttack(this.position, this.isBlack, isLeft)) {
+                    if (Cell.isUnderDioganalAttack(this.position, this.isBlack, isLeft)) {
+                        let pos = this.position
+                        let dx = pos[0] > CheckSystem.BKingPos.pos[0] ? -1 : 1;
+                        let dy = pos[1] > CheckSystem.BKingPos.pos[1] ? -1 : 1;
+                        while (pos[0] !== CheckSystem.BKingPos.pos[0] && pos[1] !== CheckSystem.BKingPos.pos[1]) {
+                            if (ArrayBoards.L[pos[0]][pos[1]].length !== 0) {
+                                return false
+                            }
+                            pos[0] += dx;
+                            pos[1] += dy;
+                        }
+                        return true;
+                    }
+                    if (Cell.isUnderLineAttack(this.position, this.isBlack, isLeft)) {
+                        let pos = this.position
+                        if (pos[0] === CheckSystem.BKingPos.pos[0]) {
+                            let delta = pos[0] > CheckSystem.BKingPos.pos[0] ? -1 : 1;
+                            while (pos[1] !== CheckSystem.BKingPos.pos[1]) {
+                                if (ArrayBoards.L[pos[0]][pos[1]].length !== 0) {
+                                    return false;
+                                }
+                                pos[0] += delta;
+                            }
+                            return true;
+                        }
+                        if (pos[1] === CheckSystem.BKingPos.pos[1]) {
+                            let delta = pos[1] > CheckSystem.BKingPos.pos[1] ? -1 : 1;
+                            while (pos[1] !== CheckSystem.BKingPos.pos[1]) {
+                                if (ArrayBoards.L[pos[0]][pos[1]].length !== 0) {
+                                    return false;
+                                }
+                                pos[1] += delta;
+                            }
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+        if (!this.isBlack) {
+            if (CheckSystem.WKingPos.side === isLeft) {
+                if (Cell.isUnderAttack(this.position, this.isBlack, isLeft)) {
+                    if (Cell.isUnderDioganalAttack(this.position, this.isBlack, isLeft)) {
+                        let pos = this.position
+                        let dx = pos[0] > CheckSystem.WKingPos.pos[0] ? -1 : 1;
+                        let dy = pos[1] > CheckSystem.WKingPos.pos[1] ? -1 : 1;
+                        while (pos[0] !== CheckSystem.WKingPos.pos[0] && pos[1] !== CheckSystem.WKingPos.pos[1]) {
+                            if (ArrayBoards.L[pos[0]][pos[1]].length !== 0) {
+                                return false
+                            }
+                            pos[0] += dx;
+                            pos[1] += dy;
+                        }
+                        return true;
+                    }
+                    if (Cell.isUnderLineAttack(this.position, this.isBlack, isLeft)) {
+                        let pos = this.position
+                        if (pos[0] === CheckSystem.WKingPos.pos[0]) {
+                            let delta = pos[0] > CheckSystem.WKingPos.pos[0] ? -1 : 1;
+                            while (pos[1] !== CheckSystem.WKingPos.pos[1]) {
+                                if (ArrayBoards.L[pos[0]][pos[1]].length !== 0) {
+                                    return false;
+                                }
+                                pos[0] += delta;
+                            }
+                            return true;
+                        }
+                        if (pos[1] === CheckSystem.WKingPos.pos[1]) {
+                            let delta = pos[1] > CheckSystem.WKingPos.pos[1] ? -1 : 1;
+                            while (pos[1] !== CheckSystem.WKingPos.pos[1]) {
+                                if (ArrayBoards.L[pos[0]][pos[1]].length !== 0) {
+                                    return false;
+                                }
+                                pos[1] += delta;
+                            }
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+        return false
     }
 
     static move(e: Event, startPosition: number[], endPosition: number[], startSide: string, movedPiece: HTMLElement) {
@@ -87,14 +189,14 @@ export class Piece extends Chess {
                     if (CheckSystem.WKingPos.side === piece[0].isLeft) {
                         if (piece[0].id.charAt(2) !== 'p') {
                             if (piece[0].isVailedMove(piece[0].position, CheckSystem.WKingPos.pos)) {
-                                CheckSystem.AttackingPiecePos = {pos:piece[0].position , side:piece[0].isLeft}
+                                CheckSystem.AttackingPiecePos = { pos: piece[0].position, side: piece[0].isLeft }
                                 CheckSystem.IsBlackAttacked = false
                                 CheckSystem.AttackingPiece = piece[0].id.charAt(2)
                             }
                         }
                         else {
                             if (piece[0].isVailedEating(piece[0].position, CheckSystem.WKingPos.pos)) {
-                                CheckSystem.AttackingPiecePos = {pos:piece[0].position , side:piece[0].isLeft}
+                                CheckSystem.AttackingPiecePos = { pos: piece[0].position, side: piece[0].isLeft }
                                 CheckSystem.IsBlackAttacked = false
                                 CheckSystem.AttackingPiece = piece[0].id.charAt(2)
                             }
@@ -105,14 +207,14 @@ export class Piece extends Chess {
                     if (CheckSystem.BKingPos.side === piece[0].isLeft) {
                         if (piece[0].id.charAt(2) !== 'p') {
                             if (piece[0].isVailedMove(piece[0].position, CheckSystem.BKingPos.pos)) {
-                                CheckSystem.AttackingPiecePos = {pos:piece[0].position , side:piece[0].isLeft}
+                                CheckSystem.AttackingPiecePos = { pos: piece[0].position, side: piece[0].isLeft }
                                 CheckSystem.IsBlackAttacked = true
                                 CheckSystem.AttackingPiece = piece[0].id.charAt(2)
                             }
                         }
                         else {
                             if (piece[0].isVailedEating(piece[0].position, CheckSystem.BKingPos.pos)) {
-                                CheckSystem.AttackingPiecePos = {pos:piece[0].position , side:piece[0].isLeft}
+                                CheckSystem.AttackingPiecePos = { pos: piece[0].position, side: piece[0].isLeft }
                                 CheckSystem.IsBlackAttacked = true
                                 CheckSystem.AttackingPiece = piece[0].id.charAt(2)
                             }
@@ -179,14 +281,14 @@ export class Piece extends Chess {
                     if (CheckSystem.WKingPos.side === piece[0].isLeft) {
                         if (piece[0].id.charAt(2) !== 'p') {
                             if (piece[0].isVailedMove(piece[0].position, CheckSystem.WKingPos.pos)) {
-                                CheckSystem.AttackingPiecePos = {pos:piece[0].position , side:piece[0].isLeft}
+                                CheckSystem.AttackingPiecePos = { pos: piece[0].position, side: piece[0].isLeft }
                                 CheckSystem.IsBlackAttacked = false
                                 CheckSystem.AttackingPiece = piece[0].id.charAt(2)
                             }
                         }
                         else {
                             if (piece[0].isVailedEating(piece[0].position, CheckSystem.WKingPos.pos)) {
-                                CheckSystem.AttackingPiecePos = {pos:piece[0].position , side:piece[0].isLeft}
+                                CheckSystem.AttackingPiecePos = { pos: piece[0].position, side: piece[0].isLeft }
                                 CheckSystem.IsBlackAttacked = false
                                 CheckSystem.AttackingPiece = piece[0].id.charAt(2)
                             }
@@ -197,14 +299,14 @@ export class Piece extends Chess {
                     if (CheckSystem.BKingPos.side === piece[0].isLeft) {
                         if (piece[0].id.charAt(2) !== 'p') {
                             if (piece[0].isVailedMove(piece[0].position, CheckSystem.BKingPos.pos)) {
-                                CheckSystem.AttackingPiecePos = {pos:piece[0].position , side:piece[0].isLeft}
+                                CheckSystem.AttackingPiecePos = { pos: piece[0].position, side: piece[0].isLeft }
                                 CheckSystem.IsBlackAttacked = true
                                 CheckSystem.AttackingPiece = piece[0].id.charAt(2)
                             }
                         }
                         else {
                             if (piece[0].isVailedEating(piece[0].position, CheckSystem.BKingPos.pos)) {
-                                CheckSystem.AttackingPiecePos = {pos:piece[0].position , side:piece[0].isLeft}
+                                CheckSystem.AttackingPiecePos = { pos: piece[0].position, side: piece[0].isLeft }
                                 CheckSystem.IsBlackAttacked = true
                                 CheckSystem.AttackingPiece = piece[0].id.charAt(2)
                             }
@@ -429,7 +531,9 @@ export class Bishop extends Piece {
         }
 
         // -----------[Pinned check]--------------
-
+        if (super.isPinned(this.isLeft)) {
+            return false
+        }
         // ---------------------------------------
 
         const xOffset = positionEnd[0] > positionStart[0] ? 1 : -1;
@@ -588,6 +692,12 @@ export class Rock extends Piece {
         if (positionStart[0] !== positionEnd[0] && positionStart[1] !== positionEnd[1]) {
             return false;
         }
+
+        // -----------[Pinned check]--------------
+        if (super.isPinned(this.isLeft)) {
+            return false
+        }
+        // ---------------------------------------
 
         if (positionStart[0] === positionEnd[0]) {
             const yOffset = positionEnd[1] > positionStart[1] ? 1 : -1;
@@ -753,6 +863,12 @@ export class Queen extends Piece {
     }
 
     isVailedMove(positionStart: number[], positionEnd: number[]): boolean {
+        // -----------[Pinned check]--------------
+        if (super.isPinned(this.isLeft)) {
+            return false
+        }
+        // ---------------------------------------
+
         if (this.bishop.isVailedMove(positionStart, positionEnd) || (this.rock.isVailedMove(positionStart, positionEnd))) {
             return true;
         }
@@ -760,7 +876,7 @@ export class Queen extends Piece {
     }
 
     lightAllPossibleMove(): void {
-                Cell.lightStartCell(this.position, this.isLeft)
+        Cell.lightStartCell(this.position, this.isLeft)
         // --------------------------------------------------------------------------------------
         // check is our king under attack
         if (this.isBlack && CheckSystem.IsBlackAttacked && CheckSystem.AttackingPiecePos != null) {
@@ -882,6 +998,12 @@ export class Knight extends Piece {
     }
 
     isVailedMove(positionStart: number[], positionEnd: number[]): boolean {
+        // -----------[Pinned check]--------------
+        if (super.isPinned(this.isLeft)) {
+            return false
+        }
+        // ---------------------------------------
+
         if ((Math.abs(positionEnd[0] - positionStart[0]) === 1 && Math.abs(positionEnd[1] - positionStart[1]) === 2) || (Math.abs(positionEnd[0] - positionStart[0]) === 2 && Math.abs(positionEnd[1] - positionStart[1]) === 1)) {
             return true;
         }
@@ -1012,6 +1134,12 @@ export class Pawn extends Piece {
     }
 
     isVailedMove(positionStart: number[], positionEnd: number[]): boolean {
+        // -----------[Pinned check]--------------
+        if (super.isPinned(this.isLeft)) {
+            return false
+        }
+        // ---------------------------------------
+
         if (this.isLeft) {
             if (!this.isBlack) {
                 if (positionStart[1] === 6) {

@@ -169,7 +169,9 @@ export class Piece extends Chess {
 
             // special flag for casteling realization
             if (piece[0].id.charAt(2) === 'k' || piece[0].id.charAt(2) === 'r') {
-                piece[0].isMoved = true;
+                if ("isMoved" in piece[0]) {
+                    piece[0].isMoved = true;
+                }
             }
 
             if (piece[0].id.charAt(2) === 'k') {
@@ -195,10 +197,12 @@ export class Piece extends Chess {
                             }
                         }
                         else {
-                            if (piece[0].isVailedEating(piece[0].position, CheckSystem.WKingPos.pos)) {
-                                CheckSystem.AttackingPiecePos = { pos: piece[0].position, side: piece[0].isLeft }
-                                CheckSystem.IsBlackAttacked = false
-                                CheckSystem.AttackingPiece = piece[0].id.charAt(2)
+                            if ("isVailedEating" in piece[0]) {
+                                if (piece[0].isVailedEating(piece[0].position, CheckSystem.WKingPos.pos)) {
+                                    CheckSystem.AttackingPiecePos = { pos: piece[0].position, side: piece[0].isLeft }
+                                    CheckSystem.IsBlackAttacked = false
+                                    CheckSystem.AttackingPiece = piece[0].id.charAt(2)
+                                }
                             }
                         }
                     }
@@ -213,19 +217,23 @@ export class Piece extends Chess {
                             }
                         }
                         else {
-                            if (piece[0].isVailedEating(piece[0].position, CheckSystem.BKingPos.pos)) {
-                                CheckSystem.AttackingPiecePos = { pos: piece[0].position, side: piece[0].isLeft }
-                                CheckSystem.IsBlackAttacked = true
-                                CheckSystem.AttackingPiece = piece[0].id.charAt(2)
+                            if ("isVailedEating" in piece[0]) {
+                                if (piece[0].isVailedEating(piece[0].position, CheckSystem.BKingPos.pos)) {
+                                    CheckSystem.AttackingPiecePos = { pos: piece[0].position, side: piece[0].isLeft }
+                                    CheckSystem.IsBlackAttacked = true
+                                    CheckSystem.AttackingPiece = piece[0].id.charAt(2)
+                                }
                             }
                         }
                     }
                 }
             }
 
-            if (piece[0].id.charAt(2) === 'q') {
-                piece[0].bishop.isLeft = false;
-                piece[0].rock.isLeft = false;
+            if ("bishop" in piece[0] && "rock" in piece[0]) {
+                if (piece[0].id.charAt(2) === 'q') {
+                    piece[0].bishop.isLeft = false;
+                    piece[0].rock.isLeft = false;
+                }
             }
 
             Board.Clear();
@@ -256,12 +264,16 @@ export class Piece extends Chess {
 
             // special flag for casteling realization
             if ((piece[0].id.charAt(2) === 'k') || piece[0].id.charAt(2) === 'r') {
-                piece[0].isMoved = true;
+                if ('isMoved' in piece[0]) {
+                    piece[0].isMoved = true;
+                }
             }
 
-            if (piece[0].id.charAt(2) === 'q') {
-                piece[0].bishop.isLeft = true;
-                piece[0].rock.isLeft = true;
+            if ('rock' in piece[0] && 'bishop' in piece[0]) {
+                if (piece[0].id.charAt(2) === 'q') {
+                    piece[0].bishop.isLeft = true;
+                    piece[0].rock.isLeft = true;
+                }
             }
 
             if (piece[0].id.charAt(2) === 'k') {
@@ -287,10 +299,12 @@ export class Piece extends Chess {
                             }
                         }
                         else {
-                            if (piece[0].isVailedEating(piece[0].position, CheckSystem.WKingPos.pos)) {
-                                CheckSystem.AttackingPiecePos = { pos: piece[0].position, side: piece[0].isLeft }
-                                CheckSystem.IsBlackAttacked = false
-                                CheckSystem.AttackingPiece = piece[0].id.charAt(2)
+                            if ('isVailedEating' in piece[0]) {
+                                if (piece[0].isVailedEating(piece[0].position, CheckSystem.WKingPos.pos)) {
+                                    CheckSystem.AttackingPiecePos = { pos: piece[0].position, side: piece[0].isLeft }
+                                    CheckSystem.IsBlackAttacked = false
+                                    CheckSystem.AttackingPiece = piece[0].id.charAt(2)
+                                }
                             }
                         }
                     }
@@ -305,10 +319,12 @@ export class Piece extends Chess {
                             }
                         }
                         else {
-                            if (piece[0].isVailedEating(piece[0].position, CheckSystem.BKingPos.pos)) {
-                                CheckSystem.AttackingPiecePos = { pos: piece[0].position, side: piece[0].isLeft }
-                                CheckSystem.IsBlackAttacked = true
-                                CheckSystem.AttackingPiece = piece[0].id.charAt(2)
+                            if ('isVailedEating' in piece[0]) {
+                                if (piece[0].isVailedEating(piece[0].position, CheckSystem.BKingPos.pos)) {
+                                    CheckSystem.AttackingPiecePos = { pos: piece[0].position, side: piece[0].isLeft }
+                                    CheckSystem.IsBlackAttacked = true
+                                    CheckSystem.AttackingPiece = piece[0].id.charAt(2)
+                                }
                             }
                         }
                     }
@@ -415,7 +431,7 @@ export class Piece extends Chess {
 }
 export class King extends Piece {
     public isLeft: boolean
-    private isMoved: boolean;
+    public isMoved: boolean;
 
     constructor(id: string, position: number[], isLeft: boolean, isMoved: boolean = false) {
         super(id, position)
@@ -675,7 +691,7 @@ export class Bishop extends Piece {
 }
 export class Rock extends Piece {
     public isLeft: boolean
-    private isMoved: boolean;
+    public isMoved: boolean;
 
     constructor(id: string, position: number[], isLeft: boolean, isMoved: boolean = false) {
         super(id, position)
@@ -847,8 +863,8 @@ export class Rock extends Piece {
 }
 export class Queen extends Piece {
     public isLeft: boolean
-    private bishop: Bishop
-    private rock: Rock
+    public bishop: Bishop
+    public rock: Rock
 
     constructor(id: string, position: number[], isLeft: boolean) {
         super(id, position)

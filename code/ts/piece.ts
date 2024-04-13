@@ -18,6 +18,8 @@ export class Chess {
     }
 
     UpdateAllPieces(): void {
+        this.allBlackPiece = []
+        this.allWhitePiece = []
         for (let x = 0; x < 8; x++) {
             for (let y = 0; y < 8; y++) {
                 if (ArrayBoards.L[x][y].length > 0) {

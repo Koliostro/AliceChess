@@ -2,14 +2,42 @@ import { ArrayBoards, CheckSystem, picePos } from "./main.js"
 import { Cell, Board } from './field.js'
 
 export class Chess {
-    isBlackTurn: boolean
-    isChechireChess: boolean
-    currentMove: string
+    public isBlackTurn: boolean
+    public isChechireChess: boolean
+    public currentMove: string
+
+    public allBlackPiece: Piece[]
+    public allWhitePiece: Piece[]
 
     constructor(isBlackTurn: boolean = false, isChechireChess: boolean = false, currentMove: string = 'w') {
         this.isBlackTurn = isBlackTurn;
         this.isChechireChess = isChechireChess
         this.currentMove = currentMove
+        this.allBlackPiece = []
+        this.allWhitePiece = []
+    }
+
+    UpdateAllPieces(): void {
+        for (let x = 0; x < 8; x++) {
+            for (let y = 0; y < 8; y++) {
+                if (ArrayBoards.L[x][y].length > 0) {
+                    if (ArrayBoards.L[x][y][0].id.charAt(0) === 'w') {
+                        this.allWhitePiece.push(ArrayBoards.L[x][y][0])
+                    }
+                    if (ArrayBoards.L[x][y][0].id.charAt(0) === 'b') {
+                        this.allBlackPiece.push(ArrayBoards.L[x][y][0])
+                    }
+                }
+                if (ArrayBoards.R[x][y].length > 0) {
+                    if (ArrayBoards.R[x][y][0].id.charAt(0) === 'w') {
+                        this.allWhitePiece.push(ArrayBoards.R[x][y][0])
+                    }
+                    if (ArrayBoards.R[x][y][0].id.charAt(0) === 'b') {
+                        this.allBlackPiece.push(ArrayBoards.R[x][y][0])
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -31,18 +59,6 @@ export class Piece extends Chess {
         CheckSystem.AttackingPiecePos = null
         CheckSystem.IsBlackAttacked = null
     }
-
-    // TODO:
-    /* 
-        Need to take some pice of code into general functions
-        1) Move under King check
-
-        Others I don`t see, so only that. But only after mate logic maybe.
-
-        Idea: 
-        Store movable cells for cheaper cpu count. We generate once use it multiple times. 
-        I`ll do this after mate logic. 
-    */
 
     protected isPinned(isLeft: boolean): boolean {
         if (this.isBlack) {
@@ -333,6 +349,8 @@ export class Piece extends Chess {
 
             Board.Clear();
         }
+        Game.UpdateAllPieces()
+        console.log(Game.allBlackPiece, Game.allWhitePiece)
     }
 
     static movment(e: Event): void {

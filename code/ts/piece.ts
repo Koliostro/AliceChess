@@ -6,36 +6,75 @@ export class Chess {
     public isChechireChess: boolean
     public currentMove: string
 
-    public allBlackPiece: Piece[]
-    public allWhitePiece: Piece[]
+    static allBlackPiece: Piece[]
+    static allWhitePiece: Piece[]
 
     constructor(isBlackTurn: boolean = false, isChechireChess: boolean = false, currentMove: string = 'w') {
         this.isBlackTurn = isBlackTurn;
         this.isChechireChess = isChechireChess
         this.currentMove = currentMove
-        this.allBlackPiece = []
-        this.allWhitePiece = []
+        Chess.allBlackPiece = []
+        Chess.allWhitePiece = []
+    }
+
+    static isMate() : boolean {
+        if (CheckSystem.IsBlackAttacked !== null) {
+            Game.UpdateAllPieces()
+            if (CheckSystem.IsBlackAttacked) {
+                let allMoves = 0
+                Chess.allBlackPiece.forEach(element => {
+                    if (element.numberPossibleMoves !== 0) {
+                        allMoves += 1
+                    }
+                });
+                if (allMoves > 0) {
+                    return false
+                }
+                return true
+            }
+            else {
+                let allMoves = 0
+                Chess.allWhitePiece.forEach(element => {
+                    if (element.numberPossibleMoves !== 0) {
+                        allMoves += 1
+                    }
+                });
+                if (allMoves > 0) {
+                    return false
+                }
+                return true
+            }
+        }
+        return false
     }
 
     UpdateAllPieces(): void {
-        this.allBlackPiece = []
-        this.allWhitePiece = []
+        Chess.allBlackPiece = []
+        Chess.allWhitePiece = []
         for (let x = 0; x < 8; x++) {
             for (let y = 0; y < 8; y++) {
                 if (ArrayBoards.L[x][y].length > 0) {
                     if (ArrayBoards.L[x][y][0].id.charAt(0) === 'w') {
-                        this.allWhitePiece.push(ArrayBoards.L[x][y][0])
+                        let piece = ArrayBoards.L[x][y][0]
+                        piece.lightAllPossibleMove(true)
+                        Chess.allWhitePiece.push(piece)
                     }
                     if (ArrayBoards.L[x][y][0].id.charAt(0) === 'b') {
-                        this.allBlackPiece.push(ArrayBoards.L[x][y][0])
+                        let piece = ArrayBoards.L[x][y][0]
+                        piece.lightAllPossibleMove(true)
+                        Chess.allBlackPiece.push(piece)
                     }
                 }
                 if (ArrayBoards.R[x][y].length > 0) {
                     if (ArrayBoards.R[x][y][0].id.charAt(0) === 'w') {
-                        this.allWhitePiece.push(ArrayBoards.R[x][y][0])
+                        let piece = ArrayBoards.R[x][y][0]
+                        piece.lightAllPossibleMove(true)
+                        Chess.allWhitePiece.push(piece)
                     }
                     if (ArrayBoards.R[x][y][0].id.charAt(0) === 'b') {
-                        this.allBlackPiece.push(ArrayBoards.R[x][y][0])
+                        let piece = ArrayBoards.R[x][y][0]
+                        piece.lightAllPossibleMove(true)
+                        Chess.allBlackPiece.push(piece)
                     }
                 }
             }
@@ -48,12 +87,14 @@ export class Piece extends Chess {
     public id: string;
     public position: number[] // x first, y second
     public isBlack: boolean;
+    public numberPossibleMoves: number
 
     protected constructor(id: string, position: number[]) {
         super()
         this.id = id;
         this.position = position
         this.isBlack = id.charAt(0) === 'b' ? true : false;
+        this.numberPossibleMoves = 0
     }
 
     static resetCheck(): void {
@@ -352,10 +393,13 @@ export class Piece extends Chess {
             Board.Clear();
         }
         Game.UpdateAllPieces()
-        console.log(Game.allBlackPiece, Game.allWhitePiece)
     }
 
     static movment(e: Event): void {
+        if (!this.isMate()) {
+            return
+        }
+
         // on which HTML element user click
         const target = e.target as HTMLInputElement
 
@@ -400,7 +444,7 @@ export class Piece extends Chess {
         else {
             Piece.move(e, startPosition, clickPosition, startSide, movedPiece)
         }
-        console.log(CheckSystem)
+        console.log(Chess.allBlackPiece)
     }
 
     protected createPiece(pieceName: string, isLeft: boolean): void {
@@ -517,29 +561,34 @@ export class King extends Piece {
         return false
     }
 
-    lightAllPossibleMove(): void {
-        Cell.lightStartCell(this.position, this.isLeft)
+    lightAllPossibleMove(isSecretly: boolean = false): void {
+        this.numberPossibleMoves = 0;
+        Cell.lightStartCell(this.position, this.isLeft, isSecretly)
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
                 if (this.isVailedCasteling(this.position, [i, j], this.isLeft, this.isBlack)) {
-                    Cell.lightMovableCell([i, j], this.isLeft)
-                    Cell.lightCastelingCell([i, j], this.isLeft)
+                    Cell.lightMovableCell([i, j], this.isLeft, isSecretly)
+                    Cell.lightCastelingCell([i, j], this.isLeft, isSecretly)
+                    this.numberPossibleMoves += 1
                 }
                 if (this.isVailedMove(this.position, [i, j])) {
                     if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
                         if (i !== this.position[0] || j !== this.position[1]) {
-                            Cell.lightMovableCell([i, j], this.isLeft)
+                            Cell.lightMovableCell([i, j], this.isLeft, isSecretly)
+                            this.numberPossibleMoves += 1
                         }
                     }
                     if (this.position[0] !== i || this.position[1] !== j) {
                         if (this.isLeft === true) {
                             if (ArrayBoards.L[j][i].length !== 0 && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
-                                Cell.lightEatableCell([i, j], this.isLeft)
+                                Cell.lightEatableCell([i, j], this.isLeft, isSecretly)
+                                this.numberPossibleMoves += 1
                             }
                         }
                         else {
                             if (ArrayBoards.R[j][i].length !== 0 && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
-                                Cell.lightEatableCell([i, j], this.isLeft)
+                                Cell.lightEatableCell([i, j], this.isLeft, isSecretly)
+                                this.numberPossibleMoves += 1
                             }
                         }
                     }
@@ -600,8 +649,9 @@ export class Bishop extends Piece {
         return true;
     }
 
-    lightAllPossibleMove(): void {
-        Cell.lightStartCell(this.position, this.isLeft)
+    lightAllPossibleMove(isSecretly: boolean = false): void {
+        Cell.lightStartCell(this.position, this.isLeft, isSecretly)
+        this.numberPossibleMoves = 0
         // --------------------------------------------------------------------------------------
         // check is our king under attack
         if (this.isBlack && CheckSystem.IsBlackAttacked && CheckSystem.AttackingPiecePos != null) {
@@ -620,7 +670,8 @@ export class Bishop extends Piece {
 
                             for (let Y_i = start; Y_i < end; Y_i++) {
                                 if (this.isVailedMove(this.position, [CheckSystem.AttackingPiecePos.pos[0], Y_i])) {
-                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos.pos[0], Y_i], this.isLeft)
+                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos.pos[0], Y_i], this.isLeft, isSecretly)
+                                    this.numberPossibleMoves += 1
                                 }
                             }
                             return
@@ -632,7 +683,8 @@ export class Bishop extends Piece {
 
                             for (let X_i = start; X_i < end; X_i++) {
                                 if (this.isVailedMove(this.position, [CheckSystem.AttackingPiecePos.pos[0], X_i])) {
-                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos.pos[0], X_i], this.isLeft)
+                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos.pos[0], X_i], this.isLeft, isSecretly)
+                                    this.numberPossibleMoves += 1
                                 }
                             }
                             return
@@ -640,8 +692,9 @@ export class Bishop extends Piece {
                     }
                     // Separtly check is this piece can eat attacker
                     if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos.pos)) {
-                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
-                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
+                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                        this.numberPossibleMoves += 1
                     }
                     break;
                 case 'b' || 'q':
@@ -654,7 +707,8 @@ export class Bishop extends Piece {
                         for (let X_i = start[0]; X_i < end[0]; X_i++) {
                             for (let Y_i = start[1]; Y_i < end[1]; Y_i++) {
                                 if (this.isVailedMove(this.position, [X_i, Y_i])) {
-                                    Cell.lightMovableCell([X_i, Y_i], this.isLeft)
+                                    Cell.lightMovableCell([X_i, Y_i], this.isLeft, isSecretly)
+                                    this.numberPossibleMoves += 1
                                 }
                             }
                             return
@@ -662,16 +716,18 @@ export class Bishop extends Piece {
                     }
                     // Separtly check is this piece can eat attacker
                     if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos.pos)) {
-                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
-                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
+                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                        this.numberPossibleMoves += 1
                     }
                     break;
 
                 default:
                     if (CheckSystem.AttackingPiecePos.side === this.isLeft) {
                         if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos.pos)) {
-                            Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
-                            Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
+                            Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                            Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                            this.numberPossibleMoves += 1
                         }
                     }
                     break;
@@ -686,18 +742,21 @@ export class Bishop extends Piece {
                     if (this.isVailedMove(this.position, [i, j])) {
                         if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
                             if (i !== this.position[0] || j !== this.position[1]) {
-                                Cell.lightMovableCell([i, j], this.isLeft)
+                                Cell.lightMovableCell([i, j], this.isLeft, isSecretly)
+                                this.numberPossibleMoves += 1
                             }
                         }
                         if (this.position[0] !== i || this.position[1] !== j) {
                             if (this.isLeft === true) {
                                 if (ArrayBoards.L[j][i].length !== 0 && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
-                                    Cell.lightEatableCell([i, j], this.isLeft)
+                                    Cell.lightEatableCell([i, j], this.isLeft, isSecretly)
+                                    this.numberPossibleMoves += 1
                                 }
                             }
                             else {
                                 if (ArrayBoards.R[j][i].length !== 0 && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
-                                    Cell.lightEatableCell([i, j], this.isLeft)
+                                    Cell.lightEatableCell([i, j], this.isLeft, isSecretly)
+                                    this.numberPossibleMoves += 1
                                 }
                             }
                         }
@@ -774,8 +833,9 @@ export class Rock extends Piece {
 
     }
 
-    lightAllPossibleMove(): void {
-        Cell.lightStartCell(this.position, this.isLeft)
+    lightAllPossibleMove(isSecretly: boolean = false): void {
+        Cell.lightStartCell(this.position, this.isLeft, isSecretly)
+        this.numberPossibleMoves = 0
         // --------------------------------------------------------------------------------------
         // check is our king under attack
         if (this.isBlack && CheckSystem.IsBlackAttacked && CheckSystem.AttackingPiecePos != null) {
@@ -794,7 +854,8 @@ export class Rock extends Piece {
 
                             for (let Y_i = start; Y_i < end; Y_i++) {
                                 if (this.isVailedMove(this.position, [CheckSystem.AttackingPiecePos.pos[0], Y_i])) {
-                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos.pos[0], Y_i], this.isLeft)
+                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos.pos[0], Y_i], this.isLeft, isSecretly)
+                                    this.numberPossibleMoves += 1
                                 }
                             }
                             return
@@ -806,7 +867,8 @@ export class Rock extends Piece {
 
                             for (let X_i = start; X_i < end; X_i++) {
                                 if (this.isVailedMove(this.position, [CheckSystem.AttackingPiecePos.pos[0], X_i])) {
-                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos.pos[0], X_i], this.isLeft)
+                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos.pos[0], X_i], this.isLeft, isSecretly)
+                                    this.numberPossibleMoves += 1
                                 }
                             }
                             return
@@ -814,8 +876,9 @@ export class Rock extends Piece {
                     }
                     // Separtly check is this piece can eat attacker
                     if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos.pos)) {
-                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
-                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
+                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                        this.numberPossibleMoves += 1
                     }
                     break;
                 case 'b' || 'q':
@@ -828,7 +891,8 @@ export class Rock extends Piece {
                         for (let X_i = start[0]; X_i < end[0]; X_i++) {
                             for (let Y_i = start[1]; Y_i < end[1]; Y_i++) {
                                 if (this.isVailedMove(this.position, [X_i, Y_i])) {
-                                    Cell.lightMovableCell([X_i, Y_i], this.isLeft)
+                                    Cell.lightMovableCell([X_i, Y_i], this.isLeft, isSecretly)
+                                    this.numberPossibleMoves += 1
                                 }
                             }
                             return
@@ -836,16 +900,18 @@ export class Rock extends Piece {
                     }
                     // Separtly check is this piece can eat attacker
                     if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos.pos)) {
-                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
-                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
+                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                        this.numberPossibleMoves += 1
                     }
                     break;
 
                 default:
                     if (CheckSystem.AttackingPiecePos.side === this.isLeft) {
                         if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos.pos)) {
-                            Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
-                            Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
+                            Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                            Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                            this.numberPossibleMoves += 1
                         }
                     }
                     break;
@@ -860,18 +926,21 @@ export class Rock extends Piece {
                     if (this.isVailedMove(this.position, [i, j])) {
                         if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
                             if (i !== this.position[0] || j !== this.position[1]) {
-                                Cell.lightMovableCell([i, j], this.isLeft)
+                                Cell.lightMovableCell([i, j], this.isLeft, isSecretly)
+                                this.numberPossibleMoves += 1
                             }
                         }
                         if (this.position[0] !== i || this.position[1] !== j) {
                             if (this.isLeft) {
                                 if (ArrayBoards.L[j][i].length !== 0 && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
-                                    Cell.lightEatableCell([i, j], this.isLeft)
+                                    Cell.lightEatableCell([i, j], this.isLeft, isSecretly)
+                                    this.numberPossibleMoves += 1
                                 }
                             }
                             else {
                                 if (ArrayBoards.R[j][i].length !== 0 && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
-                                    Cell.lightEatableCell([i, j], this.isLeft)
+                                    Cell.lightEatableCell([i, j], this.isLeft, isSecretly)
+                                    this.numberPossibleMoves += 1
                                 }
                             }
                         }
@@ -911,8 +980,9 @@ export class Queen extends Piece {
         return false
     }
 
-    lightAllPossibleMove(): void {
-        Cell.lightStartCell(this.position, this.isLeft)
+    lightAllPossibleMove(isSecretly: boolean = false): void {
+        Cell.lightStartCell(this.position, this.isLeft, isSecretly)
+        this.numberPossibleMoves = 0
         // --------------------------------------------------------------------------------------
         // check is our king under attack
         if (this.isBlack && CheckSystem.IsBlackAttacked && CheckSystem.AttackingPiecePos != null) {
@@ -931,7 +1001,8 @@ export class Queen extends Piece {
 
                             for (let Y_i = start; Y_i < end; Y_i++) {
                                 if (this.isVailedMove(this.position, [CheckSystem.AttackingPiecePos.pos[0], Y_i])) {
-                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos.pos[0], Y_i], this.isLeft)
+                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos.pos[0], Y_i], this.isLeft, isSecretly)
+                                    this.numberPossibleMoves += 1
                                 }
                             }
                             return
@@ -943,7 +1014,8 @@ export class Queen extends Piece {
 
                             for (let X_i = start; X_i < end; X_i++) {
                                 if (this.isVailedMove(this.position, [CheckSystem.AttackingPiecePos.pos[0], X_i])) {
-                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos.pos[0], X_i], this.isLeft)
+                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos.pos[0], X_i], this.isLeft, isSecretly)
+                                    this.numberPossibleMoves += 1
                                 }
                             }
                             return
@@ -951,8 +1023,9 @@ export class Queen extends Piece {
                     }
                     // Separtly check is this piece can eat attacker
                     if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos.pos)) {
-                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
-                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
+                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                        this.numberPossibleMoves += 1
                     }
                     break;
                 case 'b' || 'q':
@@ -965,7 +1038,8 @@ export class Queen extends Piece {
                         for (let X_i = start[0]; X_i < end[0]; X_i++) {
                             for (let Y_i = start[1]; Y_i < end[1]; Y_i++) {
                                 if (this.isVailedMove(this.position, [X_i, Y_i])) {
-                                    Cell.lightMovableCell([X_i, Y_i], this.isLeft)
+                                    Cell.lightMovableCell([X_i, Y_i], this.isLeft, isSecretly)
+                                    this.numberPossibleMoves += 1
                                 }
                             }
                             return
@@ -973,16 +1047,18 @@ export class Queen extends Piece {
                     }
                     // Separtly check is this piece can eat attacker
                     if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos.pos)) {
-                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
-                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
+                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                        this.numberPossibleMoves += 1
                     }
                     break;
 
                 default:
                     if (CheckSystem.AttackingPiecePos.side === this.isLeft) {
                         if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos.pos)) {
-                            Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
-                            Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
+                            Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                            Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                            this.numberPossibleMoves += 1
                         }
                     }
                     break;
@@ -997,18 +1073,21 @@ export class Queen extends Piece {
                     if (this.isVailedMove(this.position, [i, j])) {
                         if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
                             if (i !== this.position[0] || j !== this.position[1]) {
-                                Cell.lightMovableCell([i, j], this.isLeft)
+                                Cell.lightMovableCell([i, j], this.isLeft, isSecretly)
+                                this.numberPossibleMoves += 1
                             }
                         }
                         if (this.position[0] !== i || this.position[1] !== j) {
                             if (this.isLeft === true) {
                                 if (ArrayBoards.L[j][i].length !== 0 && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
-                                    Cell.lightEatableCell([i, j], this.isLeft)
+                                    Cell.lightEatableCell([i, j], this.isLeft, isSecretly)
+                                    this.numberPossibleMoves += 1
                                 }
                             }
                             else {
                                 if (ArrayBoards.R[j][i].length !== 0 && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
-                                    Cell.lightEatableCell([i, j], this.isLeft)
+                                    Cell.lightEatableCell([i, j], this.isLeft, isSecretly)
+                                    this.numberPossibleMoves += 1
                                 }
                             }
                         }
@@ -1047,8 +1126,9 @@ export class Knight extends Piece {
         return false;
     }
 
-    lightAllPossibleMove(): void {
-        Cell.lightStartCell(this.position, this.isLeft)
+    lightAllPossibleMove(isSecretly: boolean = false): void {
+        Cell.lightStartCell(this.position, this.isLeft, isSecretly)
+        this.numberPossibleMoves = 0
         // --------------------------------------------------------------------------------------
         // check is our king under attack
         if (this.isBlack && CheckSystem.IsBlackAttacked && CheckSystem.AttackingPiecePos != null) {
@@ -1067,7 +1147,8 @@ export class Knight extends Piece {
 
                             for (let Y_i = start; Y_i < end; Y_i++) {
                                 if (this.isVailedMove(this.position, [CheckSystem.AttackingPiecePos.pos[0], Y_i])) {
-                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos.pos[0], Y_i], this.isLeft)
+                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos.pos[0], Y_i], this.isLeft, isSecretly)
+                                    this.numberPossibleMoves += 1
                                 }
                             }
                             return
@@ -1079,7 +1160,8 @@ export class Knight extends Piece {
 
                             for (let X_i = start; X_i < end; X_i++) {
                                 if (this.isVailedMove(this.position, [CheckSystem.AttackingPiecePos.pos[0], X_i])) {
-                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos.pos[0], X_i], this.isLeft)
+                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos.pos[0], X_i], this.isLeft, isSecretly)
+                                    this.numberPossibleMoves += 1
                                 }
                             }
                             return
@@ -1087,8 +1169,9 @@ export class Knight extends Piece {
                     }
                     // Separtly check is this piece can eat attacker
                     if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos.pos)) {
-                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
-                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
+                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                        this.numberPossibleMoves += 1
                     }
                     break;
                 case 'b' || 'q':
@@ -1101,7 +1184,8 @@ export class Knight extends Piece {
                         for (let X_i = start[0]; X_i < end[0]; X_i++) {
                             for (let Y_i = start[1]; Y_i < end[1]; Y_i++) {
                                 if (this.isVailedMove(this.position, [X_i, Y_i])) {
-                                    Cell.lightMovableCell([X_i, Y_i], this.isLeft)
+                                    Cell.lightMovableCell([X_i, Y_i], this.isLeft, isSecretly)
+                                    this.numberPossibleMoves += 1
                                 }
                             }
                             return
@@ -1109,16 +1193,18 @@ export class Knight extends Piece {
                     }
                     // Separtly check is this piece can eat attacker
                     if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos.pos)) {
-                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
-                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
+                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                        this.numberPossibleMoves += 1
                     }
                     break;
 
                 default:
                     if (CheckSystem.AttackingPiecePos.side === this.isLeft) {
                         if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos.pos)) {
-                            Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
-                            Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
+                            Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                            Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                            this.numberPossibleMoves += 1
                         }
                     }
                     break;
@@ -1139,12 +1225,14 @@ export class Knight extends Piece {
                         if (this.position[0] !== i || this.position[1] !== j) {
                             if (this.isLeft === true) {
                                 if (ArrayBoards.L[j][i].length !== 0 && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
-                                    Cell.lightEatableCell([i, j], this.isLeft)
+                                    Cell.lightEatableCell([i, j], this.isLeft, isSecretly)
+                                    this.numberPossibleMoves += 1
                                 }
                             }
                             else {
                                 if (ArrayBoards.R[j][i].length !== 0 && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
-                                    Cell.lightEatableCell([i, j], this.isLeft)
+                                    Cell.lightEatableCell([i, j], this.isLeft, isSecretly)
+                                    this.numberPossibleMoves += 1
                                 }
                             }
                         }
@@ -1246,8 +1334,9 @@ export class Pawn extends Piece {
         return false
     }
 
-    lightAllPossibleMove(): void {
-        Cell.lightStartCell(this.position, this.isLeft)
+    lightAllPossibleMove(isSecretly: boolean = false): void {
+        Cell.lightStartCell(this.position, this.isLeft, isSecretly)
+        this.numberPossibleMoves = 0
         // --------------------------------------------------------------------------------------
         // check is our king under attack
         if (this.isBlack && CheckSystem.IsBlackAttacked && CheckSystem.AttackingPiecePos != null) {
@@ -1266,7 +1355,8 @@ export class Pawn extends Piece {
 
                             for (let Y_i = start; Y_i < end; Y_i++) {
                                 if (this.isVailedMove(this.position, [CheckSystem.AttackingPiecePos.pos[0], Y_i])) {
-                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos.pos[0], Y_i], this.isLeft)
+                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos.pos[0], Y_i], this.isLeft, isSecretly)
+                                    this.numberPossibleMoves += 1
                                 }
                             }
                             return
@@ -1278,7 +1368,8 @@ export class Pawn extends Piece {
 
                             for (let X_i = start; X_i < end; X_i++) {
                                 if (this.isVailedMove(this.position, [CheckSystem.AttackingPiecePos.pos[0], X_i])) {
-                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos.pos[0], X_i], this.isLeft)
+                                    Cell.lightMovableCell([CheckSystem.AttackingPiecePos.pos[0], X_i], this.isLeft, isSecretly)
+                                    this.numberPossibleMoves += 1
                                 }
                             }
                             return
@@ -1286,8 +1377,9 @@ export class Pawn extends Piece {
                     }
                     // Separtly check is this piece can eat attacker
                     if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos.pos)) {
-                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
-                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
+                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                        this.numberPossibleMoves += 1
                     }
                     break;
                 case 'b' || 'q':
@@ -1300,7 +1392,8 @@ export class Pawn extends Piece {
                         for (let X_i = start[0]; X_i < end[0]; X_i++) {
                             for (let Y_i = start[1]; Y_i < end[1]; Y_i++) {
                                 if (this.isVailedMove(this.position, [X_i, Y_i])) {
-                                    Cell.lightMovableCell([X_i, Y_i], this.isLeft)
+                                    Cell.lightMovableCell([X_i, Y_i], this.isLeft, isSecretly)
+                                    this.numberPossibleMoves += 1
                                 }
                             }
                             return
@@ -1308,16 +1401,18 @@ export class Pawn extends Piece {
                     }
                     // Separtly check is this piece can eat attacker
                     if (this.isVailedMove(this.position, CheckSystem.AttackingPiecePos.pos)) {
-                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
-                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
+                        Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                        Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                        this.numberPossibleMoves += 1
                     }
                     break;
 
                 default:
                     if (CheckSystem.AttackingPiecePos.side === this.isLeft) {
                         if (this.isVailedEating(this.position, CheckSystem.AttackingPiecePos.pos)) {
-                            Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
-                            Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft)
+                            Cell.lightMovableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                            Cell.lightEatableCell(CheckSystem.AttackingPiecePos.pos, this.isLeft, isSecretly)
+                            this.numberPossibleMoves += 1
                         }
                     }
                     break;
@@ -1331,19 +1426,22 @@ export class Pawn extends Piece {
                 if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
                     if (this.isVailedMove(this.position, [i, j])) {
                         if (i !== this.position[0] || j !== this.position[1]) {
-                            Cell.lightMovableCell([i, j], this.isLeft)
+                            Cell.lightMovableCell([i, j], this.isLeft, isSecretly)
+                            this.numberPossibleMoves += 1
                         }
                     }
                 }
                 if (i === this.position[0] && j === this.position[1]) {
-                    Cell.lightStartCell(this.position, this.isLeft)
+                    Cell.lightStartCell(this.position, this.isLeft, isSecretly)
                 }
                 if (this.isVailedEating(this.position, [i, j])) {
                     if (this.isLeft && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i].length !== 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
-                        Cell.lightEatableCell([i, j], this.isLeft)
+                        Cell.lightEatableCell([i, j], this.isLeft, isSecretly)
+                        this.numberPossibleMoves += 1
                     }
                     else if (!this.isLeft && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i].length !== 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
-                        Cell.lightEatableCell([i, j], this.isLeft)
+                        Cell.lightEatableCell([i, j], this.isLeft, isSecretly)
+                        this.numberPossibleMoves += 1
                     }
                 }
             }

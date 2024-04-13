@@ -329,32 +329,48 @@ export class Cell extends Board {
         }
     }
 
-    static lightCastelingCell(position: number[], isLeft: boolean) {
+    static lightCastelingCell(position: number[], isLeft: boolean, isSecretly : boolean = false) {
         const side = isLeft === true ? 'L' : 'R'
         const selectedCell: HTMLElement | null = document.getElementById(`${position[0]},${position[1]},${side}`)
-
+        
+        if (isSecretly) {
+            return
+        }
+        
         selectedCell?.classList.add(`lighttedCell`, `lighttedCell_casteling`)
         selectedCell?.addEventListener('click', (<EventListener>Piece.movment))
     }
 
-    static lightMovableCell(position: number[], isLeft: boolean) {
+    static lightMovableCell(position: number[], isLeft: boolean , isSecretly : boolean = false) {
         const side = isLeft === true ? 'L' : 'R'
         const selectedCell: HTMLElement | null = document.getElementById(`${position[0]},${position[1]},${side}`)
+
+        if (isSecretly) {
+            return
+        }
 
         selectedCell?.classList.add(`lighttedCell`)
         selectedCell?.addEventListener('click', (<EventListener>Piece.movment))
     }
 
-    static lightStartCell(position: number[], isLeft: boolean) {
+    static lightStartCell(position: number[], isLeft: boolean, isSecretly : boolean = false) {
         const side = isLeft === true ? 'L' : 'R'
         const selectedCell: HTMLElement | null = document.getElementById(`${position[0]},${position[1]},${side}`)
+
+        if (isSecretly) {
+            return
+        }
 
         selectedCell?.classList.add(`selectedCell`)
     }
 
-    static lightEatableCell(position: number[], isLeft: boolean) {
+    static lightEatableCell(position: number[], isLeft: boolean, isSecretly : boolean = false) {
         const side = isLeft === true ? 'L' : 'R'
         const selectedCell: HTMLElement | null = document.getElementById(`${position[0]},${position[1]},${side}`)
+
+        if (isSecretly) {
+            return
+        }
 
         selectedCell?.classList.add(`lighttedCell`, `lighttedCell_eat`)
         selectedCell?.addEventListener('click', (<EventListener>Piece.movment))

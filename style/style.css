@@ -1,9 +1,10 @@
 @import url(pice_style.css);
+@import url(normolize.css);
 
 body {
-    align-items: center;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    align-items: center;
 }
 
 .Board {
@@ -17,9 +18,10 @@ body {
 
 .boardPlace {
     display: flex;
-    margin-left: 12%;
-    margin-top: 7%;
-    gap: 100px;
+    position: relative;
+    transform: translateY(15%);
+    top: 50%;
+    gap: 5%;
 }
 
 .cell {

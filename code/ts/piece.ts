@@ -1,6 +1,6 @@
 import { ArrayBoards, CheckSystem, picePos } from "./main.js"
 import { Cell, Board } from './field.js'
-
+import { isValiedPlace } from "./drag-n-drop.js"
 export class Chess {
     public isBlackTurn: boolean
     public isChechireChess: boolean
@@ -398,7 +398,7 @@ export class Piece extends Chess {
     }
 
     static movment(e: Event): void {
-        if (!this.isMate()) {
+        if (Chess.isMate()){
             return
         }
 
@@ -446,7 +446,6 @@ export class Piece extends Chess {
         else {
             Piece.move(e, startPosition, clickPosition, startSide, movedPiece)
         }
-        console.log(Chess.allBlackPiece)
     }
 
     protected createPiece(pieceName: string, isLeft: boolean): void {
@@ -457,8 +456,10 @@ export class Piece extends Chess {
         let piece: HTMLElement = document.createElement('div');
         piece.className = `piece ${pieceName}`
         piece.id = this.id
+        piece.draggable = true
 
         piece.addEventListener('click', (<EventListener>this.movementOfPieces));
+        piece.addEventListener('dragstart', (<EventListener>this.movementOfPieces))
 
         placment?.append(piece)
     }

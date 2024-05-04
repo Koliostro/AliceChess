@@ -72,7 +72,3 @@ export let CheckSystem : CheckLibrary = {
     AttackingPiece : null,
     IsBlackAttacked : null,
 }
-
-console.log(encode(BK));
-let decoded = decodePiece(encode(BK))
-console.log(decoded);

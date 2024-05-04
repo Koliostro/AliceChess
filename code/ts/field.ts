@@ -1,9 +1,9 @@
+import { isValiedPlace } from './drag-n-drop.js';
 import { ArrayBoards } from './main.js';
 import { Chess, Piece } from './piece.js'
 
 const leftBoardHTML: HTMLElement | null = document.querySelector(`.leftBoard`);
 const rightBoardHTML: HTMLElement | null = document.querySelector(`.rightBoard`);
-
 export class Board extends Chess{
     public isLeft: boolean;
 
@@ -13,6 +13,9 @@ export class Board extends Chess{
     }
 
     fieldGeneration(): void {
+        leftBoardHTML?.addEventListener('mousemove', isValiedPlace)
+        rightBoardHTML?.addEventListener('mousemove', isValiedPlace)
+
         const WhiteCell = new Cell(true, false)
         const BlackCell = new Cell(true, true)
 

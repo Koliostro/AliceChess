@@ -1,6 +1,6 @@
 import { ArrayBoards, CheckSystem, picePos } from "./main.js"
 import { Cell, Board } from './field.js'
-
+import { isValiedPlace } from "./drag-n-drop.js"
 export class Chess {
     public isBlackTurn: boolean
     public isChechireChess: boolean
@@ -84,17 +84,19 @@ export class Chess {
 
 const Game = new Chess()
 export class Piece extends Chess {
+    public isLeft : boolean
     public id: string;
     public position: number[] // x first, y second
     public isBlack: boolean;
     public numberPossibleMoves: number
 
-    protected constructor(id: string, position: number[]) {
+    protected constructor(id: string, position: number[], isLeft : boolean) {
         super()
         this.id = id;
         this.position = position
         this.isBlack = id.charAt(0) === 'b' ? true : false;
         this.numberPossibleMoves = 0
+        this.isLeft = isLeft
     }
 
     static resetCheck(): void {
@@ -396,7 +398,7 @@ export class Piece extends Chess {
     }
 
     static movment(e: Event): void {
-        if (!this.isMate()) {
+        if (Chess.isMate()){
             return
         }
 
@@ -444,7 +446,6 @@ export class Piece extends Chess {
         else {
             Piece.move(e, startPosition, clickPosition, startSide, movedPiece)
         }
-        console.log(Chess.allBlackPiece)
     }
 
     protected createPiece(pieceName: string, isLeft: boolean): void {
@@ -455,8 +456,10 @@ export class Piece extends Chess {
         let piece: HTMLElement = document.createElement('div');
         piece.className = `piece ${pieceName}`
         piece.id = this.id
+        piece.draggable = true
 
         piece.addEventListener('click', (<EventListener>this.movementOfPieces));
+        piece.addEventListener('dragstart', (<EventListener>this.movementOfPieces))
 
         placment?.append(piece)
     }
@@ -494,12 +497,10 @@ export class Piece extends Chess {
     }
 }
 export class King extends Piece {
-    public isLeft: boolean
     public isMoved: boolean;
 
     constructor(id: string, position: number[], isLeft: boolean, isMoved: boolean = false) {
-        super(id, position)
-        this.isLeft = isLeft
+        super(id, position, isLeft)
         this.isMoved = isMoved
     }
 
@@ -598,11 +599,9 @@ export class King extends Piece {
     }
 }
 export class Bishop extends Piece {
-    public isLeft: boolean
 
     constructor(id: string, position: number[], isLeft: boolean) {
-        super(id, position)
-        this.isLeft = isLeft
+        super(id, position, isLeft)
     }
 
     create(): void { // color = black/white
@@ -769,12 +768,10 @@ export class Bishop extends Piece {
     }
 }
 export class Rock extends Piece {
-    public isLeft: boolean
     public isMoved: boolean;
 
     constructor(id: string, position: number[], isLeft: boolean, isMoved: boolean = false) {
-        super(id, position)
-        this.isLeft = isLeft
+        super(id, position, isLeft)
         this.isMoved = isMoved
     }
 
@@ -951,13 +948,11 @@ export class Rock extends Piece {
     }
 }
 export class Queen extends Piece {
-    public isLeft: boolean
     public bishop: Bishop
     public rock: Rock
 
     constructor(id: string, position: number[], isLeft: boolean) {
-        super(id, position)
-        this.isLeft = isLeft
+        super(id, position, isLeft)
         this.bishop = new Bishop(id, position, isLeft)
         this.rock = new Rock(id, position, isLeft, true)
     }
@@ -1103,7 +1098,7 @@ export class Knight extends Piece {
     public isLeft: boolean
 
     constructor(id: string, position: number[], isLeft: boolean) {
-        super(id, position)
+        super(id, position, isLeft)
         this.isLeft = isLeft
     }
 
@@ -1245,11 +1240,9 @@ export class Knight extends Piece {
     }
 }
 export class Pawn extends Piece {
-    public isLeft: boolean
 
     constructor(id: string, position: number[], isLeft: boolean) {
-        super(id, position)
-        this.isLeft = isLeft
+        super(id, position, isLeft)
     }
 
     create(): void { // color = black/white

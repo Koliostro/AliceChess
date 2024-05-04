@@ -1,14 +1,15 @@
 import { Board, Cell } from "./field.js";
 import { Bishop, King, Knight, Pawn, Queen, Rock} from "./piece.js";
+import { decodePiece, encode } from "./web.js";
 
 const VisualBoard = new Board()
 
 VisualBoard.fieldGeneration();  
 
-let BK : Piece = new King('b_k', [0,0], true)
+let BK : Piece = new King('b_k_0', [0,0], true)
 BK.create()
 
-let WK : Piece = new King('w_k', [7,7], false)
+let WK : Piece = new King('w_k_0', [7,7], false)
 WK.create()
 
 let WR0 : Piece = new Rock('w_r_0', [0,4], true)

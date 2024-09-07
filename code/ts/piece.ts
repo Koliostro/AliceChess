@@ -1,6 +1,7 @@
 import { ArrayBoards, CheckSystem, picePos } from "./main.js"
 import { Cell, Board } from './field.js'
 import { isValiedPlace } from "./drag-n-drop.js"
+
 export class Chess {
     public isBlackTurn: boolean
     public isChechireChess: boolean
@@ -1095,8 +1096,6 @@ export class Queen extends Piece {
     }
 }
 export class Knight extends Piece {
-    public isLeft: boolean
-
     constructor(id: string, position: number[], isLeft: boolean) {
         super(id, position, isLeft)
         this.isLeft = isLeft

@@ -40,26 +40,19 @@ function piecetype(piece: Piece): string {
     switch (piece.id.charAt(2)) {
         case 'p':
             return "0b010"
-            break;
         case 'r':
             return "0b011"
-            break;
         case 'n':
             return "0b100"
-            break;
         case 'b':
             return "0b101"
-            break;
         case 'q':
             return "0b110"
-            break;
         case 'k':
             return "0b111"
-            break;
 
         default:
             return "0b000"
-            break;
     }
 }
 

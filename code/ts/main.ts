@@ -1,4 +1,4 @@
-import { Board, Cell } from "./field.js";
+import { Board } from "./field.js";
 import { Bishop, King, Knight, Pawn, Queen, Rock} from "./piece.js";
 import { decodePiece, encode } from "./web.js";
 

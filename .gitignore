@@ -1,2 +1,4 @@
 # Ignore compiced js files.
-*.js
+code/js/*.js
+out/
+node_modules/

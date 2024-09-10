@@ -1,4 +1,4 @@
-import { Piece } from "./main.js"
+import { Piece } from "./index.js"
 import { Chess } from "./piece.js"
 
 function dec2bin(dec: number): string {

@@ -1,5 +1,4 @@
-import { isValiedPlace } from './drag-n-drop.js';
-import { ArrayBoards } from './main.js';
+import { ArrayBoards } from './index.js';
 import { Chess, Piece } from './piece.js'
 
 const leftBoardHTML: HTMLElement | null = document.querySelector(`.leftBoard`);
@@ -13,8 +12,6 @@ export class Board extends Chess{
     }
 
     fieldGeneration(): void {
-        leftBoardHTML?.addEventListener('mousemove', isValiedPlace)
-        rightBoardHTML?.addEventListener('mousemove', isValiedPlace)
 
         const WhiteCell = new Cell(true, false)
         const BlackCell = new Cell(true, true)
@@ -364,7 +361,9 @@ export class Cell extends Board {
             return
         }
 
-        selectedCell?.classList.add(`selectedCell`)
+        if (selectedCell !== null) {
+            selectedCell.classList.add(`selectedCell`)
+        }
     }
 
     static lightEatableCell(position: number[], isLeft: boolean, isSecretly : boolean = false) {

@@ -1,6 +1,5 @@
-import { ArrayBoards, CheckSystem, picePos } from "./main.js"
+import { ArrayBoards, CheckSystem, picePos } from "./index.js"
 import { Cell, Board } from './field.js'
-import { isValiedPlace } from "./drag-n-drop.js"
 
 export class Chess {
     public isBlackTurn: boolean
@@ -460,7 +459,7 @@ export class Piece extends Chess {
         piece.draggable = true
 
         piece.addEventListener('click', (<EventListener>this.movementOfPieces));
-        piece.addEventListener('dragstart', (<EventListener>this.movementOfPieces))
+        //piece.addEventListener('dragstart', (<EventListener>this.movementOfPieces))
 
         placment?.append(piece)
     }

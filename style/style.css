@@ -31,7 +31,7 @@ body {
 }
 
 .selectedCell {
-    border: 5px cadetblue dashed;
+    border: 2px cadetblue dashed;
 }
 
 .lighttedCell {
@@ -44,12 +44,16 @@ body {
     content: '';
     width: 30px;
     height: 30px;
-    background-color: royalblue;
+    background-color: rgb(65, 105, 225);
     border-radius: 50%;
 }
 
+.lighttedCell_eat {
+    border: 5px orange dotted;
+}
+
 .lighttedCell_eat::before {
-    background-color: rgb(73, 0, 0);
+    background-color: rgba(65, 105, 225, 0);
 }
 
 .cellWhite {

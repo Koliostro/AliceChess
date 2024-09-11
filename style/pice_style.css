@@ -2,43 +2,43 @@
     border-radius: 50%;
     height: 100%;
     width: 100%;
+
+    background-size: cover;
 }
 
 .black_pawn {
-    background-color: rgba(255, 127, 80, 0.5);
+    background-image: url("../images/pawn_black.svg")
 } 
 .white_pawn {
-    background-color: coral;
+    background-image: url("../images/pawn_white.svg")
 }
 .black_rock {
-    background-color: rgba(218, 165, 32, 0.5);
+    background-image: url("../images/rock_black.svg")
 }
-
 .white_rock {
-    background-color: goldenrod;
+    background-image: url("../images/rock_white.svg")
 }
 .black_knight{
-    background-color: rgba(0, 0, 255, 0.5);
+    background-image: url("../images/knight_black.svg")
 } 
 .white_knight {
-    background-color: blue;
+    background-image: url("../images/knight_white.svg")
 }
 .black_bishop {
-    background-color: rgba(0, 255, 0, 0.5);
+    background-image: url("../images/bishop_black.svg")
 } 
 .white_bishop {
-    background-color: lime;
+    background-image: url("../images/bishop_white.svg")
 }
-.black_queen
-{
-    background-color:rgba(255, 0, 255, 0.5);
+.black_queen{
+    background-image: url("../images/queen_black.svg")
 }
 .white_queen {
-    background-color:fuchsia;
+    background-image: url("../images/queen_while.svg")
 }
 .black_king{
-    background-color: rgba(76, 0, 130, 0.5);
+    background-image: url("../images/king_black.svg")
 } 
 .white_king {
-    background-color: indigo;
+    background-image: url("../images/kilng_white.svg")
 }

@@ -12,8 +12,9 @@ body {
     border: 3px solid darkgray;
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
-    width: 500px;
-    height: 500px;
+    width: fit-content;
+
+    background-color: rgba(131, 131, 131, 0.527);
 }
 
 .boardPlace {
@@ -25,7 +26,11 @@ body {
 }
 
 .cell {
-    border: 3px solid darkgray;
+    margin: 2.5px;
+
+    height: 50px;
+    aspect-ratio: 1/1;
+    border: 3px solid grey;
     display: flex;
     align-items: center;
 }
@@ -39,17 +44,19 @@ body {
 }
 
 .lighttedCell::before {
-    left: 25%;
+    right: 25%;
+
     position: absolute;
     content: '';
-    width: 30px;
-    height: 30px;
+    width: 25px;
     background-color: rgb(65, 105, 225);
     border-radius: 50%;
+    aspect-ratio: 1/1;
 }
 
 .lighttedCell_eat {
-    border: 5px orange dotted;
+    border: 3px orange inset;
+    margin: 1.5px
 }
 
 .lighttedCell_eat::before {

@@ -9,6 +9,8 @@ const createWindow = () => {
 
     win.setMenuBarVisibility(false)
     win.loadFile('main.html')
+    win.maximize()
+    win.focus()
 }
 
 app.whenReady().then( () => {

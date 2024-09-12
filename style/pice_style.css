@@ -1,9 +1,26 @@
+@keyframes movment {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
 .piece {
     border-radius: 50%;
     height: 100%;
-    width: 100%;
+
+    aspect-ratio: 1/1;
 
     background-size: cover;
+
+    transition: all;
+}
+
+.movment_in {
+    animation: 0.8s normal movment forwards;
 }
 
 .black_pawn {

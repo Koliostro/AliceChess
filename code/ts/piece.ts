@@ -209,9 +209,15 @@ export class Piece extends Chess {
             // Save piece`s class in variable  
             const piece = ArrayBoards.L[startPosition[1]][startPosition[0]];
 
-            // Add selected piece to selected cell as child element
-            oppositCell?.append(movedPiece);
+            movedPiece.classList.add('movment_in')
 
+            // Add selected piece to selected cell as child element
+            
+            setTimeout(() => {
+                movedPiece.classList.remove('movment_in')
+                oppositCell?.append(movedPiece)
+            }, 1000)            
+            
             // remove piece (eating)
             if (target.classList.contains(`lighttedCell_eat`)) {
                 target.firstChild?.remove();
@@ -304,8 +310,13 @@ export class Piece extends Chess {
             // Save piece`s class in variable  
             const piece = ArrayBoards.R[startPosition[1]][startPosition[0]];
 
+            movedPiece.classList.add('movment_in')
+
             // Add selected piece to selected cell as child element
-            oppositCell?.append(movedPiece);
+            setTimeout(() => {
+                movedPiece.classList.remove('movment_in')
+                oppositCell?.append(movedPiece)
+            }, 1000)    
 
             // remove piece (eating)
             if (target.classList.contains(`lighttedCell_eat`)) {

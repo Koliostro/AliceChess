@@ -1,3 +1,26 @@
+import {Chess} from "./chess";
+import {GamePiece} from "./types";
+
+export class Piece {
+    private PieceName : GamePiece;
+    private GAME_SESSION : Chess;
+
+    constructor(PieceName : GamePiece, GAME_SESSION : Chess) {
+        this.PieceName = PieceName;
+        this.GAME_SESSION = GAME_SESSION;
+    }
+
+    public createPiece(position : number[], isLeft : boolean) : void {
+        if (isLeft) {
+            
+        }
+        else {
+
+        }
+    }
+}
+
+
 //export class Chess {
 //    public isBlackTurn: boolean
 //    public isChechireChess: boolean

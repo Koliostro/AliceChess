@@ -20,6 +20,33 @@ This is an interesting attempt to do it on my own and a very necessary experienc
 - [ ] Create server for multiplayer
 - [ ] Add Cheshire's chess regime
 
+## How to build project
+
+First of all you need to download all listed packages. 
+
+--= How to compile from scratch =--
+
+--= Requirements =--
+
+1) nodeJS (v. 20.12.1 this version used to work, may work on other version)
+2) npm (v. 10.8.3 simu;ar to nodeJS may work on other version
+3) electron (v.
+4) electron-forge/cli (v.
+
+--= Instalation =--
+
+Electron:
+npm install --save-dev electron
+
+Electron-forge/cli:
+npm install --save-dev electron-forge/cli
+npx electron-forge import
+
+--= Compilation =--
+
+To compile run "npm run make" other work will do compiler and created configuration
+
+
 ## Goal of project
 
 The goal of project it's creation of playable version of Alice's chess and Cheshire's chess. I did't find any good realisation of those games. So I'll do this with fancy visual and multiplayer. Server will be done specialy for this.

@@ -10,13 +10,29 @@ export class Piece {
         this.GAME_SESSION = GAME_SESSION;
     }
 
-    public createPiece(position : number[], isLeft : boolean) : void {
-        if (isLeft) {
-            
-        }
-        else {
 
+    // TODO :
+    //          1) Download images for different types of pieces
+    //          2) Need make working placment of figures at visual board
+    
+    private createPieceLeft(Piece : GamePiece, position : number[]) : number {
+        return 0;
+    }
+    
+    private createPieceRight(Piece : GamePiece, position : number[]) : number {
+        return 0;
+    }
+
+    public createPiece(position : number[], isLeft : boolean) : number {
+        if (position.length !== 2) {
+            return -1;
         }
+        
+        if (!position.every(num => ((num >= 0) && (num < 8)))) {
+            return -1;
+        }
+        
+        return 0;
     }
 }
 

@@ -3,3 +3,4 @@ code/js/*
 out/*
 node_modules/*
 *.txt
+dist/*.js

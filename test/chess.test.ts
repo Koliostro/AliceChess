@@ -97,6 +97,56 @@ describe("Testing piece placment", () => {
 });
 
 describe("Check notation generation", () => {
+   let TEST_ARRAY : GamePiece[][]; 
+    
+   beforeEach(() => {
+        TEST_ARRAY = [
+            [EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL],
+            [EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL],
+            [EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL],
+            [EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL],
+            [EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL],
+            [EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL],
+            [EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL],
+            [EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL,EMPTY_CELL]
+        ]
+    }); 
+
+    test('Generate position from empty stateString', () => {
+        document.body.innerHTML = html_state;
+
+        const CHESS = new Chess();
+        CHESS.setUpEmptyBoards();
+        CHESS.fillLeftBoard(TEST_ARRAY);
+        CHESS.generateBoardSetUp("8\\8\\8\\8\\8\\8\\8\\8\\", true);
+
+        expect(CHESS.generateNotation(true)).toBe("8\\8\\8\\8\\8\\8\\8\\8\\");
+    });
+    
+    test('Generate position from stateString with black bishop at first cell', () => {
+
+        document.body.innerHTML = html_state;
+
+        const CHESS = new Chess();
+        CHESS.setUpEmptyBoards();
+        CHESS.fillLeftBoard(TEST_ARRAY);
+        CHESS.generateBoardSetUp("b7\\8\\8\\8\\8\\8\\8\\8\\", true);
+        
+        expect(CHESS.generateNotation(true)).toBe("b7\\8\\8\\8\\8\\8\\8\\8\\");
+    });
+    
+    test('Generate position from stateString with black bishop at last cell', () => {
+
+        document.body.innerHTML = html_state;
+
+        const CHESS = new Chess();
+        CHESS.setUpEmptyBoards();
+        CHESS.fillLeftBoard(TEST_ARRAY);
+        CHESS.generateBoardSetUp("8\\8\\8\\8\\8\\8\\8\\7b\\", true);
+        
+        expect(CHESS.generateNotation(true)).toBe("8\\8\\8\\8\\8\\8\\8\\7b\\");
+    });
+    
     test('Generate empty notation', () => {
 
         document.body.innerHTML = html_state;
@@ -105,9 +155,30 @@ describe("Check notation generation", () => {
         CHESS.setUpEmptyBoards();
         CHESS.fillLeftBoard(TEST_ARRAY);
 
-        console.log(CHESS.generateNotation(true));
-        console.log(CHESS.getBoard(true));
-
         expect(CHESS.generateNotation(true)).toBe("8\\8\\8\\8\\8\\8\\8\\8\\");
+    });
+
+    test('Generate notation with black bishop at first cell', () => {
+
+        document.body.innerHTML = html_state;
+
+        const CHESS = new Chess();
+        CHESS.setUpEmptyBoards();
+        CHESS.fillLeftBoard(TEST_ARRAY);
+        CHESS.placePiece(true, BISHOP, [0,0]);
+        
+        expect(CHESS.generateNotation(true)).toBe("b7\\8\\8\\8\\8\\8\\8\\8\\");
+    });
+
+    test('Generate notation with black bishop at last cell', () => {
+
+        document.body.innerHTML = html_state;
+
+        const CHESS = new Chess();
+        CHESS.setUpEmptyBoards();
+        CHESS.fillLeftBoard(TEST_ARRAY);
+        CHESS.placePiece(true, BISHOP, [7,7]);
+        
+        expect(CHESS.generateNotation(true)).toBe("8\\8\\8\\8\\8\\8\\8\\7b\\");
     });
 });

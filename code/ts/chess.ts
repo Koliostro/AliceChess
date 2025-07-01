@@ -13,29 +13,25 @@ export class Chess {
         this.isGameEnd = isGameEnd
     }
 
-    /* Here need to make sure that coordinates are [x, y] */
+    /* Here need to make sure that coordinates are [x, y] 
+    *  And need to test if numbers are in range
+    * */
     private placePieceLeft (position : number[], Piece : GamePiece) : number {
-        if (position.every(num => ((num >= 0) && (num < 8)))) {
-            this.leftField[position[0]][position[1]] = Piece;
-            return 0;
-        }
-        else {
-            return -1;
-        }
+        this.leftField[position[0]][position[1]] = Piece;
+        return 0;
     }
 
     private placePieceRight (position : number[], Piece : GamePiece) : number {
-        if (position.every(num => ((num >= 0) && (num < 8)))) {
-            this.rightField[position[0]][position[1]] = Piece;
-            return 0;
-        }
-        else {
-            return -1;
-        }
+        this.rightField[position[0]][position[1]] = Piece;
+        return 0;
     }
     
     public placePiece (isLeft : boolean, Piece : GamePiece, position : number[]) : number {
         if (position.length !== 2) {
+            return -1;
+        }
+
+        if (!position.every(num => ((num >= 0) && (num < 8)))) {
             return -1;
         }
 
@@ -71,6 +67,7 @@ export class Chess {
     public fillRightBoard(state : GamePiece[][]) : void {
         this.rightField = state; 
     }
+    
 
     public generateNotation(isLeft : boolean) : string {
         let board : GamePiece[][];
@@ -92,13 +89,6 @@ export class Chess {
             board = this.rightField;
         }
 
-        // TODO : create proper generator of notation of position
-        // TODO : for now we only generate position string to empty board
-        //        next extension should be added when we can add pieces on
-        //        board. 
-        //        So next thing to add it is a piece placment on board. 
-        // For now we will use only part of FEN with position
-
         let count_empty : number = 0;
         let position_string : string = '';
 
@@ -108,21 +98,158 @@ export class Chess {
                     count_empty++;
                 }
                 else {
-                    position_string = position_string.concat(count_empty.toString(), "\\");
+                    if (count_empty > 0) {
+                        position_string = position_string.concat(count_empty.toString());
+                    }
+
+                    switch (board[i][j].type) {
+                        case Piece.BISHOP:
+                            if (board[i][j].color === Color.BLACK) {
+                                position_string = position_string.concat('b');
+                            }
+                            else {
+                                position_string = position_string.concat('B');
+                            }
+                            break;
+                        
+                        case Piece.KING:
+                            if (board[i][j].color === Color.BLACK) {
+                                position_string = position_string.concat('k');
+                            }
+                            else {
+                                position_string = position_string.concat('K');
+                            }
+                            break;
+                        
+                        case Piece.KNIGHT:
+                            if (board[i][j].color === Color.BLACK) {
+                                position_string = position_string.concat('n');
+                            }
+                            else {
+                                position_string = position_string.concat('N');
+                            }
+                            break;
+                        
+                        case Piece.PAWN:
+                            if (board[i][j].color === Color.BLACK) {
+                                position_string = position_string.concat('p');
+                            }
+                            else {
+                                position_string = position_string.concat('P');
+                            }
+                            break;
+                        
+                        case Piece.QUEEN:
+                            if (board[i][j].color === Color.BLACK) {
+                                position_string = position_string.concat('q');
+                            }
+                            else {
+                                position_string = position_string.concat('Q');
+                            }
+                            break;
+                        
+                        case Piece.ROCK:
+                            if (board[i][j].color === Color.BLACK) {
+                                position_string = position_string.concat('r');
+                            }
+                            else {
+                                position_string = position_string.concat('R');
+                            }
+                            break;
+                    }
                     count_empty = 0;
                 }
             } 
             
             if (count_empty !== 0) {
-                position_string = position_string.concat(count_empty.toString(), "\\");
+                position_string = position_string.concat(count_empty.toString());
                 count_empty = 0;
             }
+
+            position_string = position_string.concat('\\');
         }
         
         return position_string; 
     }
 
-    // TODO : create generator for board from position string
+    private checkIfTitled(str : string) : boolean {
+        const regex = /[A-Z]/;
+        return regex.test(str);
+    }
+
+    public generateBoardSetUp(stateString : string, isLeft : boolean) : number {
+        let rowCount = 0;
+        let colCount = 0;
+
+        let board : GamePiece[][];
+
+        if (isLeft) {
+            board  = this.getBoard(true);
+        }
+        else {
+            board  = this.getBoard(false);
+        }
+
+        const lowercase = stateString.toLowerCase();
+
+        let EMPTY_CELL : GamePiece = {
+            type : Piece.EMPTY,
+            color : Color.NONE
+        }
+
+        for (let i = 0; i < 8 ; i++) {
+            board[i] = new Array(8);
+        }
+        
+        for (let i = 0; i < stateString.length; i++) {
+            if (stateString[i] === '\\') {
+                rowCount++;
+                colCount = 0;
+                continue;
+            }    
+
+            if (isNaN(Number(stateString[i]))) {
+                let typeOfPiece : Piece;
+
+                switch (lowercase[i]) {
+                    case 'b':
+                        typeOfPiece = Piece.BISHOP;
+                        break;
+                    case 'p':
+                        typeOfPiece = Piece.PAWN;
+                        break;
+                    case 'r':
+                        typeOfPiece = Piece.ROCK;
+                        break;
+                    case 'k':
+                        typeOfPiece = Piece.KING;
+                        break;
+                    case 'n':
+                        typeOfPiece = Piece.KNIGHT;
+                        break;
+                    default:
+                        typeOfPiece = Piece.QUEEN;
+                        break;
+                }
+
+                board[rowCount][colCount] = { 
+                    type : typeOfPiece, 
+                    color : this.checkIfTitled(stateString[i]) ? Color.WHITE : Color.BLACK 
+                };
+            }
+            else {
+                for (let count = 0; count < Number(stateString[i]); count++) {
+                    board[rowCount][colCount + count] = EMPTY_CELL;
+                }
+
+                colCount = Number(stateString[i]) - 1;
+            }
+
+            colCount++;
+        }
+
+        return 0;
+    }
     
     public createBoard() : void {
         if (this.boardObject !== null) {

@@ -1,28 +1,107 @@
-import {Chess} from "./chess";
-import {GamePiece} from "./types";
+import {GamePiece, Color, Piece, ROCK_VECTOR, BISHOP_VECTOR, QUEEN_VECTOR} from "./types";
 
-export class Piece {
+export class RealPiece {
     private PieceName : GamePiece;
-    private GAME_SESSION : Chess;
+    private Position : number[];
 
-    constructor(PieceName : GamePiece, GAME_SESSION : Chess) {
+    /**
+     * Constructor for creating visual representation of Piece
+     * @param PieceName - GamePiece object that fully describe piece
+     */
+    constructor(PieceName : GamePiece, Pos : number[]) {
         this.PieceName = PieceName;
-        this.GAME_SESSION = GAME_SESSION;
+        this.Position = Pos;
     }
 
+    private getStyleFromPieceType(PlayingPiece : GamePiece): string {
+       switch (PlayingPiece.type) {
+        case Piece.PAWN:
+            if (PlayingPiece.color === Color.BLACK) {
+                return "black_pawn";
+            }
+            if (PlayingPiece.color === Color.WHITE) {
+                return "white_pawn";
+            }
+        case Piece.ROCK:
+            if (PlayingPiece.color === Color.BLACK) {
+                return "black_rock";
+            }
+            if (PlayingPiece.color === Color.WHITE) {
+                return "white_rock";
+            }
+        case Piece.KING:
+            if (PlayingPiece.color === Color.BLACK) {
+                return "black_king";
+            }
+            if (PlayingPiece.color === Color.WHITE) {
+                return "white_king";
+            }
+        case Piece.KNIGHT:
+            if (PlayingPiece.color === Color.BLACK) {
+                return "black_knight";
+            }
+            if (PlayingPiece.color === Color.WHITE) {
+                return "white_knight";
+            }
+        case Piece.BISHOP:
+            if (PlayingPiece.color === Color.BLACK) {
+                return "black_bishop";
+            }
+            if (PlayingPiece.color === Color.WHITE) {
+                return "white_bishop";
+            }
+        case Piece.QUEEN:
+            if (PlayingPiece.color === Color.BLACK) {
+                return "black_queen";
+            }
+            if (PlayingPiece.color === Color.WHITE) {
+                return "white_queen";
+            }
+       }
+       return "";
+    }
 
-    // TODO :
-    //          1) Download images for different types of pieces
-    //          2) Need make working placment of figures at visual board
+    /**
+     * Getter for name of piece
+     */
+    public getPieceName() {
+        return this.PieceName;
+    }
     
-    private createPieceLeft(Piece : GamePiece, position : number[]) : number {
+    /* For coordinates: number at index 0 is x 
+     *                  number at index 1 are y*/
+    private createPieceLeft(position : number[]) : number {
+        let visual_piece : HTMLElement = document.createElement('div');
+
+        visual_piece.classList.add("piece");
+        visual_piece.classList.add(this.getStyleFromPieceType(this.PieceName));
+
+        const visual_position = document.getElementById(`${position[1]},${position[0]},L`);
+        
+        visual_position?.appendChild(visual_piece);
+        
         return 0;
     }
     
-    private createPieceRight(Piece : GamePiece, position : number[]) : number {
+    /* Creating and adding div decorated as piece to selected cell */
+    private createPieceRight(position : number[]) : number {
+        let visual_piece : HTMLElement = document.createElement('div');
+        visual_piece.classList.add("piece");
+        visual_piece.classList.add(this.getStyleFromPieceType(this.PieceName));
+        
+        const visual_position = document.getElementById(`${position[1]},${position[0]},R`);
+        
+        visual_position?.appendChild(visual_piece);
+        
         return 0;
     }
 
+    /**
+     * Create visual placment of figure depends on state of logic board
+     * @param {number[]} position  - position for placment of new piece ([y,x])
+     * @param {boolean} isLeft - flag to toggle placment on left or right board
+     * @returns {number} At end return 0 if succes or -1 if error occure
+     */
     public createPiece(position : number[], isLeft : boolean) : number {
         if (position.length !== 2) {
             return -1;
@@ -31,454 +110,58 @@ export class Piece {
         if (!position.every(num => ((num >= 0) && (num < 8)))) {
             return -1;
         }
-        
-        return 0;
+
+        if (isLeft) {
+            return this.createPieceLeft(position);
+        }
+        else {
+            return this.createPieceRight(position);
+        }
     }
+
+    /*
+     * TODO:
+     *      Need to create methods for generating moves for pieces.
+     *      First of all it is method to generate list of all possible moves.
+     *      It should remove cells behind other pieces if it is a sliding piece.
+     *
+     *      And last we need to display all finded cells. 
+     */
+
+    private generateMovesFromVectors(vectors : number[][]) : number[] {
+        let result : number[] = []; 
+
+
+        // Iterate over all vectors
+        for (let index = 0; index < vectors.length; index++) {
+            console.log(vectors[index]);
+        }
+
+        return result;
+    }
+
+    public generateAllMoves() : number[] {
+        switch (this.PieceName.type) {
+            case Piece.PAWN:
+                // TODO: Need to create pawn movment
+            case Piece.ROCK:
+                return this.generateMovesFromVectors(ROCK_VECTOR);
+            case Piece.KING:
+                // TODO: Need to create King movment check
+            case Piece.KNIGHT:
+                // TODO: Need to create Knight movment check
+            case Piece.BISHOP:
+                return this.generateMovesFromVectors(BISHOP_VECTOR);
+            case Piece.QUEEN:
+                return this.generateMovesFromVectors(QUEEN_VECTOR);
+            case Piece.EMPTY:
+                return [-1];
+        }
+    }
+
 }
 
 
-//export class Chess {
-//    public isBlackTurn: boolean
-//    public isChechireChess: boolean
-//    public currentMove: string
-//
-//    static allBlackPiece: Piece[]
-//    static allWhitePiece: Piece[]
-//
-//    constructor(isBlackTurn: boolean = false, isChechireChess: boolean = false, currentMove: string = 'w') {
-//        this.isBlackTurn = isBlackTurn;
-//        this.isChechireChess = isChechireChess
-//        this.currentMove = currentMove
-//        Chess.allBlackPiece = []
-//        Chess.allWhitePiece = []
-//    }
-//
-//    static isMate() : boolean {
-//        if (CheckSystem.IsBlackAttacked !== null) {
-//            Game.UpdateAllPieces()
-//            if (CheckSystem.IsBlackAttacked) {
-//                let allMoves = 0
-//                Chess.allBlackPiece.forEach(element => {
-//                    if (element.numberPossibleMoves !== 0) {
-//                        allMoves += 1
-//                    }
-//                });
-//                if (allMoves > 0) {
-//                    return false
-//                }
-//                return true
-//            }
-//            else {
-//                let allMoves = 0
-//                Chess.allWhitePiece.forEach(element => {
-//                    if (element.numberPossibleMoves !== 0) {
-//                        allMoves += 1
-//                    }
-//                });
-//                if (allMoves > 0) {
-//                    return false
-//                }
-//                return true
-//            }
-//        }
-//        return false
-//    }
-//
-//    UpdateAllPieces(): void {
-//        Chess.allBlackPiece = []
-//        Chess.allWhitePiece = []
-//        for (let x = 0; x < 8; x++) {
-//            for (let y = 0; y < 8; y++) {
-//                if (ArrayBoards.L[x][y].length > 0) {
-//                    if (ArrayBoards.L[x][y][0].id.charAt(0) === 'w') {
-//                        let piece = ArrayBoards.L[x][y][0]
-//                        piece.lightAllPossibleMove(true)
-//                        Chess.allWhitePiece.push(piece)
-//                    }
-//                    if (ArrayBoards.L[x][y][0].id.charAt(0) === 'b') {
-//                        let piece = ArrayBoards.L[x][y][0]
-//                        piece.lightAllPossibleMove(true)
-//                        Chess.allBlackPiece.push(piece)
-//                    }
-//                }
-//                if (ArrayBoards.R[x][y].length > 0) {
-//                    if (ArrayBoards.R[x][y][0].id.charAt(0) === 'w') {
-//                        let piece = ArrayBoards.R[x][y][0]
-//                        piece.lightAllPossibleMove(true)
-//                        Chess.allWhitePiece.push(piece)
-//                    }
-//                    if (ArrayBoards.R[x][y][0].id.charAt(0) === 'b') {
-//                        let piece = ArrayBoards.R[x][y][0]
-//                        piece.lightAllPossibleMove(true)
-//                        Chess.allBlackPiece.push(piece)
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
-//
-//const Game = new Chess()
-//export class Piece extends Chess {
-//    public isLeft : boolean
-//    public id: string;
-//    public position: number[] // x first, y second
-//    public isBlack: boolean;
-//    public numberPossibleMoves: number
-//
-//    protected constructor(id: string, position: number[], isLeft : boolean) {
-//        super()
-//        this.id = id;
-//        this.position = position
-//        this.isBlack = id.charAt(0) === 'b' ? true : false;
-//        this.numberPossibleMoves = 0
-//        this.isLeft = isLeft
-//    }
-//
-//    static resetCheck(): void {
-//        CheckSystem.AttackingPiece = null
-//        CheckSystem.AttackingPiecePos = null
-//        CheckSystem.IsBlackAttacked = null
-//    }
-//
-//    protected isPinned(isLeft: boolean): boolean {
-//        if (this.isBlack) {
-//            if (CheckSystem.BKingPos.side === isLeft) {
-//                if (Cell.isUnderAttack(this.position, this.isBlack, isLeft)) {
-//                    if (Cell.isUnderDioganalAttack(this.position, this.isBlack, isLeft)) {
-//                        let pos = this.position
-//                        let dx = pos[0] > CheckSystem.BKingPos.pos[0] ? -1 : 1;
-//                        let dy = pos[1] > CheckSystem.BKingPos.pos[1] ? -1 : 1;
-//                        while (pos[0] !== CheckSystem.BKingPos.pos[0] && pos[1] !== CheckSystem.BKingPos.pos[1]) {
-//                            if (ArrayBoards.L[pos[0]][pos[1]].length !== 0) {
-//                                return false
-//                            }
-//                            pos[0] += dx;
-//                            pos[1] += dy;
-//                        }
-//                        return true;
-//                    }
-//                    if (Cell.isUnderLineAttack(this.position, this.isBlack, isLeft)) {
-//                        let pos = this.position
-//                        if (pos[0] === CheckSystem.BKingPos.pos[0]) {
-//                            let delta = pos[0] > CheckSystem.BKingPos.pos[0] ? -1 : 1;
-//                            while (pos[1] !== CheckSystem.BKingPos.pos[1]) {
-//                                if (ArrayBoards.L[pos[0]][pos[1]].length !== 0) {
-//                                    return false;
-//                                }
-//                                pos[0] += delta;
-//                            }
-//                            return true;
-//                        }
-//                        if (pos[1] === CheckSystem.BKingPos.pos[1]) {
-//                            let delta = pos[1] > CheckSystem.BKingPos.pos[1] ? -1 : 1;
-//                            while (pos[1] !== CheckSystem.BKingPos.pos[1]) {
-//                                if (ArrayBoards.L[pos[0]][pos[1]].length !== 0) {
-//                                    return false;
-//                                }
-//                                pos[1] += delta;
-//                            }
-//                            return true;
-//                        }
-//                    }
-//                }
-//            }
-//            return false;
-//        }
-//        if (!this.isBlack) {
-//            if (CheckSystem.WKingPos.side === isLeft) {
-//                if (Cell.isUnderAttack(this.position, this.isBlack, isLeft)) {
-//                    if (Cell.isUnderDioganalAttack(this.position, this.isBlack, isLeft)) {
-//                        let pos = this.position
-//                        let dx = pos[0] > CheckSystem.WKingPos.pos[0] ? -1 : 1;
-//                        let dy = pos[1] > CheckSystem.WKingPos.pos[1] ? -1 : 1;
-//                        while (pos[0] !== CheckSystem.WKingPos.pos[0] && pos[1] !== CheckSystem.WKingPos.pos[1]) {
-//                            if (ArrayBoards.L[pos[0]][pos[1]].length !== 0) {
-//                                return false
-//                            }
-//                            pos[0] += dx;
-//                            pos[1] += dy;
-//                        }
-//                        return true;
-//                    }
-//                    if (Cell.isUnderLineAttack(this.position, this.isBlack, isLeft)) {
-//                        let pos = this.position
-//                        if (pos[0] === CheckSystem.WKingPos.pos[0]) {
-//                            let delta = pos[0] > CheckSystem.WKingPos.pos[0] ? -1 : 1;
-//                            while (pos[1] !== CheckSystem.WKingPos.pos[1]) {
-//                                if (ArrayBoards.L[pos[0]][pos[1]].length !== 0) {
-//                                    return false;
-//                                }
-//                                pos[0] += delta;
-//                            }
-//                            return true;
-//                        }
-//                        if (pos[1] === CheckSystem.WKingPos.pos[1]) {
-//                            let delta = pos[1] > CheckSystem.WKingPos.pos[1] ? -1 : 1;
-//                            while (pos[1] !== CheckSystem.WKingPos.pos[1]) {
-//                                if (ArrayBoards.L[pos[0]][pos[1]].length !== 0) {
-//                                    return false;
-//                                }
-//                                pos[1] += delta;
-//                            }
-//                            return true;
-//                        }
-//                    }
-//                }
-//            }
-//            return false;
-//        }
-//        return false
-//    }
-//
-//    static recreate(pos : number[], isLeft : boolean) {
-//        if (isLeft) {
-//            ArrayBoards.L[pos[1]][pos[0]][0].create()
-//        }
-//        else {
-//            ArrayBoards.R[pos[1]][pos[0]][0].create()
-//        }
-//    }
-//
-//    static remove(pos : number[], side : string) {
-//        const toRemove = document.getElementById(`${pos[0]},${pos[1]},${side}`)?.firstChild
-//        
-//        if (toRemove != null) {
-//            toRemove.remove()
-//        }
-//    }
-//
-//    
-//
-//    static findNearest(pos : number[], isLeft : boolean) {
-//        
-//        interface nearestRock {
-//            distance : null | number;
-//            x_pos : null | number
-//        }
-//
-//        if (isLeft) {
-//            if (ArrayBoards.L[pos[1]][0][0].id.charAt(2) == 'r') {
-//                let countRock = 0
-//                let rock_0_dist : nearestRock = {
-//                   distance : null,
-//                   x_pos : null
-//                } 
-//
-//                let rock_1_dist : nearestRock = {
-//                   distance : null,
-//                   x_pos : null 
-//                } 
-//
-//                const rock_0 = ArrayBoards.L[pos[1]][0][0] as Rock
-//                if (!rock_0.isMoved) {
-//
-//                    countRock++
-//                    rock_0_dist.distance = Math.abs(7 - pos[0])
-//                    rock_0_dist.x_pos = 7
-//                }               
-//                const rock_1 = ArrayBoards.L[pos[1]][7][0] as Rock
-//                if (!rock_1.isMoved) {
-//
-//                    countRock++
-//                    rock_1_dist.distance = Math.abs(0 - pos[0])
-//                    rock_1_dist.x_pos = 0
-//                }               
-//
-//                if (countRock > 0) {
-//                    if (countRock == 2) {
-//                        if (rock_0_dist.distance != null && rock_1_dist.distance != null) {
-//                            if (rock_0_dist.distance > rock_1_dist.distance) {
-//                                return rock_1_dist
-//                            }
-//                            else {
-//                                return rock_0_dist
-//                            }
-//                        }
-//                    }
-//                    else {
-//                        if (rock_0_dist.distance != null) {
-//                            return rock_0_dist
-//                        }
-//                        else {
-//                            return rock_1_dist
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        else {
-//            if (ArrayBoards.R[pos[1]][0][0].id.charAt(2) == 'r') {
-//                let countRock = 0
-//                let rock_0_dist : nearestRock = {
-//                   distance : null,
-//                   x_pos : null
-//                } 
-//
-//                let rock_1_dist : nearestRock = {
-//                   distance : null,
-//                   x_pos : null 
-//                } 
-//
-//                const rock_0 = ArrayBoards.R[pos[1]][0][0] as Rock
-//                if (!rock_0.isMoved) {
-//
-//                    countRock++
-//                    rock_0_dist.distance = Math.abs(7 - pos[0])
-//                    rock_0_dist.x_pos = 7
-//                }               
-//                const rock_1 = ArrayBoards.R[pos[1]][7][0] as Rock
-//                if (!rock_1.isMoved) {
-//
-//                    countRock++
-//                    rock_1_dist.distance = Math.abs(0 - pos[0])
-//                    rock_1_dist.x_pos = 0
-//                }               
-//
-//                if (countRock > 0) {
-//                    if (countRock == 2) {
-//                        if (rock_0_dist.distance != null && rock_1_dist.distance != null) {
-//                            if (rock_0_dist.distance > rock_1_dist.distance) {
-//                                return rock_1_dist
-//                            }
-//                            else {
-//                                return rock_0_dist
-//                            }
-//                        }
-//                    }
-//                    else {
-//                        if (rock_0_dist.distance != null) {
-//                            return rock_0_dist
-//                        }
-//                        else {
-//                            return rock_1_dist
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    static move(positionOnBoard : number[], startPosition : number[], startSide : string, flag :string = 'NONE') {
-//        Game.currentMove = Game.currentMove === 'w' ? 'b' : 'w'
-//        
-//            /*
-//         * System to validate movment.
-//         *
-//         * First of all we need to figure out what is needed for 
-//         * function to work properly.
-//         *
-//         * 1) State of board
-//         * 2) Selected figure.
-//         *
-//         * All of this is can be getted.
-//         *
-//         * State of board is just 2d array from main
-//         *
-//         * Selected wigure is can be simply position of it
-//         * on board!
-//         *
-//         * Hint (1):
-//         *   Positions are swapped.
-//         *   [0] : y 
-//         *   [1] : x 
-//         *
-//         *   Don't ask why
-//         *
-//         */
-//
-//        if (startSide == "L") {
-//            if (flag == 'NONE') {
-//                // Update position of figure. 
-//                //
-//                // Base of movment is done. Next need to create rocking and it is all. 
-//                //
-//                // I am proud of muself
-//                ArrayBoards.L[startPosition[1]][startPosition[0]][0].position = positionOnBoard
-//
-//                ArrayBoards.R[positionOnBoard[1]][positionOnBoard[0]] = ArrayBoards.L[startPosition[1]][startPosition[0]]
-//                ArrayBoards.R[positionOnBoard[1]][positionOnBoard[0]][0].isLeft = false
-//                ArrayBoards.L[startPosition[1]][startPosition[0]] = []
-//
-//                console.log(ArrayBoards)
-//
-//                this.remove(startPosition, "L")
-//                this.recreate(positionOnBoard, false)
-//            }
-//            
-//            if (flag == 'CASTLING') {
-//                console.log('CASTLING')
-//
-//                // Return the nearest rock.
-//                //
-//                // TODO:
-//                //  * Create castling 
-//                //  * Create checking for castling 
-//                //
-//                // Today we have all info for castling
-//                console.log(this.findNearest(positionOnBoard, true))
-//
-//                if (Game.currentMove == 'b') {
-//                    console.log('w')
-//                }
-//                else {
-//                    console.log('b')
-//                }
-//            }
-//        }
-//        else {
-//
-//        }
-//
-//
-//        Board.Clear();
-//        Game.UpdateAllPieces() //Recreate array of pieces for check system
-//    }
-//
-//    static movment(e: Event): void {
-//        if (Chess.isMate()){
-//            return
-//        }
-//
-//        // on which HTML element user click
-//        const target = e.target as HTMLInputElement
-//
-//        // make an array of 2 coordinates for position of click
-//        const clickPosition = [Number(target.id.charAt(0)), Number(target.id.charAt(2))]
-//
-//        // Importing HTML element of starting cell
-//        const startCell = document.querySelector(`.selectedCell`) as HTMLElement
-//
-//        // Calculate start position
-//        const startPosition: number[] = [Number(startCell.id.charAt(0)), Number(startCell.id.charAt(2))]
-//
-//        // get starting cell
-//        const startSide = startCell?.id.charAt(4)
-//
-//        if (target.classList.contains('lighttedCell_casteling')) {
-//            Piece.move(clickPosition, startPosition, startSide, 'CASTLING')
-//        }
-//        else {
-//            Piece.move(clickPosition, startPosition, startSide)
-//        }
-//    }
-//
-//    protected createPiece(pieceName: string, isLeft: boolean): void {
-//        const side = isLeft === true ? 'L' : 'R';
-//
-//        const placment: HTMLElement | null = document.getElementById(`${this.position[0]},${this.position[1]},${side}`)
-//
-//        let piece: HTMLElement = document.createElement('div');
-//        piece.className = `piece ${pieceName}`
-//        piece.id = this.id
-//        piece.draggable = true
-//
-//        piece.addEventListener('click', (<EventListener>this.movementOfPieces));
-//        piece.addEventListener('dragstart', (<EventListener>this.movementOfPieces))
-//
-//        placment?.append(piece)
-//    }
-//
 //    movementOfPieces(event: Event & { target: HTMLElement }): void {
 //        if (event.target.id.charAt(0) !== Game.currentMove) {
 //            return

@@ -12,21 +12,19 @@ const empty_board = GAME.setUpEmptyBoards();
 GAME.fillLeftBoard(empty_board);
 GAME.fillRightBoard(empty_board);
 
-const TestPiece : GamePiece = {
-    type : Piece.BISHOP,
-    color : Color.BLACK
-}
+GAME.generateBoardSetUp("B7\\8\\8\\8\\8\\8\\8\\8\\", true);
 
-const TestPiece2 : GamePiece = {
-    type : Piece.ROCK,
-    color : Color.WHITE
-}
+const leftboard = GAME.getBoard(true);
 
-GAME.placePiece(true, TestPiece, [0,2]);
-GAME.placePiece(true, TestPiece2, [1,2]);
+for (let i = 0; i < 8; i++) {
+    for (let j = 0; j < 8; j++) {
+        GAME.createPiece(leftboard[j][i], [j,i], true); 
+    }
+}
 
 // Generate notation for current setup
 console.log(GAME.generateNotation(true));
 console.log(GAME.getBoard(true));
 
 GAME.generateBoardSetUp(GAME.generateNotation(true), true);
+console.log(GAME.getPieceFromPos([0,0], true));

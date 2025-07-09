@@ -13,7 +13,6 @@
 .black_rock {
     background-color: rgba(218, 165, 32, 0.5);
 }
-
 .white_rock {
     background-color: goldenrod;
 }
@@ -29,8 +28,7 @@
 .white_bishop {
     background-color: lime;
 }
-.black_queen
-{
+.black_queen {
     background-color:rgba(255, 0, 255, 0.5);
 }
 .white_queen {

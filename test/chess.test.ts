@@ -1,4 +1,5 @@
 import { Chess }  from '../code/ts/chess';
+import {RealPiece} from '../code/ts/piece';
 import {GamePiece, Piece, Color} from '../code/ts/types';
 
 const html_state = 
@@ -39,6 +40,50 @@ describe("Testing logic with field code", () => {
         const result = CHESS.setUpEmptyBoards();
 
         expect(result).toStrictEqual(TEST_EMPTY_ARRAY);
+    });
+
+    test("Testing getter for all black pieces", () => {
+
+        document.body.innerHTML = html_state;
+
+        const CHESS = new Chess();
+        CHESS.createBoard();
+        CHESS.generateBoardSetUp("b7\\8\\8\\8\\8\\8\\8\\8\\", true);
+
+        CHESS.createPiece(BISHOP, [0,0], true);
+        const result = CHESS.getAllBlackPieces();
+
+        const black_bishop : GamePiece = {
+            type : Piece.BISHOP,
+            color : Color.BLACK 
+        }
+
+        const TEST_PIECE = new RealPiece(black_bishop, [0,0]);
+
+        expect(result).toStrictEqual([TEST_PIECE]);
+
+    });
+    
+    test("Testing getter for all white pieces", () => {
+
+        document.body.innerHTML = html_state;
+
+        const CHESS = new Chess();
+        CHESS.createBoard();
+        CHESS.generateBoardSetUp("b7\\8\\8\\8\\8\\8\\8\\8\\", true);
+
+        const white_bishop : GamePiece = {
+            type : Piece.BISHOP,
+            color : Color.WHITE 
+        }
+        
+        CHESS.createPiece(white_bishop, [0,0], true);
+        const result = CHESS.getAllWhitePieces();
+
+        const TEST_PIECE = new RealPiece(white_bishop, [0,0]);
+
+        expect(result).toStrictEqual([TEST_PIECE]);
+
     });
 });
     

@@ -120,6 +120,14 @@ export class RealPiece {
         }
     }
 
+    private checkIfOnBoard(coord : number) : boolean {
+        if (coord < 8 && coord > -1 ) {
+            return true;
+        }
+        
+        return false;
+    }
+    
     /*
      * TODO:
      *      Need to create methods for generating moves for pieces.
@@ -129,42 +137,74 @@ export class RealPiece {
      *      And last we need to display all finded cells. 
      */
 
-    private generateMovesFromVectors(vectors : number[][]) : number[] {
-        let result : number[] = []; 
+    private generateMovesFromVectors(vectors : number[][], board : GamePiece[][]) : number[][] {
+        let result : number[][] = []; 
         let calculated : number[] = [];
+        let isEnd : boolean = false; 
 
         // Iterate over all vectors
         for (let index = 0; index < vectors.length; index++) {
             // We copy position for future calculation and don't mess with real position
+            calculated = [];
             this.Position.map(item => (calculated.push(item)));
-
             // TODO: iter throught all cells while it gets at someones another piece
+
+            console.log("Vector :", vectors[index]);
+            
+            calculated[0] += vectors[index][0];
+            calculated[1] += vectors[index][1];
+
+            isEnd = false;
+
+            while (!isEnd) {
+                console.log(" Calculated : ", calculated);
+                
+                result.push([]);
+                calculated.map(item => (result[result.length - 1].push(item)));
+
+                calculated[0] += vectors[index][0];
+                calculated[1] += vectors[index][1];
+
+                if (this.checkIfOnBoard(calculated[0]) && this.checkIfOnBoard(calculated[1])) {
+                    if (board[calculated[0]][calculated[1]].type !== Piece.EMPTY) {
+                        if (board[calculated[0]][calculated[1]].color !== this.PieceName.color) {
+                            result.push([]);
+                            calculated.map(item => (result[result.length - 1].push(item)));
+                        }
+                        break;
+                    }
+                }
+                
+                if (!this.checkIfOnBoard(calculated[0]) || !this.checkIfOnBoard(calculated[1])) {
+                   isEnd = true; 
+                }
+            }
         }
 
         return result;
     }
 
-    public generateAllMoves(isLeft : boolean, GameState : Chess) : number[] {
+    public generateAllMoves(isLeft : boolean, GameState : Chess) : number[][] | null {
         const board = GameState.getBoard(isLeft) 
 
         switch (this.PieceName.type) {
             case Piece.PAWN:
                 // TODO: Need to create pawn movment
-                return [-1];
+                return null;
             case Piece.ROCK:
-                return this.generateMovesFromVectors(ROCK_VECTOR);
+                return this.generateMovesFromVectors(ROCK_VECTOR, board);
             case Piece.KING:
-                return [-1];
                 // TODO: Need to create King movment check
+                return null;
             case Piece.KNIGHT:
-                return [-1];
                 // TODO: Need to create Knight movment check
+                return null;
             case Piece.BISHOP:
-                return this.generateMovesFromVectors(BISHOP_VECTOR);
+                return this.generateMovesFromVectors(BISHOP_VECTOR, board);
             case Piece.QUEEN:
-                return this.generateMovesFromVectors(QUEEN_VECTOR);
+                return this.generateMovesFromVectors(QUEEN_VECTOR, board);
             case Piece.EMPTY:
-                return [-1];
+                return null;
         }
     }
 

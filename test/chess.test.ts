@@ -227,3 +227,36 @@ describe("Check notation generation", () => {
         expect(CHESS.generateNotation(true)).toBe("8\\8\\8\\8\\8\\8\\8\\7b\\");
     });
 });
+
+describe("Testing generation of all moves for pieces", () => {
+    test("Check movement generation for Bishop", () => {
+
+
+        // TODO : Fix test
+        const expected_moves = [
+            [4, 5],
+            [5, 6],
+            [6, 7],
+            [2, 3],
+            [1, 2],
+            [4, 3],
+            [5, 2],
+            [6, 1],
+            [7, 0],
+            [2, 5],
+            [1, 6],
+            [0, 7]
+        ];
+
+        document.body.innerHTML = html_state;
+
+        const CHESS = new Chess();
+        CHESS.createBoard();
+        CHESS.generateBoardSetUp("8\\2r6\\8\\4B3\\8\\8\\8\\8\\", true);
+        const piece = CHESS.getPieceFromPos([4,3], true);
+
+        const result = piece.generateAllMoves(true, CHESS);
+
+        expect(result).toStrictEqual(expected_moves);
+    });
+});

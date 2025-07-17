@@ -171,6 +171,21 @@ export class Chess {
         }
     }
 
+    public setBoard(isLeft : boolean, state : GamePiece[][]) : void {
+        if (isLeft) {
+           for (let y = this.leftField.length; y < 8; y++) {
+                for (let x = this.leftField[0].length; x < 8; x++) {
+                    this.leftField[y][x] = state[y][x];
+                }
+           } 
+
+           console.log(this.leftField);
+        }
+        else {
+
+        }
+    }
+
     /**
      * Method to create Board object for future usage
      */
@@ -315,7 +330,8 @@ export class Chess {
     }
 
     /**
-     * Generate full board with one selected piece
+     * Generate full board with one selected piece. Need to mention that this
+     * method normally works only when array are empty.
      * @param stateString - State of string in FEH notation
      * @param isLeft - Flag to check if this is left or right board 
      */
@@ -323,14 +339,7 @@ export class Chess {
         let rowCount = 0;
         let colCount = 0;
 
-        let board : GamePiece[][];
-
-        if (isLeft) {
-            board  = this.getBoard(true);
-        }
-        else {
-            board  = this.getBoard(false);
-        }
+        let board = this.getBoard(isLeft)
 
         const lowercase = stateString.toLowerCase();
 

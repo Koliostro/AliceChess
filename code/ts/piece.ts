@@ -1,3 +1,4 @@
+import {Chess} from "./chess";
 import {GamePiece, Color, Piece, ROCK_VECTOR, BISHOP_VECTOR, QUEEN_VECTOR} from "./types";
 
 export class RealPiece {
@@ -130,25 +131,33 @@ export class RealPiece {
 
     private generateMovesFromVectors(vectors : number[][]) : number[] {
         let result : number[] = []; 
-
+        let calculated : number[] = [];
 
         // Iterate over all vectors
         for (let index = 0; index < vectors.length; index++) {
-            console.log(vectors[index]);
+            // We copy position for future calculation and don't mess with real position
+            this.Position.map(item => (calculated.push(item)));
+
+            // TODO: iter throught all cells while it gets at someones another piece
         }
 
         return result;
     }
 
-    public generateAllMoves() : number[] {
+    public generateAllMoves(isLeft : boolean, GameState : Chess) : number[] {
+        const board = GameState.getBoard(isLeft) 
+
         switch (this.PieceName.type) {
             case Piece.PAWN:
                 // TODO: Need to create pawn movment
+                return [-1];
             case Piece.ROCK:
                 return this.generateMovesFromVectors(ROCK_VECTOR);
             case Piece.KING:
+                return [-1];
                 // TODO: Need to create King movment check
             case Piece.KNIGHT:
+                return [-1];
                 // TODO: Need to create Knight movment check
             case Piece.BISHOP:
                 return this.generateMovesFromVectors(BISHOP_VECTOR);

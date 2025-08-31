@@ -229,34 +229,186 @@ describe("Check notation generation", () => {
 });
 
 describe("Testing generation of all moves for pieces", () => {
-    test("Check movement generation for Bishop", () => {
 
+    describe("Check movement generation for rock", () => {
+        test("Generation moves on empty board", () => {
 
-        // TODO : Fix test
-        const expected_moves = [
-            [4, 5],
-            [5, 6],
-            [6, 7],
-            [2, 3],
-            [1, 2],
-            [4, 3],
-            [5, 2],
-            [6, 1],
-            [7, 0],
-            [2, 5],
-            [1, 6],
-            [0, 7]
-        ];
+            const expected_moves = [
+                [4, 4],
+                [4, 5],
+                [4, 6],
+                [4, 7],
+                [5, 3],
+                [6, 3],
+                [7, 3],
+                [4, 2],
+                [4, 1],
+                [4, 0],
+                [3, 3],
+                [2, 3],
+                [1, 3],
+                [0, 3]
+            ];
 
-        document.body.innerHTML = html_state;
+            document.body.innerHTML = html_state;
 
-        const CHESS = new Chess();
-        CHESS.createBoard();
-        CHESS.generateBoardSetUp("8\\2r6\\8\\4B3\\8\\8\\8\\8\\", true);
-        const piece = CHESS.getPieceFromPos([4,3], true);
+            const CHESS = new Chess();
+            CHESS.createBoard();
+            CHESS.generateBoardSetUp("8\\8\\8\\4R3\\8\\8\\8\\8\\", true);
 
-        const result = piece.generateAllMoves(true, CHESS);
+            const leftboard = CHESS.getBoard(true);
 
-        expect(result).toStrictEqual(expected_moves);
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    CHESS.createPiece(leftboard[j][i], [i,j], true);
+                }
+            }
+
+            const piece = CHESS.getPieceFromPos([4,3], true);
+            const result = piece?.generateAllMoves(true, CHESS);
+            expect(result).toStrictEqual(expected_moves);
+        });
+    });
+
+    describe("Ceck movement generation for bishop", () => {
+        test("Check movement generation for Bishop when enemie's pieces are not in touch", () => {
+
+            const expected_moves = [
+                [5, 4],
+                [6, 5],
+                [7, 6],
+                [3, 2],
+                [2, 1],
+                [5, 2],
+                [6, 1],
+                [7, 0],
+                [3, 4],
+                [2, 5],
+                [1, 6],
+                [0, 7]
+            ];
+
+            document.body.innerHTML = html_state;
+
+            const CHESS = new Chess();
+            CHESS.createBoard();
+            CHESS.generateBoardSetUp("8\\2r6\\8\\4B3\\8\\8\\8\\8\\", true);
+
+            const leftboard = CHESS.getBoard(true);
+
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    CHESS.createPiece(leftboard[j][i], [i,j], true);
+                }
+            }
+
+            const piece = CHESS.getPieceFromPos([4,3], true);
+            const result = piece?.generateAllMoves(true, CHESS);
+            expect(result).toStrictEqual(expected_moves);
+        });
+        
+        test("Check movement generation for Bishop in empty field", () => {
+
+            const expected_moves = [
+                [5, 4],
+                [6, 5],
+                [7, 6],
+                [3, 2],
+                [2, 1],
+                [1, 0],
+                [5, 2],
+                [6, 1],
+                [7, 0],
+                [3, 4],
+                [2, 5],
+                [1, 6],
+                [0, 7]
+            ];
+
+            document.body.innerHTML = html_state;
+
+            const CHESS = new Chess();
+            CHESS.createBoard();
+            CHESS.generateBoardSetUp("8\\8\\8\\4B3\\8\\8\\8\\8\\", true);
+
+            const leftboard = CHESS.getBoard(true);
+
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    CHESS.createPiece(leftboard[j][i], [i,j], true);
+                }
+            }
+
+            const piece = CHESS.getPieceFromPos([4,3], true);
+            const result = piece?.generateAllMoves(true, CHESS);
+            expect(result).toStrictEqual(expected_moves);
+        });
+
+        test("Check movement generation for Bishop with in touch with enemy piece", () => {
+
+            const expected_moves = [
+                [5, 4],
+                [3, 2],
+                [2, 1],
+                [1, 0],
+                [5, 2],
+                [6, 1],
+                [7, 0],
+                [3, 4],
+                [2, 5],
+                [1, 6],
+                [0, 7],
+            ];
+
+            document.body.innerHTML = html_state;
+
+            const CHESS = new Chess();
+            CHESS.createBoard();
+            CHESS.generateBoardSetUp("8\\8\\8\\4B3\\5r3\\8\\8\\8\\", true);
+
+            const leftboard = CHESS.getBoard(true);
+
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    CHESS.createPiece(leftboard[j][i], [i,j], true);
+                }
+            }
+
+            const piece = CHESS.getPieceFromPos([4,3], true);
+            const result = piece?.generateAllMoves(true, CHESS);
+            expect(result).toStrictEqual(expected_moves);
+        });
+
+        test("Check movement generation for Bishop with ally piece in touch", () => {
+
+            const expected_moves = [
+                [3, 1],
+                [2, 0],
+                [5, 1],
+                [6, 0],
+                [3, 3],
+                [2, 4],
+                [1, 5],
+                [0, 6]
+            ];
+
+            document.body.innerHTML = html_state;
+
+            const CHESS = new Chess();
+            CHESS.createBoard();
+            CHESS.generateBoardSetUp("8\\8\\4B3\\5R3\\8\\8\\8\\8\\", true);
+
+            const leftboard = CHESS.getBoard(true);
+
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    CHESS.createPiece(leftboard[j][i], [i,j], true);
+                }
+            }
+
+            const piece = CHESS.getPieceFromPos([4,2], true);
+            const result = piece?.generateAllMoves(true, CHESS);
+            expect(result).toStrictEqual(expected_moves);
+        });
     });
 });

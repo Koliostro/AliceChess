@@ -77,7 +77,7 @@ export class RealPiece {
         visual_piece.classList.add("piece");
         visual_piece.classList.add(this.getStyleFromPieceType(this.PieceName));
 
-        const visual_position = document.getElementById(`${position[1]},${position[0]},L`);
+        const visual_position = document.getElementById(`${position[0]},${position[1]},L`);
         
         visual_position?.appendChild(visual_piece);
         
@@ -90,7 +90,7 @@ export class RealPiece {
         visual_piece.classList.add("piece");
         visual_piece.classList.add(this.getStyleFromPieceType(this.PieceName));
         
-        const visual_position = document.getElementById(`${position[1]},${position[0]},R`);
+        const visual_position = document.getElementById(`${position[0]},${position[1]},R`);
         
         visual_position?.appendChild(visual_piece);
         
@@ -129,82 +129,117 @@ export class RealPiece {
     }
     
     /*
-     * TODO:
-     *      Need to create methods for generating moves for pieces.
-     *      First of all it is method to generate list of all possible moves.
-     *      It should remove cells behind other pieces if it is a sliding piece.
-     *
-     *      And last we need to display all finded cells. 
+     * Here we check if cell is empty or not.
      */
+   private checkColide(Position : number[], board : GamePiece[][]) : boolean {
+       const x = Position[0];
+       const y = Position[1];
+       
+       if (board[y][x].color !== Color.NONE) {
+           return true
+       }
 
-    private generateMovesFromVectors(vectors : number[][], board : GamePiece[][]) : number[][] {
-        let result : number[][] = []; 
-        let calculated : number[] = [];
-        let isEnd : boolean = false; 
+       return false;
+   } 
 
-        // Iterate over all vectors
-        for (let index = 0; index < vectors.length; index++) {
-            // We copy position for future calculation and don't mess with real position
-            calculated = [];
-            this.Position.map(item => (calculated.push(item)));
-            // TODO: iter throught all cells while it gets at someones another piece
+   /**
+    * Generation all moves using vectors.
+    * Only needed for sliding pieces. 
+    *
+    * Maybe later should add litle changes but for now it's ok
+    */
+   private generateMovesFromVectors(vectors : number[][], board : GamePiece[][]) : number[][] {
+       let result : number[][] = []; 
+       let calculated : number[] = [];
+       let isEnd : boolean = false; 
+       const opposite_color = this.PieceName.color === Color.BLACK ? Color.WHITE : Color.BLACK
 
-            console.log("Vector :", vectors[index]);
-            
-            calculated[0] += vectors[index][0];
-            calculated[1] += vectors[index][1];
 
-            isEnd = false;
+       // Iterate over all vectors
+       for (let index = 0; index < vectors.length; index++) {
 
-            while (!isEnd) {
-                console.log(" Calculated : ", calculated);
-                
-                result.push([]);
-                calculated.map(item => (result[result.length - 1].push(item)));
+           // We copy position for future calculation and don't mess with real position
+           calculated = [];
+           this.Position.map(item => (calculated.push(item)));
 
-                calculated[0] += vectors[index][0];
-                calculated[1] += vectors[index][1];
+           let x_temp = calculated[0] += vectors[index][0];
+           let y_temp = calculated[1] += vectors[index][1];
 
-                if (this.checkIfOnBoard(calculated[0]) && this.checkIfOnBoard(calculated[1])) {
-                    if (board[calculated[0]][calculated[1]].type !== Piece.EMPTY) {
-                        if (board[calculated[0]][calculated[1]].color !== this.PieceName.color) {
-                            result.push([]);
-                            calculated.map(item => (result[result.length - 1].push(item)));
-                        }
-                        break;
-                    }
-                }
-                
-                if (!this.checkIfOnBoard(calculated[0]) || !this.checkIfOnBoard(calculated[1])) {
-                   isEnd = true; 
-                }
-            }
-        }
+           isEnd = false;
 
-        return result;
-    }
+           if (this.checkColide(calculated, board)) {
+               if (board[y_temp][x_temp].color === opposite_color) {
+                   result.push([]);
+                   calculated.map(item => (result[result.length - 1].push(item)));
+                   isEnd = true;
+               }
+               else {
+                   isEnd = true;
+               }
+           }
 
-    public generateAllMoves(isLeft : boolean, GameState : Chess) : number[][] | null {
+           while (!isEnd) {
+
+               // We add an empty place for new pair.
+               // Then we put x and y coord at the end of array
+               // This isn't readable at all. Maybe I should to rewrite it later
+
+               result.push([]);
+               calculated.map(item => (result[result.length - 1].push(item)));
+
+               let x_temp = calculated[0] += vectors[index][0];
+               let y_temp = calculated[1] += vectors[index][1];
+
+               // Exit the loop if any of coord are invalid
+               if (!this.checkIfOnBoard(calculated[0]) || !this.checkIfOnBoard(calculated[1])) {
+                   break
+               }
+
+               // Check colide
+               if (this.checkColide(calculated, board)) {
+                   if (board[y_temp][x_temp].color === opposite_color) {
+                       result.push([]);
+                       calculated.map(item => (result[result.length - 1].push(item)));
+                       isEnd = true;
+                   }
+                   else {
+                       isEnd = true;
+                   }
+               }
+           }
+       }
+       console.log(result);
+
+       return result;
+   }
+
+    /**
+     * Generate all possible moves for any selected piece. (Now it is not check is piece are pinned)
+     * @param isLeft selector for wich board we working
+     * @param GameState game object for getting needed information about game
+     * @returns Array of positions that are theoreticaly avaible for movment
+     */
+    public generateAllMoves(isLeft : boolean, GameState : Chess) : number[][] {
         const board = GameState.getBoard(isLeft) 
 
         switch (this.PieceName.type) {
             case Piece.PAWN:
                 // TODO: Need to create pawn movment
-                return null;
+                return [[0,0]];
             case Piece.ROCK:
                 return this.generateMovesFromVectors(ROCK_VECTOR, board);
             case Piece.KING:
                 // TODO: Need to create King movment check
-                return null;
+                return [[0,0]];
             case Piece.KNIGHT:
                 // TODO: Need to create Knight movment check
-                return null;
+                return [[0,0]];
             case Piece.BISHOP:
                 return this.generateMovesFromVectors(BISHOP_VECTOR, board);
             case Piece.QUEEN:
                 return this.generateMovesFromVectors(QUEEN_VECTOR, board);
             case Piece.EMPTY:
-                return null;
+                return [[0,0]];
         }
     }
 

@@ -1,36 +1,42 @@
 import { Chess } from "./chess";
-import {Color, GamePiece, Piece} from "./types";
+import { Board } from "./field";
+import { cellStates } from "./types";
 
 let GAME = new Chess();
 
 // Generate a visual board for game
 GAME.createBoard();
 
-GAME.generateBoardSetUp("8\\2r6\\8\\4B3\\8\\8\\8\\8\\", true);
+GAME.generateBoardSetUp("8\\8\\8\\8\\8\\8\\8\\8\\", true);
 const leftboard = GAME.getBoard(true);
 
-GAME.generateBoardSetUp("8\\8\\8\\4r3\\8\\8\\8\\8\\", false);
+GAME.generateBoardSetUp("8\\8\\8\\4B3\\5r3\\8\\8\\8\\", false);
 const rightboard = GAME.getBoard(false);
 
 for (let i = 0; i < 8; i++) {
     for (let j = 0; j < 8; j++) {
-        GAME.createPiece(leftboard[j][i], [j,i], true); 
-        GAME.createPiece(rightboard[j][i], [j,i], false); 
+        GAME.createPiece(leftboard[j][i], [i,j], true); 
+        GAME.createPiece(rightboard[j][i], [i,j], false); 
     }
 }
 
 // Generate notation for current setup
-let selectedPiece = GAME.getPieceFromPos([4,3], true);
+let selectedPiece = GAME.getPieceFromPos([4,3], false);
 
-console.log("Bishop:");
+console.log(selectedPiece)
+console.log(rightboard)
+
 if (selectedPiece !== null) {
-    console.log(selectedPiece.generateAllMoves(true, GAME));
-}
+    let all_cells = selectedPiece.generateAllMoves(false, GAME);
+   
+    // Need to finish    
+    if (all_cells !== undefined) {
+        for (let i = 0; i < all_cells.length; i++) {
+            let HTML_cell = Board.getCellbyPosition(all_cells[i], false)
 
-//GAME.generateBoardSetUp(GAME.generateNotation(true), true);
-//selectedPiece = GAME.getPieceFromPos([4,3], false);
-//
-//console.log("Rock:");
-//if (selectedPiece !== null) {
-//    console.log(selectedPiece.generateAllMoves(true, GAME));
-//}
+            if (HTML_cell !== null) {
+                Board.lightupCell(HTML_cell, cellStates.moveble)            
+            }
+        }
+    }
+}

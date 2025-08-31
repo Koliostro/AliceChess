@@ -1,4 +1,14 @@
 /**
+ * Enumeration for states of cell
+ */
+
+export const enum cellStates {
+    idle,
+    unberAttack,
+    moveble
+}
+
+/**
  * Emuneration for determing which piece are presented here. Need to mention
  * that empty cells have type Piece.EMPTY
  */

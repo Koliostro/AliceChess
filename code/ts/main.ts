@@ -2,7 +2,7 @@ import { Chess } from "./chess";
 import { Board } from "./field";
 import { cellStates } from "./types";
 
-let GAME = new Chess();
+const GAME = new Chess();
 
 // Generate a visual board for game
 GAME.createBoard();
@@ -10,7 +10,7 @@ GAME.createBoard();
 GAME.generateBoardSetUp("8\\8\\8\\8\\8\\8\\8\\8\\", true);
 const leftboard = GAME.getBoard(true);
 
-GAME.generateBoardSetUp("8\\8\\8\\4B3\\5r3\\8\\8\\8\\", false);
+GAME.generateBoardSetUp("8\\8\\8\\4N3\\5r3\\8\\8\\8\\", false);
 const rightboard = GAME.getBoard(false);
 
 for (let i = 0; i < 8; i++) {
@@ -21,22 +21,22 @@ for (let i = 0; i < 8; i++) {
 }
 
 // Generate notation for current setup
-let selectedPiece = GAME.getPieceFromPos([4,3], false);
+const selectedPiece = GAME.getPieceFromPos([4,3], false);
 
 console.log(selectedPiece)
 console.log(rightboard)
 
 if (selectedPiece !== null) {
-    let all_cells = selectedPiece.generateAllMoves(false, GAME);
-   
-    // Need to finish    
-    if (all_cells !== undefined) {
-        for (let i = 0; i < all_cells.length; i++) {
-            let HTML_cell = Board.getCellbyPosition(all_cells[i], false)
+	const side = selectedPiece.getSide();
+	const possibleCells = selectedPiece.generateAllMoves(side, GAME)
 
-            if (HTML_cell !== null) {
-                Board.lightupCell(HTML_cell, cellStates.moveble)            
-            }
-        }
-    }
+	if (selectedPiece.getPos() !== undefined) {
+		for (let i = 0; i < possibleCells.length; i++) {
+			const HTML_cell = Board.getCellbyPosition(possibleCells[i], side)
+
+			if (HTML_cell !== null) {
+				Board.lightupCell(HTML_cell, cellStates.moveble)            
+			}
+		}
+	}
 }

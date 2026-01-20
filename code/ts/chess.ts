@@ -56,7 +56,7 @@ export class Chess {
             board = this.rightField;
         }
 
-        let selectedPiece = board[Pos[1]][Pos[0]];
+        const selectedPiece = board[Pos[1]][Pos[0]];
         let finded;
         const Piece_color = selectedPiece.color;
         const Piece_type = selectedPiece.type;
@@ -96,9 +96,9 @@ export class Chess {
      */
     public createPiece(Piece : GamePiece, position : number[], isLeft : boolean) {
         if (Piece.color === Color.WHITE) {
-            this.allWhitePieces.push(new RealPiece(Piece, position));
+            this.allWhitePieces.push(new RealPiece(Piece, position, isLeft));
 
-            let result = this.allWhitePieces[this.allWhitePieces.length - 1]
+            const result = this.allWhitePieces[this.allWhitePieces.length - 1]
             .createPiece(position, isLeft);
 
             if (result === -1) {
@@ -107,9 +107,9 @@ export class Chess {
             }
         }
         else if (Piece.color === Color.BLACK) {
-            this.allBlackPieces.push(new RealPiece(Piece, position));
+            this.allBlackPieces.push(new RealPiece(Piece, position, isLeft));
 
-            let result = this.allBlackPieces[this.allBlackPieces.length - 1]
+            const result = this.allBlackPieces[this.allBlackPieces.length - 1]
             .createPiece(position, isLeft);
 
             if (result === -1) {
@@ -140,6 +140,7 @@ export class Chess {
      * @param isLeft - Flag to determen side of piece placment
      * @returns Either 0 at succes or -1 at error
      */
+
     public placePiece (isLeft : boolean, Piece : GamePiece, position : number[]) : number {
         if (position.length !== 2) {
             return -1;
@@ -329,6 +330,10 @@ export class Chess {
         return regex.test(str);
     }
 
+	static showAllMoves(Piece : RealPiece) : void {
+		// TODO : make generation of all moves from this function!!	
+	}
+
     /**
      * Generate full board with one selected piece. Need to mention that this
      * method normally works only when array are empty.
@@ -339,7 +344,7 @@ export class Chess {
         let rowCount = 0;
         let colCount = 0;
 
-        let board = this.getBoard(isLeft)
+        const board = this.getBoard(isLeft)
 
         const lowercase = stateString.toLowerCase();
 

@@ -29,7 +29,7 @@ First of all you need to download all listed packages.
 --= Requirements =--
 
 1) nodeJS (v. 20.12.1 this version used to work, may work on other version)
-2) npm (v. 10.8.3 simu;ar to nodeJS may work on other version
+2) npm (v. 10.8.3 simular to nodeJS may work on other version
 3) electron (v.
 4) electron-forge/cli (v.
 
@@ -45,7 +45,6 @@ npx electron-forge import
 --= Compilation =--
 
 To compile run "npm run make" other work will do compiler and created configuration
-
 
 ## Goal of project
 

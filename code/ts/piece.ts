@@ -1,18 +1,29 @@
 import {Chess} from "./chess";
-import {GamePiece, Color, Piece, ROCK_VECTOR, BISHOP_VECTOR, QUEEN_VECTOR} from "./types";
+import {GamePiece, Color, Piece, ROCK_VECTOR, BISHOP_VECTOR, QUEEN_VECTOR, cellStates} from "./types";
+import { Board } from "./field";
 
 export class RealPiece {
     private PieceName : GamePiece;
     private Position : number[];
+	private isLeft : boolean;
 
     /**
      * Constructor for creating visual representation of Piece
      * @param PieceName - GamePiece object that fully describe piece
      */
-    constructor(PieceName : GamePiece, Pos : number[]) {
+    constructor(PieceName : GamePiece, Pos : number[], isLeft : boolean) {
         this.PieceName = PieceName;
         this.Position = Pos;
+		this.isLeft = isLeft;
     }
+
+	public getSide() : boolean {
+		return this.isLeft;
+	}
+
+	public getPos() : number[] {
+		return this.Position;
+	}
 
     private getStyleFromPieceType(PlayingPiece : GamePiece): string {
        switch (PlayingPiece.type) {
@@ -23,6 +34,7 @@ export class RealPiece {
             if (PlayingPiece.color === Color.WHITE) {
                 return "white_pawn";
             }
+			break
         case Piece.ROCK:
             if (PlayingPiece.color === Color.BLACK) {
                 return "black_rock";
@@ -30,6 +42,7 @@ export class RealPiece {
             if (PlayingPiece.color === Color.WHITE) {
                 return "white_rock";
             }
+			break
         case Piece.KING:
             if (PlayingPiece.color === Color.BLACK) {
                 return "black_king";
@@ -37,6 +50,7 @@ export class RealPiece {
             if (PlayingPiece.color === Color.WHITE) {
                 return "white_king";
             }
+			break
         case Piece.KNIGHT:
             if (PlayingPiece.color === Color.BLACK) {
                 return "black_knight";
@@ -44,6 +58,7 @@ export class RealPiece {
             if (PlayingPiece.color === Color.WHITE) {
                 return "white_knight";
             }
+			break
         case Piece.BISHOP:
             if (PlayingPiece.color === Color.BLACK) {
                 return "black_bishop";
@@ -51,6 +66,7 @@ export class RealPiece {
             if (PlayingPiece.color === Color.WHITE) {
                 return "white_bishop";
             }
+			break
         case Piece.QUEEN:
             if (PlayingPiece.color === Color.BLACK) {
                 return "black_queen";
@@ -58,6 +74,7 @@ export class RealPiece {
             if (PlayingPiece.color === Color.WHITE) {
                 return "white_queen";
             }
+			break
        }
        return "";
     }
@@ -72,7 +89,7 @@ export class RealPiece {
     /* For coordinates: number at index 0 is x 
      *                  number at index 1 are y*/
     private createPieceLeft(position : number[]) : number {
-        let visual_piece : HTMLElement = document.createElement('div');
+        const visual_piece : HTMLElement = document.createElement('div');
 
         visual_piece.classList.add("piece");
         visual_piece.classList.add(this.getStyleFromPieceType(this.PieceName));
@@ -80,13 +97,14 @@ export class RealPiece {
         const visual_position = document.getElementById(`${position[0]},${position[1]},L`);
         
         visual_position?.appendChild(visual_piece);
+		
         
         return 0;
     }
     
     /* Creating and adding div decorated as piece to selected cell */
     private createPieceRight(position : number[]) : number {
-        let visual_piece : HTMLElement = document.createElement('div');
+        const visual_piece : HTMLElement = document.createElement('div');
         visual_piece.classList.add("piece");
         visual_piece.classList.add(this.getStyleFromPieceType(this.PieceName));
         
@@ -113,10 +131,10 @@ export class RealPiece {
         }
 
         if (isLeft) {
-            return this.createPieceLeft(position);
+             return this.createPieceLeft(position);
         }
         else {
-            return this.createPieceRight(position);
+            return  this.createPieceRight(position);
         }
     }
 
@@ -149,7 +167,7 @@ export class RealPiece {
     * Maybe later should add litle changes but for now it's ok
     */
    private generateMovesFromVectors(vectors : number[][], board : GamePiece[][]) : number[][] {
-       let result : number[][] = []; 
+       const result : number[][] = []; 
        let calculated : number[] = [];
        let isEnd : boolean = false; 
        const opposite_color = this.PieceName.color === Color.BLACK ? Color.WHITE : Color.BLACK
@@ -162,8 +180,8 @@ export class RealPiece {
            calculated = [];
            this.Position.map(item => (calculated.push(item)));
 
-           let x_temp = calculated[0] += vectors[index][0];
-           let y_temp = calculated[1] += vectors[index][1];
+           const x_temp = calculated[0] += vectors[index][0];
+           const y_temp = calculated[1] += vectors[index][1];
 
            isEnd = false;
 
@@ -187,8 +205,8 @@ export class RealPiece {
                result.push([]);
                calculated.map(item => (result[result.length - 1].push(item)));
 
-               let x_temp = calculated[0] += vectors[index][0];
-               let y_temp = calculated[1] += vectors[index][1];
+               const x_temp = calculated[0] += vectors[index][0];
+               const y_temp = calculated[1] += vectors[index][1];
 
                // Exit the loop if any of coord are invalid
                if (!this.checkIfOnBoard(calculated[0]) || !this.checkIfOnBoard(calculated[1])) {
@@ -208,13 +226,80 @@ export class RealPiece {
                }
            }
        }
-       console.log(result);
 
        return result;
    }
 
+	public showPossibleMoves() : void {
+	}
+
+    /*
+     * Generate movment for Pieces that can be calculated via equasion
+     */ 
+
+    private generatePawnMoves(): number[][] {
+        /* TODO: It should be chenged when i'll create a multiplayer because
+        * player's pieces will be always at the bottom, so right equation for
+        * them is [x_movable, y_start + 1]. But for now it should be :
+                * [x_movable, y_start +- 1]*/
+        if (this.PieceName.color == Color.WHITE) {
+            return [[this.Position[0], this.Position[1] - 1]];
+        }
+        if (this.PieceName.color === Color.BLACK) {
+            return [[this.Position[0], this.Position[1] + 1]];
+        }
+        return [[-1, -1]] 
+    }
+
+    private generateKingMoves(): number[][] {
+        let all_moves = [];
+
+        // Here we generate all moves by iterating over all cell and check if there needed move.
+        // Theese must be true:
+        // 1) | x_end - x_start | <= 1
+        // 2) | y_end - y_start | <= 1
+
+        for (let y_temp = 0; y_temp < 8; y_temp++) {
+            for (let x_temp = 0; x_temp < 8; x_temp++) {
+                if (x_temp === this.Position[0] && y_temp === this.Position[1]) {
+                    continue
+                }
+                if (Math.abs(x_temp - this.Position[0]) <= 1 && Math.abs(y_temp - this.Position[1]) <= 1) {
+                    all_moves.push([x_temp, y_temp])
+                }
+            }
+        }
+
+        return all_moves;
+    }
+
+    private generateKnightMoves() : number[][] {
+        let all_moves : number[][] = [];
+
+        // Here we geberate all moves for knight via iterating
+        // Either of theese conditions must be true:
+        // 1) | x_end - x_start | = 1
+        //    | y_end - y_start | = 2
+        // 2) | x_end - x_start | = 2
+        //    | y_end - y_start | = 1
+
+        for (let y_temp = 0; y_temp < 8 ; y_temp++) {
+            for (let x_temp = 0; x_temp < 8; x_temp++) {
+                if (Math.abs(x_temp - this.Position[0]) === 1 && Math.abs(y_temp - this.Position[1]) === 2) {
+                    all_moves.push([x_temp, y_temp])
+                }
+                if (Math.abs(x_temp - this.Position[0]) === 2 && Math.abs(y_temp - this.Position[1]) === 1) {
+                    all_moves.push([x_temp, y_temp])
+                }
+            }
+        }
+        
+        
+        return all_moves;
+    }
+
     /**
-     * Generate all possible moves for any selected piece. (Now it is not check is piece are pinned)
+     * Generate all possible moves for any selected piece. After that function we need to check further for possibility to move
      * @param isLeft selector for wich board we working
      * @param GameState game object for getting needed information about game
      * @returns Array of positions that are theoreticaly avaible for movment
@@ -224,22 +309,20 @@ export class RealPiece {
 
         switch (this.PieceName.type) {
             case Piece.PAWN:
-                // TODO: Need to create pawn movment
-                return [[0,0]];
+                return this.generatePawnMoves();
             case Piece.ROCK:
                 return this.generateMovesFromVectors(ROCK_VECTOR, board);
             case Piece.KING:
-                // TODO: Need to create King movment check
-                return [[0,0]];
+                return this.generateKingMoves();
             case Piece.KNIGHT:
-                // TODO: Need to create Knight movment check
-                return [[0,0]];
+                return this.generateKnightMoves()
             case Piece.BISHOP:
                 return this.generateMovesFromVectors(BISHOP_VECTOR, board);
             case Piece.QUEEN:
                 return this.generateMovesFromVectors(QUEEN_VECTOR, board);
-            case Piece.EMPTY:
-                return [[0,0]];
+            // This varian SHOULD never be happend.
+			default:
+				return [[]];
         }
     }
 

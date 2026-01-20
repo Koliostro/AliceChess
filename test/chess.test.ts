@@ -58,7 +58,7 @@ describe("Testing logic with field code", () => {
             color : Color.BLACK 
         }
 
-        const TEST_PIECE = new RealPiece(black_bishop, [0,0]);
+        const TEST_PIECE = new RealPiece(black_bishop, [0,0], true);
 
         expect(result).toStrictEqual([TEST_PIECE]);
 
@@ -80,7 +80,7 @@ describe("Testing logic with field code", () => {
         CHESS.createPiece(white_bishop, [0,0], true);
         const result = CHESS.getAllWhitePieces();
 
-        const TEST_PIECE = new RealPiece(white_bishop, [0,0]);
+        const TEST_PIECE = new RealPiece(white_bishop, [0,0], true);
 
         expect(result).toStrictEqual([TEST_PIECE]);
 

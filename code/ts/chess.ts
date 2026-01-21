@@ -330,10 +330,6 @@ export class Chess {
         return regex.test(str);
     }
 
-	static showAllMoves(Piece : RealPiece) : void {
-		// TODO : make generation of all moves from this function!!	
-	}
-
     /**
      * Generate full board with one selected piece. Need to mention that this
      * method normally works only when array are empty.

@@ -1,6 +1,5 @@
 import {Chess} from "./chess";
-import {GamePiece, Color, Piece, ROCK_VECTOR, BISHOP_VECTOR, QUEEN_VECTOR, cellStates} from "./types";
-import { Board } from "./field";
+import {GamePiece, Color, Piece, ROCK_VECTOR, BISHOP_VECTOR, QUEEN_VECTOR } from "./types";
 
 export class RealPiece {
     private PieceName : GamePiece;
@@ -68,7 +67,7 @@ export class RealPiece {
             }
 			break
         case Piece.QUEEN:
-            if (PlayingPiece.color === Color.BLACK) {
+        if (PlayingPiece.color === Color.BLACK) {
                 return "black_queen";
             }
             if (PlayingPiece.color === Color.WHITE) {
@@ -230,28 +229,45 @@ export class RealPiece {
        return result;
    }
 
-	public showPossibleMoves() : void {
-	}
-
     /*
      * Generate movment for Pieces that can be calculated via equasion
      */ 
 
-    private generatePawnMoves(): number[][] {
+    private generatePawnMoves(board : GamePiece[][]): number[][] {
         /* TODO: It should be chenged when i'll create a multiplayer because
         * player's pieces will be always at the bottom, so right equation for
         * them is [x_movable, y_start + 1]. But for now it should be :
                 * [x_movable, y_start +- 1]*/
+        let all_moves = [];
         if (this.PieceName.color == Color.WHITE) {
-            return [[this.Position[0], this.Position[1] - 1]];
+            let x_temp = this.Position[0];
+            let y_temp = this.Position[1] - 1;
+
+            if (board[x_temp][y_temp].color !== Color.NONE) {
+                all_moves.push([]);
+                return all_moves;
+            } 
+
+            all_moves.push([x_temp, y_temp]);
+            return all_moves;
         }
         if (this.PieceName.color === Color.BLACK) {
-            return [[this.Position[0], this.Position[1] + 1]];
+            let x_temp = this.Position[0];
+            let y_temp = this.Position[1] + 1;
+
+            if (board[x_temp][y_temp].color !== Color.NONE) {
+                all_moves.push([]);
+                return all_moves;
+            } 
+
+            all_moves.push([x_temp, y_temp]);
+            return all_moves;
         }
+        // Return error if color is NONE. But it shouldn't happend
         return [[-1, -1]] 
     }
 
-    private generateKingMoves(): number[][] {
+    private generateKingMoves(board : GamePiece[][]): number[][] {
         let all_moves = [];
 
         // Here we generate all moves by iterating over all cell and check if there needed move.
@@ -265,6 +281,9 @@ export class RealPiece {
                     continue
                 }
                 if (Math.abs(x_temp - this.Position[0]) <= 1 && Math.abs(y_temp - this.Position[1]) <= 1) {
+                    if (board[y_temp][x_temp].color === this.getPieceName().color) {
+                        continue
+                    }
                     all_moves.push([x_temp, y_temp])
                 }
             }
@@ -273,7 +292,7 @@ export class RealPiece {
         return all_moves;
     }
 
-    private generateKnightMoves() : number[][] {
+    private generateKnightMoves(board : GamePiece[][]) : number[][] {
         let all_moves : number[][] = [];
 
         // Here we geberate all moves for knight via iterating
@@ -285,6 +304,9 @@ export class RealPiece {
 
         for (let y_temp = 0; y_temp < 8 ; y_temp++) {
             for (let x_temp = 0; x_temp < 8; x_temp++) {
+                if (board[y_temp][x_temp].color === this.getPieceName().color) {
+                    continue
+                }
                 if (Math.abs(x_temp - this.Position[0]) === 1 && Math.abs(y_temp - this.Position[1]) === 2) {
                     all_moves.push([x_temp, y_temp])
                 }
@@ -304,18 +326,16 @@ export class RealPiece {
      * @param GameState game object for getting needed information about game
      * @returns Array of positions that are theoreticaly avaible for movment
      */
-    public generateAllMoves(isLeft : boolean, GameState : Chess) : number[][] {
-        const board = GameState.getBoard(isLeft) 
-
+    public generateAllMoves(board : GamePiece[][]) : number[][] {
         switch (this.PieceName.type) {
             case Piece.PAWN:
-                return this.generatePawnMoves();
+                return this.generatePawnMoves(board);
             case Piece.ROCK:
                 return this.generateMovesFromVectors(ROCK_VECTOR, board);
             case Piece.KING:
-                return this.generateKingMoves();
+                return this.generateKingMoves(board);
             case Piece.KNIGHT:
-                return this.generateKnightMoves()
+                return this.generateKnightMoves(board)
             case Piece.BISHOP:
                 return this.generateMovesFromVectors(BISHOP_VECTOR, board);
             case Piece.QUEEN:
@@ -325,7 +345,6 @@ export class RealPiece {
 				return [[]];
         }
     }
-
 }
 
 

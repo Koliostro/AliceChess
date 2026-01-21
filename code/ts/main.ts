@@ -10,7 +10,7 @@ GAME.createBoard();
 GAME.generateBoardSetUp("8\\8\\8\\8\\8\\8\\8\\8\\", true);
 const leftboard = GAME.getBoard(true);
 
-GAME.generateBoardSetUp("8\\8\\8\\4N3\\5r3\\8\\8\\8\\", false);
+GAME.generateBoardSetUp("8\\8\\8\\4P3\\4r3\\8\\8\\8\\", false);
 const rightboard = GAME.getBoard(false);
 
 for (let i = 0; i < 8; i++) {
@@ -28,7 +28,8 @@ console.log(rightboard)
 
 if (selectedPiece !== null) {
 	const side = selectedPiece.getSide();
-	const possibleCells = selectedPiece.generateAllMoves(side, GAME)
+    const board = GAME.getBoard(side);
+	const possibleCells = selectedPiece.generateAllMoves(board)
 
 	if (selectedPiece.getPos() !== undefined) {
 		for (let i = 0; i < possibleCells.length; i++) {

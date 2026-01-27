@@ -4,4 +4,5 @@ out/*
 docs/**/*
 node_modules/*
 *.txt
+*/**/*.swp
 dist/*.js

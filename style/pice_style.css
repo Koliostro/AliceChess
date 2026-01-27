@@ -4,6 +4,10 @@
     width: 100%;
 }
 
+.clickable {
+    cursor: pointer;
+}
+
 .black_pawn {
     background-color: rgba(255, 127, 80, 0.5);
 } 

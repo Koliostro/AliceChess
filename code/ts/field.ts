@@ -40,8 +40,6 @@ export class Board {
         }
 
         return 0;
-
-        
     }
 
     /**

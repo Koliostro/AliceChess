@@ -4,7 +4,7 @@ import { Color, GamePiece, Piece } from "./types";
 
 export class Chess {
     private isBlackTurn : boolean
-    private isGameEnd : boolean
+    private isGameEnd : boolean;
     private leftField : GamePiece[][] = []
     private rightField : GamePiece[][] = []
     private boardObject : Board | null = null

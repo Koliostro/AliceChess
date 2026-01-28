@@ -1,5 +1,6 @@
-import {Chess} from "./chess";
 import {GamePiece, Color, Piece, ROCK_VECTOR, BISHOP_VECTOR, QUEEN_VECTOR } from "./types";
+import { Board } from "./field";
+import { cellStates } from "./types";
 
 export class RealPiece {
     private PieceName : GamePiece;
@@ -14,6 +15,14 @@ export class RealPiece {
         this.PieceName = PieceName;
         this.Position = Pos;
 		this.isLeft = isLeft;
+    }
+
+    /**
+     * Show all possible moves for selected piece
+     * @returns nothing
+     */
+    private highlightAllpossibleMoves() : void {
+        console.log(1);
     }
 
 	public getSide() : boolean {
@@ -92,6 +101,7 @@ export class RealPiece {
 
         visual_piece.classList.add("piece");
         visual_piece.classList.add(this.getStyleFromPieceType(this.PieceName));
+        visual_piece.addEventListener("click", this.highlightAllpossibleMoves)
 
         const visual_position = document.getElementById(`${position[0]},${position[1]},L`);
         
@@ -108,6 +118,7 @@ export class RealPiece {
         const visual_piece : HTMLElement = document.createElement('div');
         visual_piece.classList.add("piece");
         visual_piece.classList.add(this.getStyleFromPieceType(this.PieceName));
+        visual_piece.addEventListener("click", this.highlightAllpossibleMoves)
         
         const visual_position = document.getElementById(`${position[0]},${position[1]},R`);
         

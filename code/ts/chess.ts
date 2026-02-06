@@ -96,18 +96,17 @@ export class Chess {
      */
     public createPiece(Piece : GamePiece, position : number[], isLeft : boolean) {
         if (Piece.color === Color.WHITE) {
-            this.allWhitePieces.push(new RealPiece(Piece, position, isLeft));
+            let new_Piece : RealPiece = new RealPiece(Piece, position, isLeft, this.leftField, this.rightField)
+            let result = new_Piece.createPiece(position, isLeft);
 
-            const result = this.allWhitePieces[this.allWhitePieces.length - 1]
-            .createPiece(position, isLeft);
-
-            if (result === -1) {
-                // Remove piece object if placment was not succsesful
-                this.allWhitePieces.pop();
+            console.log("object : ", new_Piece);
+            
+            if (result !== -1) {
+                this.allWhitePieces.push(new_Piece);
             }
         }
         else if (Piece.color === Color.BLACK) {
-            this.allBlackPieces.push(new RealPiece(Piece, position, isLeft));
+            this.allBlackPieces.push(new RealPiece(Piece, position, isLeft, this.leftField, this.rightField));
 
             const result = this.allBlackPieces[this.allBlackPieces.length - 1]
             .createPiece(position, isLeft);

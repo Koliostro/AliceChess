@@ -6,15 +6,22 @@ export class RealPiece {
     private PieceName : GamePiece;
     private Position : number[];
 	private isLeft : boolean;
+    private BoardLeft : GamePiece[][];
+    private BoardRight : GamePiece[][];
 
     /**
      * Constructor for creating visual representation of Piece
      * @param PieceName - GamePiece object that fully describe piece
      */
-    constructor(PieceName : GamePiece, Pos : number[], isLeft : boolean) {
+    constructor(PieceName : GamePiece, Pos : number[], 
+                isLeft : boolean, leftBoard : GamePiece[][],
+                rightBoard : GamePiece[][]) {
         this.PieceName = PieceName;
         this.Position = Pos;
 		this.isLeft = isLeft;
+
+        this.BoardLeft = leftBoard;
+        this.BoardRight = rightBoard;
     }
 
     /**
@@ -22,7 +29,17 @@ export class RealPiece {
      * @returns nothing
      */
     private highlightAllpossibleMoves() : void {
-        console.log(1);
+        let moves;
+        if (this.isLeft) {
+            moves = this.generateAllMoves(this.BoardLeft);
+        }
+        else {
+            moves = this.generateAllMoves(this.BoardRight);
+        }
+
+        // TODO make highlight of places where we can move.
+
+        console.log(moves);
     }
 
 	public getSide() : boolean {
@@ -101,15 +118,15 @@ export class RealPiece {
 
         visual_piece.classList.add("piece");
         visual_piece.classList.add(this.getStyleFromPieceType(this.PieceName));
-        visual_piece.addEventListener("click", this.highlightAllpossibleMoves)
 
         const visual_position = document.getElementById(`${position[0]},${position[1]},L`);
         
         if (visual_position === null) {
-            return 1;
+            return -1;
         }
         visual_position.appendChild(visual_piece);
-        
+        visual_piece.addEventListener("click", () => { this.highlightAllpossibleMoves() } )
+
         return 0;
     }
     
@@ -118,15 +135,15 @@ export class RealPiece {
         const visual_piece : HTMLElement = document.createElement('div');
         visual_piece.classList.add("piece");
         visual_piece.classList.add(this.getStyleFromPieceType(this.PieceName));
-        visual_piece.addEventListener("click", this.highlightAllpossibleMoves)
         
         const visual_position = document.getElementById(`${position[0]},${position[1]},R`);
         
         if (visual_position === null) {
-            return 1;
+            return -1;
         }
         visual_position.appendChild(visual_piece);
-        
+        visual_piece.addEventListener("click", () => { this.highlightAllpossibleMoves() } )
+
         return 0;
     }
 
@@ -138,11 +155,11 @@ export class RealPiece {
      */
     public createPiece(position : number[], isLeft : boolean) : number {
         if (position.length !== 2) {
-            return 1;
+            return -1;
         }
         
         if (!position.every(num => ((num >= 0) && (num < 8)))) {
-            return 1;
+            return -1;
         }
 
         if (isLeft) {

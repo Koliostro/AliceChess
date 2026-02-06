@@ -23,9 +23,6 @@ for (let i = 0; i < 8; i++) {
 // Generate notation for current setup
 const selectedPiece = GAME.getPieceFromPos([4,3], false);
 
-console.log(selectedPiece)
-console.log(rightboard)
-
 if (selectedPiece !== null) {
 	const side = selectedPiece.getSide();
     const board = GAME.getBoard(side);

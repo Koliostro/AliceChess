@@ -338,7 +338,8 @@ export class Chess {
     public generateBoardSetUp(stateString : string, isLeft : boolean) : number {
         let rowCount = 0;
         let colCount = 0;
-
+        let countPieces = 0;
+        
         const board = this.getBoard(isLeft)
 
         const lowercase = stateString.toLowerCase();
@@ -353,15 +354,20 @@ export class Chess {
         }
         
         for (let i = 0; i < stateString.length; i++) {
-            if (stateString[i] === '\\') {
+            console.log(stateString);
+            console.log("Current element", stateString[i]);
+            if (stateString[i] === '/') {
                 rowCount++;
                 colCount = 0;
+                countPieces = 0;
                 continue;
             }    
 
             if (isNaN(Number(stateString[i]))) {
                 let typeOfPiece : Piece;
 
+                console.log("PIECE!!");
+                console.log("POSITION :", [rowCount, colCount]);
                 switch (lowercase[i]) {
                     case 'b':
                         typeOfPiece = Piece.BISHOP;
@@ -382,22 +388,29 @@ export class Chess {
                         typeOfPiece = Piece.QUEEN;
                         break;
                 }
-
+                console.log("Positions = ", [colCount + countPieces]);
                 board[rowCount][colCount] = { 
                     type : typeOfPiece, 
                     color : this.checkIfTitled(stateString[i]) ? Color.WHITE : Color.BLACK 
                 };
+                console.log(colCount);
+                colCount++;
+                countPieces++;
             }
             else {
+                console.log("NOTHING!!");
+                console.log(colCount);
                 for (let count = 0; count < Number(stateString[i]); count++) {
                     board[rowCount][colCount + count] = EMPTY_CELL;
                 }
-
-                colCount = Number(stateString[i]) - 1;
+                colCount = Number(stateString[i]) + countPieces;
             }
-
-            colCount++;
         }
+
+        console.log(board);
+
+        // DONE: Fixing board setup generation. 
+        // TODO: Fix statestring generation
 
         return 0;
     }

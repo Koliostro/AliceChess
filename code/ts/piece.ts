@@ -29,7 +29,21 @@ export class RealPiece {
      * @returns nothing
      */
     private highlightAllpossibleMoves() : void {
-        let moves;
+        let BoardCell : HTMLElement | null;
+        for (let y = 0; y < 8; y++) {
+            for (let x = 0; x < 8; x++) {
+                BoardCell = Board.getCellbyPosition([x,y], this.isLeft);
+
+                if (BoardCell === null) {
+                   continue 
+                }
+
+                Board.lightupCell(BoardCell, cellStates.idle);
+            }
+        }
+
+        let moves : number[][];
+
         if (this.isLeft) {
             moves = this.generateAllMoves(this.BoardLeft);
         }
@@ -37,7 +51,17 @@ export class RealPiece {
             moves = this.generateAllMoves(this.BoardRight);
         }
 
-        // TODO make highlight of places where we can move.
+        for (let index = 0; index < moves.length; index++) {
+            console.log(moves[index]);
+            BoardCell = Board.getCellbyPosition(moves[index], this.isLeft);
+
+            if (BoardCell !== null) {
+                Board.lightupCell(BoardCell, cellStates.moveble);
+            }
+
+        }
+
+        // TODO Make Castling
 
         console.log(moves);
     }
@@ -106,6 +130,7 @@ export class RealPiece {
 
     /**
      * Getter for name of piece
+     * @returns GamePiece
      */
     public getPieceName() {
         return this.PieceName;
@@ -365,6 +390,7 @@ export class RealPiece {
             case Piece.ROCK:
                 return this.generateMovesFromVectors(ROCK_VECTOR, board);
             case Piece.KING:
+                // TODO Casteling position for King
                 return this.generateKingMoves(board);
             case Piece.KNIGHT:
                 return this.generateKnightMoves(board)

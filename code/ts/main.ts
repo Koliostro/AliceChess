@@ -17,3 +17,5 @@ for (let i = 0; i < 8; i++) {
         GAME.createPiece(rightboard[j][i], [i,j], false); 
     }
 }
+
+console.log(GAME.getAllWhitePieces());

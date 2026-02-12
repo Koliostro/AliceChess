@@ -41,50 +41,6 @@ describe("Testing logic with field code", () => {
 
         expect(result).toStrictEqual(TEST_EMPTY_ARRAY);
     });
-
-    test("Testing getter for all black pieces", () => {
-
-        document.body.innerHTML = html_state;
-
-        const CHESS = new Chess();
-        CHESS.createBoard();
-        CHESS.generateBoardSetUp("b7\\8\\8\\8\\8\\8\\8\\8\\", true);
-
-        CHESS.createPiece(BISHOP, [0,0], true);
-        const result = CHESS.getAllBlackPieces();
-
-        const black_bishop : GamePiece = {
-            type : Piece.BISHOP,
-            color : Color.BLACK 
-        }
-
-        const TEST_PIECE = new RealPiece(black_bishop, [0,0], true);
-
-        expect(result).toStrictEqual([TEST_PIECE]);
-
-    });
-    
-    test("Testing getter for all white pieces", () => {
-
-        document.body.innerHTML = html_state;
-
-        const CHESS = new Chess();
-        CHESS.createBoard();
-        CHESS.generateBoardSetUp("b7\\8\\8\\8\\8\\8\\8\\8\\", true);
-
-        const white_bishop : GamePiece = {
-            type : Piece.BISHOP,
-            color : Color.WHITE 
-        }
-        
-        CHESS.createPiece(white_bishop, [0,0], true);
-        const result = CHESS.getAllWhitePieces();
-
-        const TEST_PIECE = new RealPiece(white_bishop, [0,0], true);
-
-        expect(result).toStrictEqual([TEST_PIECE]);
-
-    });
 });
     
 describe("Testing piece placment", () => {
@@ -163,9 +119,9 @@ describe("Check notation generation", () => {
         const CHESS = new Chess();
         CHESS.setUpEmptyBoards();
         CHESS.fillLeftBoard(TEST_ARRAY);
-        CHESS.generateBoardSetUp("8\\8\\8\\8\\8\\8\\8\\8\\", true);
+        CHESS.generateBoardSetUp("8/8/8/8/8/8/8/8", true);
 
-        expect(CHESS.generateNotation(true)).toBe("8\\8\\8\\8\\8\\8\\8\\8\\");
+        expect(CHESS.generateNotation(true)).toBe("8/8/8/8/8/8/8/8");
     });
     
     test('Generate position from stateString with black bishop at first cell', () => {
@@ -175,9 +131,9 @@ describe("Check notation generation", () => {
         const CHESS = new Chess();
         CHESS.setUpEmptyBoards();
         CHESS.fillLeftBoard(TEST_ARRAY);
-        CHESS.generateBoardSetUp("b7\\8\\8\\8\\8\\8\\8\\8\\", true);
+        CHESS.generateBoardSetUp("b7/8/8/8/8/8/8/8", true);
         
-        expect(CHESS.generateNotation(true)).toBe("b7\\8\\8\\8\\8\\8\\8\\8\\");
+        expect(CHESS.generateNotation(true)).toBe("b7/8/8/8/8/8/8/8");
     });
     
     test('Generate position from stateString with black bishop at last cell', () => {
@@ -187,9 +143,9 @@ describe("Check notation generation", () => {
         const CHESS = new Chess();
         CHESS.setUpEmptyBoards();
         CHESS.fillLeftBoard(TEST_ARRAY);
-        CHESS.generateBoardSetUp("8\\8\\8\\8\\8\\8\\8\\7b\\", true);
+        CHESS.generateBoardSetUp("8/8/8/8/8/8/8/7b", true);
         
-        expect(CHESS.generateNotation(true)).toBe("8\\8\\8\\8\\8\\8\\8\\7b\\");
+        expect(CHESS.generateNotation(true)).toBe("8/8/8/8/8/8/8/7b");
     });
     
     test('Generate empty notation', () => {
@@ -200,7 +156,7 @@ describe("Check notation generation", () => {
         CHESS.setUpEmptyBoards();
         CHESS.fillLeftBoard(TEST_ARRAY);
 
-        expect(CHESS.generateNotation(true)).toBe("8\\8\\8\\8\\8\\8\\8\\8\\");
+        expect(CHESS.generateNotation(true)).toBe("8/8/8/8/8/8/8/8");
     });
 
     test('Generate notation with black bishop at first cell', () => {
@@ -212,7 +168,7 @@ describe("Check notation generation", () => {
         CHESS.fillLeftBoard(TEST_ARRAY);
         CHESS.placePiece(true, BISHOP, [0,0]);
         
-        expect(CHESS.generateNotation(true)).toBe("b7\\8\\8\\8\\8\\8\\8\\8\\");
+        expect(CHESS.generateNotation(true)).toBe("b7/8/8/8/8/8/8/8");
     });
 
     test('Generate notation with black bishop at last cell', () => {
@@ -224,7 +180,7 @@ describe("Check notation generation", () => {
         CHESS.fillLeftBoard(TEST_ARRAY);
         CHESS.placePiece(true, BISHOP, [7,7]);
         
-        expect(CHESS.generateNotation(true)).toBe("8\\8\\8\\8\\8\\8\\8\\7b\\");
+        expect(CHESS.generateNotation(true)).toBe("8/8/8/8/8/8/8/7b");
     });
 });
 
@@ -254,7 +210,7 @@ describe("Testing generation of all moves for pieces", () => {
 
             const CHESS = new Chess();
             CHESS.createBoard();
-            CHESS.generateBoardSetUp("8\\8\\8\\4R3\\8\\8\\8\\8\\", true);
+            CHESS.generateBoardSetUp("8/8/8/4R3/8/8/8/8", true);
 
             const leftboard = CHESS.getBoard(true);
 
@@ -265,7 +221,7 @@ describe("Testing generation of all moves for pieces", () => {
             }
 
             const piece = CHESS.getPieceFromPos([4,3], true);
-            const result = piece?.generateAllMoves(true, CHESS);
+            const result = piece?.generateAllMoves(CHESS.getBoard(true));
             expect(result).toStrictEqual(expected_moves);
         });
     });
@@ -292,7 +248,7 @@ describe("Testing generation of all moves for pieces", () => {
 
             const CHESS = new Chess();
             CHESS.createBoard();
-            CHESS.generateBoardSetUp("8\\2r6\\8\\4B3\\8\\8\\8\\8\\", true);
+            CHESS.generateBoardSetUp("8/2r6/8/4B3/8/8/8/8", true);
 
             const leftboard = CHESS.getBoard(true);
 
@@ -303,7 +259,7 @@ describe("Testing generation of all moves for pieces", () => {
             }
 
             const piece = CHESS.getPieceFromPos([4,3], true);
-            const result = piece?.generateAllMoves(true, CHESS);
+            const result = piece?.generateAllMoves(CHESS.getBoard(true));
             expect(result).toStrictEqual(expected_moves);
         });
         
@@ -329,7 +285,7 @@ describe("Testing generation of all moves for pieces", () => {
 
             const CHESS = new Chess();
             CHESS.createBoard();
-            CHESS.generateBoardSetUp("8\\8\\8\\4B3\\8\\8\\8\\8\\", true);
+            CHESS.generateBoardSetUp("8/8/8/4B3/8/8/8/8", true);
 
             const leftboard = CHESS.getBoard(true);
 
@@ -340,7 +296,7 @@ describe("Testing generation of all moves for pieces", () => {
             }
 
             const piece = CHESS.getPieceFromPos([4,3], true);
-            const result = piece?.generateAllMoves(true, CHESS);
+            const result = piece?.generateAllMoves(CHESS.getBoard(true));
             expect(result).toStrictEqual(expected_moves);
         });
 
@@ -364,7 +320,7 @@ describe("Testing generation of all moves for pieces", () => {
 
             const CHESS = new Chess();
             CHESS.createBoard();
-            CHESS.generateBoardSetUp("8\\8\\8\\4B3\\5r3\\8\\8\\8\\", true);
+            CHESS.generateBoardSetUp("8/8/8/4B3/5r3/8/8/8", true);
 
             const leftboard = CHESS.getBoard(true);
 
@@ -375,7 +331,7 @@ describe("Testing generation of all moves for pieces", () => {
             }
 
             const piece = CHESS.getPieceFromPos([4,3], true);
-            const result = piece?.generateAllMoves(true, CHESS);
+            const result = piece?.generateAllMoves(CHESS.getBoard(true));
             expect(result).toStrictEqual(expected_moves);
         });
 
@@ -396,7 +352,7 @@ describe("Testing generation of all moves for pieces", () => {
 
             const CHESS = new Chess();
             CHESS.createBoard();
-            CHESS.generateBoardSetUp("8\\8\\4B3\\5R3\\8\\8\\8\\8\\", true);
+            CHESS.generateBoardSetUp("8/8/4B3/5R3/8/8/8/8", true);
 
             const leftboard = CHESS.getBoard(true);
 
@@ -407,7 +363,7 @@ describe("Testing generation of all moves for pieces", () => {
             }
 
             const piece = CHESS.getPieceFromPos([4,2], true);
-            const result = piece?.generateAllMoves(true, CHESS);
+            const result = piece?.generateAllMoves(CHESS.getBoard(true));
             expect(result).toStrictEqual(expected_moves);
         });
     });

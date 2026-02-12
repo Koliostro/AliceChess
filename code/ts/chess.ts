@@ -318,10 +318,10 @@ export class Chess {
                 count_empty = 0;
             }
 
-            position_string = position_string.concat('\\');
+            position_string = position_string.concat('/');
         }
         
-        return position_string; 
+        return position_string.slice(0, position_string.length - 1); 
     }
 
     private checkIfTitled(str : string) : boolean {

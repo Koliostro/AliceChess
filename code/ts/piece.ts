@@ -52,7 +52,6 @@ export class RealPiece {
         }
 
         for (let index = 0; index < moves.length; index++) {
-            console.log(moves[index]);
             BoardCell = Board.getCellbyPosition(moves[index], this.isLeft);
 
             if (BoardCell !== null) {
@@ -188,7 +187,7 @@ export class RealPiece {
         }
 
         if (isLeft) {
-             return this.createPieceLeft(position);
+            return this.createPieceLeft(position);
         }
         else {
             return  this.createPieceRight(position);
@@ -242,15 +241,20 @@ export class RealPiece {
 
            isEnd = false;
 
-           if (this.checkColide(calculated, board)) {
-               if (board[y_temp][x_temp].color === opposite_color) {
-                   result.push([]);
-                   calculated.map(item => (result[result.length - 1].push(item)));
-                   isEnd = true;
+           if (this.checkIfOnBoard(calculated[0]) && this.checkIfOnBoard(calculated[1])) {
+               if (this.checkColide(calculated, board)) {
+                   if (board[y_temp][x_temp].color === opposite_color) {
+                       result.push([]);
+                       calculated.map(item => (result[result.length - 1].push(item)));
+                       isEnd = true;
+                   }
+                   else {
+                       isEnd = true;
+                   }
                }
-               else {
-                   isEnd = true;
-               }
+           }
+           else {
+                isEnd = true;
            }
 
            while (!isEnd) {

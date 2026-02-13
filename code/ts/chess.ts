@@ -95,25 +95,15 @@ export class Chess {
      * placed 
      */
     public createPiece(Piece : GamePiece, position : number[], isLeft : boolean) {
-        if (Piece.color === Color.WHITE) {
-            let new_Piece : RealPiece = new RealPiece(Piece, position, isLeft, this.leftField, this.rightField)
-            let result = new_Piece.createPiece(position, isLeft);
-
-            console.log("object : ", new_Piece);
-            
-            if (result !== -1) {
+        let new_Piece : RealPiece = new RealPiece(Piece, position, isLeft, this.leftField, this.rightField)
+        let result = new_Piece.createPiece(position, isLeft);
+        
+        if (result !== -1) {
+            if (Piece.color === Color.WHITE ) {
                 this.allWhitePieces.push(new_Piece);
             }
-        }
-        else if (Piece.color === Color.BLACK) {
-            this.allBlackPieces.push(new RealPiece(Piece, position, isLeft, this.leftField, this.rightField));
-
-            const result = this.allBlackPieces[this.allBlackPieces.length - 1]
-            .createPiece(position, isLeft);
-
-            if (result === -1) {
-                // Remove piece object if placment was not succsesful
-                this.allBlackPieces.pop();
+            if (Piece.color === Color.BLACK) {
+                this.allBlackPieces.push(new_Piece);
             }
         }
     }
@@ -178,8 +168,6 @@ export class Chess {
                     this.leftField[y][x] = state[y][x];
                 }
            } 
-
-           console.log(this.leftField);
         }
         else {
 
@@ -354,8 +342,6 @@ export class Chess {
         }
         
         for (let i = 0; i < stateString.length; i++) {
-            console.log(stateString);
-            console.log("Current element", stateString[i]);
             if (stateString[i] === '/') {
                 rowCount++;
                 colCount = 0;
@@ -366,8 +352,6 @@ export class Chess {
             if (isNaN(Number(stateString[i]))) {
                 let typeOfPiece : Piece;
 
-                console.log("PIECE!!");
-                console.log("POSITION :", [rowCount, colCount]);
                 switch (lowercase[i]) {
                     case 'b':
                         typeOfPiece = Piece.BISHOP;
@@ -388,18 +372,14 @@ export class Chess {
                         typeOfPiece = Piece.QUEEN;
                         break;
                 }
-                console.log("Positions = ", [colCount + countPieces]);
                 board[rowCount][colCount] = { 
                     type : typeOfPiece, 
                     color : this.checkIfTitled(stateString[i]) ? Color.WHITE : Color.BLACK 
                 };
-                console.log(colCount);
                 colCount++;
                 countPieces++;
             }
             else {
-                console.log("NOTHING!!");
-                console.log(colCount);
                 for (let count = 0; count < Number(stateString[i]); count++) {
                     board[rowCount][colCount + count] = EMPTY_CELL;
                 }

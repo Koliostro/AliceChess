@@ -1,4 +1,5 @@
 import { Chess } from "./chess";
+import { Piece } from "./types";
 
 const GAME = new Chess();
 
@@ -14,7 +15,11 @@ const rightboard = GAME.getBoard(false);
 for (let i = 0; i < 8; i++) {
     for (let j = 0; j < 8; j++) {
 //        GAME.createPiece(leftboard[j][i], [i,j], true); 
-        GAME.createPiece(rightboard[j][i], [i,j], false); 
+        
+        // Need check and DON'T run createPiece on damn empty cell!!!!
+        if (rightboard[j][i].type !== Piece.EMPTY) {
+            GAME.createPiece(rightboard[j][i], [i,j], false); 
+        } 
     }
 }
 

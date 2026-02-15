@@ -390,7 +390,7 @@ export class Chess {
         console.log(board);
 
         // DONE: Fixing board setup generation. 
-        // TODO: Fix statestring generation
+        // DONE: Fix statestring generation
 
         return 0;
     }

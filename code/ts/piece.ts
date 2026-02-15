@@ -8,6 +8,7 @@ export class RealPiece {
 	private isLeft : boolean;
     private BoardLeft : GamePiece[][];
     private BoardRight : GamePiece[][];
+    private isMoved : boolean = false
 
     /**
      * Constructor for creating visual representation of Piece
@@ -29,35 +30,66 @@ export class RealPiece {
      * @returns nothing
      */
     private highlightAllpossibleMoves() : void {
-        let BoardCell : HTMLElement | null;
+        let BoardCell, BoardCell_left : HTMLElement | null;
         for (let y = 0; y < 8; y++) {
             for (let x = 0; x < 8; x++) {
                 BoardCell = Board.getCellbyPosition([x,y], this.isLeft);
+                BoardCell_left = Board.getCellbyPosition([x,y], !this.isLeft);
 
-                if (BoardCell === null) {
-                   continue 
+                if (BoardCell !== null) {
+                    Board.lightupCell(BoardCell, cellStates.idle);
+                }
+                if (BoardCell_left !== null) {
+                    Board.lightupCell(BoardCell_left, cellStates.idle);
                 }
 
-                Board.lightupCell(BoardCell, cellStates.idle);
             }
         }
 
         let moves : number[][];
+        let board, opposite_board : GamePiece[][];
 
         if (this.isLeft) {
             moves = this.generateAllMoves(this.BoardLeft);
+            board = this.BoardLeft
+            opposite_board = this.BoardRight;
         }
         else {
             moves = this.generateAllMoves(this.BoardRight);
+            board = this.BoardRight;
+            opposite_board = this.BoardLeft
         }
 
         for (let index = 0; index < moves.length; index++) {
-            BoardCell = Board.getCellbyPosition(moves[index], this.isLeft);
+            let currentMove = moves[index];
+            BoardCell = Board.getCellbyPosition(currentMove, this.isLeft);
 
-            if (BoardCell !== null) {
-                Board.lightupCell(BoardCell, cellStates.moveble);
+            if (BoardCell === null) {
+                continue
             }
 
+            // NOTES:
+            // Piece can't move to position if this cell is occupied on another
+            // board.
+            if (opposite_board[currentMove[1]][currentMove[0]].type !== Piece.EMPTY) {
+                continue
+            }
+            //NOTES:
+            //This logic aren't working with pawn. For them wa generate another
+            //list os possitions for attack
+            if (this.PieceName.type !== Piece.PAWN) {
+                // NOTES:
+                // I guess that in move generation we are get [y,x],
+                // so for the rest of system we should revers this.
+                if (board[currentMove[1]][currentMove[0]].type !== Piece.EMPTY) {
+                    Board.lightupCell(BoardCell, cellStates.underAttack);
+                }
+            }
+            else {
+                // TODO: Create generation of attack for PAWNs.
+            }
+
+            Board.lightupCell(BoardCell, cellStates.moveble);
         }
 
         // TODO Make Castling
@@ -381,6 +413,11 @@ export class RealPiece {
         return all_moves;
     }
 
+    private generateCasteling(board : GamePiece[][], moves : number[][]) : number[][] {
+        //TODO Castling
+        return moves;
+    }
+
     /**
      * Generate all possible moves for any selected piece. After that function we need to check further for possibility to move
      * @param isLeft selector for wich board we working
@@ -395,7 +432,12 @@ export class RealPiece {
                 return this.generateMovesFromVectors(ROCK_VECTOR, board);
             case Piece.KING:
                 // TODO Casteling position for King
-                return this.generateKingMoves(board);
+                let moves = this.generateKingMoves(board);
+                if (!this.isMoved) {
+                    console.log(moves);
+                    console.log(this.generateCasteling(board, moves));
+                }
+                return moves;
             case Piece.KNIGHT:
                 return this.generateKnightMoves(board)
             case Piece.BISHOP:

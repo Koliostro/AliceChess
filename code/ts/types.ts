@@ -4,7 +4,7 @@
 
 export const enum cellStates {
     idle,
-    unberAttack,
+    underAttack,
     moveble
 }
 

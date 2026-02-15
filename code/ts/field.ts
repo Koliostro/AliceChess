@@ -33,7 +33,7 @@ export class Board {
             case cellStates.moveble:
                 cell.classList.add('lighttedCell')
                 break;
-            case cellStates.unberAttack:
+            case cellStates.underAttack:
                 cell.classList.add('lighttedCell')
                 cell.classList.add('lighttedCell_eat')
                 break;

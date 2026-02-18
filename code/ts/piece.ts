@@ -9,6 +9,8 @@ export class RealPiece {
     private BoardLeft : GamePiece[][];
     private BoardRight : GamePiece[][];
     private isMoved : boolean = false
+    private HTMLPiece : HTMLElement | null = null;
+    private areaListener : AbortController = new AbortController;
 
     /**
      * Constructor for creating visual representation of Piece
@@ -25,11 +27,7 @@ export class RealPiece {
         this.BoardRight = rightBoard;
     }
 
-    /**
-     * Show all possible moves for selected piece
-     * @returns nothing
-     */
-    private highlightAllpossibleMoves() : void {
+    private removeAllPossibleMoves() {
         let BoardCell, BoardCell_left : HTMLElement | null;
         for (let y = 0; y < 8; y++) {
             for (let x = 0; x < 8; x++) {
@@ -45,6 +43,16 @@ export class RealPiece {
 
             }
         }
+    }
+
+    /**
+     * Show all possible moves for selected piece
+     * @returns nothing
+     */
+    private highlightAllpossibleMoves() : void {
+        let BoardCell : HTMLElement | null;
+
+        this.removeAllPossibleMoves();
 
         let moves : number[][];
         let board, opposite_board : GamePiece[][];
@@ -68,19 +76,16 @@ export class RealPiece {
                 continue
             }
 
-            // NOTES:
-            // Piece can't move to position if this cell is occupied on another
-            // board.
+            // NOTES: Piece can't move to position if this cell is occupied on another
+            //        board.
             if (opposite_board[currentMove[1]][currentMove[0]].type !== Piece.EMPTY) {
                 continue
             }
-            //NOTES:
-            //This logic aren't working with pawn. For them wa generate another
-            //list os possitions for attack
+            //NOTES: This logic aren't working with pawn. For them wa generate another
+            //       list os possitions for attack
             if (this.PieceName.type !== Piece.PAWN) {
-                // NOTES:
-                // I guess that in move generation we are get [y,x],
-                // so for the rest of system we should revers this.
+                // NOTES: I guess that in move generation we are get [y,x],
+                //        so for the rest of system we should revers this.
                 if (board[currentMove[1]][currentMove[0]].type !== Piece.EMPTY) {
                     Board.lightupCell(BoardCell, cellStates.underAttack);
                 }
@@ -90,11 +95,57 @@ export class RealPiece {
             }
 
             Board.lightupCell(BoardCell, cellStates.moveble);
+            
+            console.log("added listener!");
+            BoardCell.addEventListener("click", (e) => { this.movement(e) }, {signal : this.areaListener.signal} )
+            console.log("added listener!");
+        }
+    }
+
+    private movement(evt : Event) {
+        let board : GamePiece[][];
+        let opposite : GamePiece[][];
+
+        const position = evt.currentTarget as HTMLElement
+        let id = position.id
+        let pos = [Number(id.charAt(0)), Number(id.charAt(2))];
+
+        if (this.isLeft) {
+            board = this.BoardLeft;
+            opposite = this.BoardRight;
+        }
+        else {
+            board = this.BoardRight;
+            opposite = this.BoardLeft;
+        }
+        
+        if (this.HTMLPiece !== null) {
+            this.HTMLPiece.remove();
+
+            let endCell = Board.getCellbyPosition(pos, !this.isLeft)
+            if (endCell !== null) {
+                endCell.appendChild(this.HTMLPiece);
+           }
+        }
+        this.removeAllPossibleMoves();
+        // NOTES: This little line are my savier! 
+        //        Because it can remove all eventListeners at once!
+        console.log("remove");
+        this.areaListener.abort();
+        this.areaListener = new AbortController;
+
+        console.log(this.PieceName);
+        console.log(board[this.Position[1]][this.Position[0]]);
+
+        opposite[pos[1]][pos[0]] = this.PieceName;
+        board[this.Position[1]][this.Position[0]] = {
+            type : Piece.EMPTY,
+            color : Color.NONE
         }
 
-        // TODO Make Castling
-
-        console.log(moves);
+        this.Position = pos;
+        this.isLeft = !this.isLeft;
+        this.isMoved = true;
     }
 
 	public getSide() : boolean {
@@ -183,6 +234,8 @@ export class RealPiece {
         visual_position.appendChild(visual_piece);
         visual_piece.addEventListener("click", () => { this.highlightAllpossibleMoves() } )
 
+        this.HTMLPiece = visual_piece;
+
         return 0;
     }
     
@@ -199,6 +252,8 @@ export class RealPiece {
         }
         visual_position.appendChild(visual_piece);
         visual_piece.addEventListener("click", () => { this.highlightAllpossibleMoves() } )
+
+        this.HTMLPiece = visual_piece;
 
         return 0;
     }
@@ -433,10 +488,6 @@ export class RealPiece {
             case Piece.KING:
                 // TODO Casteling position for King
                 let moves = this.generateKingMoves(board);
-                if (!this.isMoved) {
-                    console.log(moves);
-                    console.log(this.generateCasteling(board, moves));
-                }
                 return moves;
             case Piece.KNIGHT:
                 return this.generateKnightMoves(board)

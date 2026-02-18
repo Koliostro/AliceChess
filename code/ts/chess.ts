@@ -22,6 +22,27 @@ export class Chess {
         this.isBlackTurn = isBlackTurn;
         this.isGameEnd = isGameEnd
     }
+    /**
+     * Iterate over all boards and create visual pieces at board
+     * @returns void
+     */
+    public visualCreationOfPieces() {
+        const leftboard = this.getBoard(true);
+        const rightboard = this.getBoard(false);
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                // Need check and DON'T run createPiece on damn empty cell!!!!
+                if (leftboard[j][i].type !== Piece.EMPTY) {
+                    this.createPiece(leftboard[j][i], [i,j], true); 
+                }
+                
+                // Need check and DON'T run createPiece on damn empty cell!!!!
+                if (rightboard[j][i].type !== Piece.EMPTY) {
+                    this.createPiece(rightboard[j][i], [i,j], false); 
+                } 
+            }
+        }
+    }
     
     /**
      * Method to get all black pieces
@@ -180,6 +201,7 @@ export class Chess {
     private prepeareBoard() : void {
         this.boardObject = new Board()
     }
+
 
     /**
      * Method for getting which turn are now
@@ -386,8 +408,6 @@ export class Chess {
                 colCount = Number(stateString[i]) + countPieces;
             }
         }
-
-        console.log(board);
 
         // DONE: Fixing board setup generation. 
         // DONE: Fix statestring generation

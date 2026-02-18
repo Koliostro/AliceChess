@@ -7,23 +7,22 @@ const GAME = new Chess();
 GAME.createBoard();
 
 GAME.generateBoardSetUp("8/8/8/8/8/8/8/6r1", true);
-const leftboard = GAME.getBoard(true);
-
 GAME.generateBoardSetUp("8/8/8/8/8/4R3/R6R/rK5R", false);
-const rightboard = GAME.getBoard(false);
 
-for (let i = 0; i < 8; i++) {
-    for (let j = 0; j < 8; j++) {
-        // Need check and DON'T run createPiece on damn empty cell!!!!
-        if (leftboard[j][i].type !== Piece.EMPTY) {
-            GAME.createPiece(leftboard[j][i], [i,j], true); 
-        }
-        
-        // Need check and DON'T run createPiece on damn empty cell!!!!
-        if (rightboard[j][i].type !== Piece.EMPTY) {
-            GAME.createPiece(rightboard[j][i], [i,j], false); 
-        } 
-    }
-}
+GAME.visualCreationOfPieces();
 
-console.log(GAME.getAllWhitePieces());
+// NOTES: This shit of code are should update board after each move
+//        not think that is good solution, but it what i can belive
+//        "mon petit péché".
+// NOTES: This must be run after creation of pieces!
+// THINK: For now i don't really know is this is need for me,
+//        but i'll keep it for now.
+//document.body.addEventListener("click", checkIfClicked)
+//
+//function checkIfClicked() : void {
+//    let left = GAME.generateNotation(true);
+//    let right = GAME.generateNotation(false)
+//
+//    GAME.generateBoardSetUp(left, true);
+//    GAME.generateBoardSetUp(right, false);
+//}

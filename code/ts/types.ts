@@ -4,6 +4,7 @@
 
 export const enum cellStates {
     idle,
+    casteling,
     underAttack,
     moveble
 }

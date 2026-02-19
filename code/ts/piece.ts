@@ -40,7 +40,6 @@ export class RealPiece {
                 if (BoardCell_left !== null) {
                     Board.lightupCell(BoardCell_left, cellStates.idle);
                 }
-
             }
         }
     }
@@ -51,6 +50,7 @@ export class RealPiece {
      */
     private highlightAllpossibleMoves() : void {
         let BoardCell : HTMLElement | null;
+        let isEating : boolean = false;
 
         this.removeAllPossibleMoves();
 
@@ -88,6 +88,7 @@ export class RealPiece {
                 //        so for the rest of system we should revers this.
                 if (board[currentMove[1]][currentMove[0]].type !== Piece.EMPTY) {
                     Board.lightupCell(BoardCell, cellStates.underAttack);
+                    isEating = true;
                 }
             }
             else {
@@ -95,20 +96,17 @@ export class RealPiece {
             }
 
             Board.lightupCell(BoardCell, cellStates.moveble);
-            
-            console.log("added listener!");
-            BoardCell.addEventListener("click", (e) => { this.movement(e) }, {signal : this.areaListener.signal} )
-            console.log("added listener!");
+            BoardCell.addEventListener("click", () => { this.movement(moves[index], isEating) }, {signal : this.areaListener.signal} )
         }
     }
 
-    private movement(evt : Event) {
+    private movement(endPos : number[], isEating : boolean) {
+        const EMPTY_CELL = {
+            type : Piece.EMPTY,
+            color : Color.NONE 
+        }
         let board : GamePiece[][];
         let opposite : GamePiece[][];
-
-        const position = evt.currentTarget as HTMLElement
-        let id = position.id
-        let pos = [Number(id.charAt(0)), Number(id.charAt(2))];
 
         if (this.isLeft) {
             board = this.BoardLeft;
@@ -122,28 +120,32 @@ export class RealPiece {
         if (this.HTMLPiece !== null) {
             this.HTMLPiece.remove();
 
-            let endCell = Board.getCellbyPosition(pos, !this.isLeft)
+            let endCell = Board.getCellbyPosition(endPos, !this.isLeft)
+            let endCellOwnBoard = Board.getCellbyPosition(endPos, this.isLeft)
+            if (isEating && endCellOwnBoard !== null) {
+                let enemyPiece = endCellOwnBoard.firstChild
+                
+                // NOTES: enemyPiece is never null in this circumstances.
+                enemyPiece?.remove();
+
+                // TODO: Need create system that update and remove pieces that are
+                //       was eaten, so the system for mate can be accurate. But 
+                //       this should be done when we'll create multiplayer.
+                board[endPos[1]][endPos[0]] = EMPTY_CELL;
+            }
             if (endCell !== null) {
                 endCell.appendChild(this.HTMLPiece);
-           }
+            }
         }
         this.removeAllPossibleMoves();
         // NOTES: This little line are my savier! 
         //        Because it can remove all eventListeners at once!
-        console.log("remove");
         this.areaListener.abort();
         this.areaListener = new AbortController;
 
-        console.log(this.PieceName);
-        console.log(board[this.Position[1]][this.Position[0]]);
-
-        opposite[pos[1]][pos[0]] = this.PieceName;
-        board[this.Position[1]][this.Position[0]] = {
-            type : Piece.EMPTY,
-            color : Color.NONE
-        }
-
-        this.Position = pos;
+        opposite[endPos[1]][endPos[0]] = this.PieceName;
+        board[this.Position[1]][this.Position[0]] = EMPTY_CELL;
+        this.Position = endPos;
         this.isLeft = !this.isLeft;
         this.isMoved = true;
     }

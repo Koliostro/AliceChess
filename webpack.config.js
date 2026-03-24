@@ -15,7 +15,7 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js'],
   },
   output: {
-    filename: 'index.js',
-    path: path.resolve(__dirname, 'dist'),
+    filename: 'game.js',
+    path: path.resolve(__dirname, 'static/chessJS/'),
   },
 };

@@ -1,0 +1,7 @@
+.boardPlace {
+    display: flex;
+    position: relative;
+    transform: translateY(15%);
+    top: 50%;
+    gap: 5%;
+}

@@ -1,0 +1,8 @@
+.flex-block {
+    display:flex;
+}
+
+.flex-block_all-center {
+    align-content: center;
+    justify-content: center;
+}

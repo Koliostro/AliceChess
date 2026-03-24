@@ -1,0 +1,10 @@
+@import url("./__cell/board__cell.css");
+
+.board {
+    display: inline-grid;
+    border: 3px solid darkgray;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    width: 500px;
+    height: 500px;
+}

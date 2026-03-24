@@ -471,7 +471,16 @@ export class RealPiece {
     }
 
     private generateCasteling(board : GamePiece[][], moves : number[][]) : number[][] {
-        //TODO Castling
+        // TODO: Castling
+        // TODO: Need to think about creation childern class for the king with place to save 
+        //       pointers to the rocks. And from there we should check if this is appropriate
+        //       but it may not work for the multiplayer.
+        //
+        //       Maybe would be better to create full and partial implementation of FEN. In
+        //       that case we simply propogate that which side casteling is possible.
+        //
+        //       Or we can send additional information via request. But i don't know how 
+        //       it should be done.
         return moves;
     }
 

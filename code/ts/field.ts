@@ -27,15 +27,15 @@ export class Board {
 
         switch (state) {
             case cellStates.idle:
-                cell.classList.remove('lighttedCell')
-                cell.classList.remove('lighttedCell_eat')
+                cell.classList.remove('board__cell_lightted')
+                cell.classList.remove('board__cell_eat')
                 break;
             case cellStates.moveble:
-                cell.classList.add('lighttedCell')
+                cell.classList.add('board__cell_lightted')
                 break;
             case cellStates.underAttack:
-                cell.classList.add('lighttedCell')
-                cell.classList.add('lighttedCell_eat')
+                cell.classList.add('board__cell_lightted')
+                cell.classList.add('board__cell_eat')
                 break;
         }
 
@@ -52,9 +52,9 @@ export class Board {
      */
     public createCell(x: number, y: number, isLeft : boolean, isBlack : boolean): HTMLElement {
         let side: string = isLeft === true ? 'L' : 'R';
-        let color: string = isBlack === true ? 'cellBlack' : 'cellWhite';
+        let color: string = isBlack === true ? 'cell_black' : 'cell_white';
         let div: HTMLElement = document.createElement('div');
-        div.className = `cell ${color}`
+        div.className = `board__cell board__${color}`
         div.id = `${x},${y},${side}`
         return div
     }

@@ -1,5 +1,7 @@
 import { Chess } from "./chess";
-import { Piece } from "./types";
+import { InitializeSocket } from "./web";
+
+InitializeSocket()
 
 const GAME = new Chess();
 

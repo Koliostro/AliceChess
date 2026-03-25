@@ -6,4 +6,4 @@ node_modules/*
 *.txt
 */**/*.swp
 dist/*.js
-static/**/*.js
+static/chessJS/*

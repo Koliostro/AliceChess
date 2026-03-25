@@ -3,29 +3,46 @@ declare const LINK: string;
 export function InitializeSocket() {
     const websocket = new WebSocket(LINK)
 
-    let message = {
-        iteration : 0,
-        content : "ping",
+    enum HEADER {
+        START = "START",
+        WAIT = "WAIT",
+        RECIVED = "RECIVED",
+        END = "END",
     }
 
-    let ID : any
+    interface MESSAGE {
+        header : HEADER,
+        data : string,
+    }
 
     websocket.addEventListener("open", ()=> {
         console.log("Connected")
-        ID = setInterval(()=> {
-            console.log(`Send ${message.content} : ${message.iteration}`)
-            websocket.send(JSON.stringify(message))        
-            message.iteration++;
-            if (message.iteration > 5) {
-                message.content = "END"
-                websocket.send(JSON.stringify(message))
-                clearInterval(ID)
-            }
-        }, 5000)    
+
+        let NewMessage : MESSAGE = {
+            header: HEADER.START,
+            data: "",
+        }
+
+        websocket.send(JSON.stringify(NewMessage))
     })
 
     websocket.addEventListener("close", ()=> {
-        console.log(`Last: ${ID}`)                          
+        console.log(`Closed`)                          
+    })
+
+    websocket.addEventListener("message", (event) => {
+        let readedMessage : MESSAGE = JSON.parse(event.data)
+
+        console.log(`Recived: ${readedMessage.header}`);
+
+        if (readedMessage.header === HEADER.RECIVED) {
+            let HALTMessage = {
+                header: HEADER.END,
+                data: "",
+            }
+
+            websocket.send(JSON.stringify(HALTMessage))
+        }
     })
 
     websocket.addEventListener("error", ()=> {

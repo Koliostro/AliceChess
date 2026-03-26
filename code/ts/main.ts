@@ -1,17 +1,51 @@
 import { Chess } from "./chess";
-import { InitializeSocket } from "./web";
+import { InitializeSocket, stateString } from "./web";
 
 InitializeSocket()
 
+function waitUntilGetState() : Promise<string> {
+    return new Promise((resolve, reject) => {
+        const maxAttampts = 10;
+        let attempts = 0;
+
+        const interval = setInterval(() => {
+            if (attempts >= maxAttampts) {
+                clearInterval(interval) 
+                reject(new Error('Max attempts'))
+            }                
+            else if (stateString !== "") {
+                clearInterval(interval) 
+                resolve(stateString)
+            }
+            attempts++
+        }, 2000)        
+    })
+}
+
+async function getStartstate() {
+    console.log("Waiting for the state");
+    let startState = "";
+    try {
+       startState = await waitUntilGetState() 
+    } catch (error) {
+        console.error(`Error: ${error}`)
+    }
+    return startState
+}
+
 const GAME = new Chess();
+
+let PromisState = getStartstate().then((value) => {
+    console.log(value)                                     
+    
+    GAME.generateBoardSetUp(value, true);
+    GAME.generateBoardSetUp("8/8/8/8/8/4R3/R6R/rK5R", false);
+
+    GAME.visualCreationOfPieces();
+})
 
 // Generate a visual board for game
 GAME.createBoard();
-
-GAME.generateBoardSetUp("8/8/8/8/8/8/8/6r1", true);
-GAME.generateBoardSetUp("8/8/8/8/8/4R3/R6R/rK5R", false);
-
-GAME.visualCreationOfPieces();
 
 // NOTES: This shit of code are should update board after each move
 //        not think that is good solution, but it what i can belive

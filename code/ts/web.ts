@@ -1,10 +1,13 @@
 declare const LINK: string;
 
+export let stateString = "";
+
 export function InitializeSocket() {
     const websocket = new WebSocket(LINK)
 
     enum HEADER {
         START = "START",
+        SET = "SET",
         WAIT = "WAIT",
         RECIVED = "RECIVED",
         END = "END",
@@ -35,14 +38,32 @@ export function InitializeSocket() {
 
         console.log(`Recived: ${readedMessage.header}`);
 
-        if (readedMessage.header === HEADER.RECIVED) {
-            let HALTMessage = {
-                header: HEADER.END,
-                data: "",
-            }
+        let AnswerMesasge : MESSAGE
+        switch (readedMessage.header) {
+            case "SET":
+                stateString = readedMessage.data;
 
-            websocket.send(JSON.stringify(HALTMessage))
+                AnswerMesasge = {
+                    header: HEADER.END,
+                    data: "",
+                }
+
+                break
+            case "RECIVED":
+                AnswerMesasge = {
+                    header: HEADER.WAIT,
+                    data: "",
+                }  
+                break
+            default:
+                AnswerMesasge = {
+                    header: HEADER.END,
+                    data: "",
+                }
+                break
         }
+
+        websocket.send(JSON.stringify(AnswerMesasge))
     })
 
     websocket.addEventListener("error", ()=> {

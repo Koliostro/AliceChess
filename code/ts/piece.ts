@@ -1,6 +1,7 @@
 import {GamePiece, Color, Piece, ROCK_VECTOR, BISHOP_VECTOR, QUEEN_VECTOR } from "./types";
 import { Board } from "./field";
 import { cellStates } from "./types";
+import {WAITING, localLink, SetWaiting} from "./web";
 
 export class RealPiece {
     private PieceName : GamePiece;
@@ -52,6 +53,10 @@ export class RealPiece {
         let BoardCell : HTMLElement | null;
         let isEating : boolean = false;
 
+        if (WAITING) {
+            return;
+        }
+
         this.removeAllPossibleMoves();
 
         let moves : number[][];
@@ -101,6 +106,10 @@ export class RealPiece {
     }
 
     private movement(endPos : number[], isEating : boolean) {
+        if (WAITING) {
+            return
+        }
+
         const EMPTY_CELL = {
             type : Piece.EMPTY,
             color : Color.NONE 
@@ -141,6 +150,9 @@ export class RealPiece {
         // NOTES: This little line are my savier! 
         //        Because it can remove all eventListeners at once!
         this.areaListener.abort();
+        
+        SetWaiting();
+
         this.areaListener = new AbortController;
 
         opposite[endPos[1]][endPos[0]] = this.PieceName;

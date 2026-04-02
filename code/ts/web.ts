@@ -1,72 +1,61 @@
-declare const LINK: string;
+import {Chess} from "./chess";
 
-export let stateString = "";
+declare const LINK : string;
 
-export function InitializeSocket() {
-    const websocket = new WebSocket(LINK)
+export let localLink : string = LINK.substring(0, LINK.length - 8);
+export let WAITING = false;
 
-    enum HEADER {
-        START = "START",
-        SET = "SET",
-        WAIT = "WAIT",
-        RECIVED = "RECIVED",
-        END = "END",
+export interface GameState {
+    Left : string
+    Right : string
+}
+
+export interface SmallState {
+    IsReaded : boolean
+    IsWritten : boolean
+    Board : GameState
+}
+
+export function SetWaiting() {
+    if (WAITING === true) {
+        WAITING = false;
     }
-
-    interface MESSAGE {
-        header : HEADER,
-        data : string,
+    else {
+        WAITING = true
     }
+}
 
-    websocket.addEventListener("open", ()=> {
-        console.log("Connected")
+function updateGameState(state : GameState, Game : Chess) {
+    console.log(state)
+    Game.generateBoardSetUp(state.Left, true);
+    Game.generateBoardSetUp(state.Right, false);
+    Game.visualCreationOfPieces();
+}
 
-        let NewMessage : MESSAGE = {
-            header: HEADER.START,
-            data: "",
+export async function getValue(Game : Chess) {
+    fetch(LINK)
+    .then((response) => {
+        if (!response.ok) {
+            console.error(`HTTP error: ${response.status}`)
+            return "";
         }
 
-        websocket.send(JSON.stringify(NewMessage))
+        return response.text()
     })
-
-    websocket.addEventListener("close", ()=> {
-        console.log(`Closed`)                          
-    })
-
-    websocket.addEventListener("message", (event) => {
-        let readedMessage : MESSAGE = JSON.parse(event.data)
-
-        console.log(`Recived: ${readedMessage.header}`);
-
-        let AnswerMesasge : MESSAGE
-        switch (readedMessage.header) {
-            case "SET":
-                stateString = readedMessage.data;
-
-                AnswerMesasge = {
-                    header: HEADER.END,
-                    data: "",
-                }
-
-                break
-            case "RECIVED":
-                AnswerMesasge = {
-                    header: HEADER.WAIT,
-                    data: "",
-                }  
-                break
-            default:
-                AnswerMesasge = {
-                    header: HEADER.END,
-                    data: "",
-                }
-                break
+    .then((text) => {
+        if (text == "") {
+            return "";
         }
 
-        websocket.send(JSON.stringify(AnswerMesasge))
-    })
+        const state : SmallState = JSON.parse(text)
 
-    websocket.addEventListener("error", ()=> {
-        console.log(`ERROR`)                          
+        if (!state.IsReaded) {
+            return
+        }
+
+        updateGameState(state.Board, Game)
     })
+    .catch((err) => {
+        console.error(err)
+    });
 }

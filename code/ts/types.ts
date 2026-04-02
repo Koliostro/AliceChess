@@ -61,3 +61,17 @@ export const QUEEN_VECTOR = [
     [ 1,-1],
     [-1, 1]
 ]
+
+export enum HEADER {
+    START = "START",
+    SET = "SET",
+    WAIT = "WAIT",
+    RECIVED = "RECIVED",
+    END = "END",
+    GET = "GET",
+};
+
+export interface MESSAGE {
+    header : HEADER,
+    data : string,
+}

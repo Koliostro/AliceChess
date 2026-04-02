@@ -2,6 +2,9 @@
     border-radius: 50%;
     height: 100%;
     width: 100%;
+
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 .clickable {
@@ -10,12 +13,16 @@
 
 .black_pawn {
     background-color: rgba(255, 127, 80, 0.5);
+
+    background-image: url(/static/img/black_pawn.png);
 } 
 .white_pawn {
     background-color: coral;
 }
 .black_rock {
     background-color: rgba(218, 165, 32, 0.5);
+
+    background-image: url(/static/img/black_rock.png);
 }
 .white_rock {
     background-color: goldenrod;

@@ -75,3 +75,7 @@ export interface MESSAGE {
     header : HEADER,
     data : string,
 }
+
+// Events
+
+export const TurnDone = new CustomEvent("turnDone", {})

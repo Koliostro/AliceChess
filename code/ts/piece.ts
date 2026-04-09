@@ -1,7 +1,7 @@
-import {GamePiece, Color, Piece, ROCK_VECTOR, BISHOP_VECTOR, QUEEN_VECTOR } from "./types";
+import {GamePiece, Color, Piece, ROCK_VECTOR, BISHOP_VECTOR, QUEEN_VECTOR, TurnDone } from "./types";
 import { Board } from "./field";
 import { cellStates } from "./types";
-import {WAITING, localLink, SetWaiting} from "./web";
+import {WAITING, WEB} from "./web";
 
 export class RealPiece {
     private PieceName : GamePiece;
@@ -9,7 +9,6 @@ export class RealPiece {
 	private isLeft : boolean;
     private BoardLeft : GamePiece[][];
     private BoardRight : GamePiece[][];
-    private isMoved : boolean = false
     private HTMLPiece : HTMLElement | null = null;
     private areaListener : AbortController = new AbortController;
 
@@ -26,6 +25,10 @@ export class RealPiece {
 
         this.BoardLeft = leftBoard;
         this.BoardRight = rightBoard;
+    }
+
+    public destructor() {
+        this.areaListener.abort()
     }
 
     private removeAllPossibleMoves() {
@@ -50,12 +53,13 @@ export class RealPiece {
      * @returns nothing
      */
     private highlightAllpossibleMoves() : void {
-        let BoardCell : HTMLElement | null;
-        let isEating : boolean = false;
-
+        console.log(WAITING);
         if (WAITING) {
             return;
         }
+
+        let BoardCell : HTMLElement | null;
+        let isEating : boolean = false;
 
         this.removeAllPossibleMoves();
 
@@ -151,15 +155,15 @@ export class RealPiece {
         //        Because it can remove all eventListeners at once!
         this.areaListener.abort();
         
-        SetWaiting();
-
         this.areaListener = new AbortController;
 
         opposite[endPos[1]][endPos[0]] = this.PieceName;
         board[this.Position[1]][this.Position[0]] = EMPTY_CELL;
         this.Position = endPos;
         this.isLeft = !this.isLeft;
-        this.isMoved = true;
+
+        WEB.SetWaiting();
+        window.dispatchEvent(TurnDone)
     }
 
 	public getSide() : boolean {

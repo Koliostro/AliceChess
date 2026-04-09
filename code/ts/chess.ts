@@ -22,6 +22,16 @@ export class Chess {
         this.isBlackTurn = isBlackTurn;
         this.isGameEnd = isGameEnd
     }
+
+    public clearBoards() {
+        this.allBlackPieces.forEach((value) => {
+            value.destructor()                            
+        })
+        this.allWhitePieces.forEach((value) => {
+            value.destructor()                            
+        })
+    }
+
     /**
      * Iterate over all boards and create visual pieces at board
      * @returns void
@@ -191,7 +201,11 @@ export class Chess {
            } 
         }
         else {
-
+           for (let y = this.rightField.length; y < 8; y++) {
+                for (let x = this.rightField[0].length; x < 8; x++) {
+                    this.rightField[y][x] = state[y][x];
+                }
+           } 
         }
     }
 

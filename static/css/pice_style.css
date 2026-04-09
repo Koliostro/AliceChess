@@ -1,53 +1,49 @@
 .piece {
-    border-radius: 50%;
     height: 100%;
     width: 100%;
 
     background-repeat: no-repeat;
-    background-size: cover;
+    background-position: center;
+    background-size: contain;
 }
 
 .clickable {
     cursor: pointer;
 }
 
-.black_pawn {
-    background-color: rgba(255, 127, 80, 0.5);
-
-    background-image: url(/static/img/black_pawn.png);
-} 
-.white_pawn {
-    background-color: coral;
-}
-.black_rock {
-    background-color: rgba(218, 165, 32, 0.5);
-
-    background-image: url(/static/img/black_rock.png);
-}
 .white_rock {
     background-color: goldenrod;
 }
+.black_pawn {
+    background-image: url(/static/img/black_pawn.svg);
+} 
+.white_pawn {
+    background-image: url(/static/img/white_pawn.svg);
+}
+.black_rock {
+    background-image: url(/static/img/black_rock.svg);
+}
 .black_knight{
-    background-color: rgba(0, 0, 255, 0.5);
+    background-image: url(/static/img/black_knight.svg);
 } 
 .white_knight {
-    background-color: blue;
+    background-image: url(/static/img/white_knight.svg);
 }
 .black_bishop {
-    background-color: rgba(0, 255, 0, 0.5);
+    background-image: url(/static/img/black_bishop.svg);
 } 
 .white_bishop {
-    background-color: lime;
+    background-image: url(/static/img/white_bishop.svg);
 }
 .black_queen {
-    background-color:rgba(255, 0, 255, 0.5);
+    background-image: url(/static/img/black_queen.svg);
 }
 .white_queen {
-    background-color:fuchsia;
+    background-image: url(/static/img/white_queen.svg);
 }
 .black_king{
-    background-color: rgba(76, 0, 130, 0.5);
+    background-image: url(/static/img/black_king.svg);
 } 
 .white_king {
-    background-color: indigo;
+    background-image: url(/static/img/white_king.svg);
 }

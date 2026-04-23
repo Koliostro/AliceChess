@@ -162,7 +162,6 @@ export class RealPiece {
         this.Position = endPos;
         this.isLeft = !this.isLeft;
 
-        WEB.SetWaiting();
         window.dispatchEvent(TurnDone)
     }
 
@@ -486,20 +485,6 @@ export class RealPiece {
         return all_moves;
     }
 
-    private generateCasteling(board : GamePiece[][], moves : number[][]) : number[][] {
-        // TODO: Castling
-        // TODO: Need to think about creation childern class for the king with place to save 
-        //       pointers to the rocks. And from there we should check if this is appropriate
-        //       but it may not work for the multiplayer.
-        //
-        //       Maybe would be better to create full and partial implementation of FEN. In
-        //       that case we simply propogate that which side casteling is possible.
-        //
-        //       Or we can send additional information via request. But i don't know how 
-        //       it should be done.
-        return moves;
-    }
-
     /**
      * Generate all possible moves for any selected piece. After that function we need to check further for possibility to move
      * @param isLeft selector for wich board we working
@@ -528,139 +513,3 @@ export class RealPiece {
         }
     }
 }
-
-
-//    movementOfPieces(event: Event & { target: HTMLElement }): void {
-//        if (event.target.id.charAt(0) !== Game.currentMove) {
-//            return
-//        }
-//
-//        const positionStart: number[] = [Number(event.target.parentElement?.id.charAt(2)), Number(event.target.parentElement?.id.charAt(0))]
-//        const side = event.target.parentElement?.id.charAt(4);
-//
-//        Board.Clear();
-//
-//        if (side === 'L') {
-//            let selected = ArrayBoards.L[positionStart[0]][positionStart[1]];
-//            if (!event.target.parentElement?.classList.contains(`selectedCell`)) {
-//                selected[0].lightAllPossibleMove()
-//            }
-//            else {
-//                Board.Clear();
-//            }
-//        }
-//
-//        else if (side === 'R') {
-//            let selected = ArrayBoards.R[positionStart[0]][positionStart[1]];
-//
-//            if (!event.target.parentElement?.classList.contains(`selectedCell`)) {
-//                selected[0].lightAllPossibleMove()
-//            }
-//            else {
-//                Board.Clear();
-//            }
-//        }
-//    }
-//}
-//export class King extends Piece {
-//    public isMoved: boolean;
-//
-//    constructor(id: string, position: number[], isLeft: boolean, isMoved: boolean = false) {
-//        super(id, position, isLeft)
-//        this.isMoved = isMoved
-//    }
-//
-//    create(): void { // color = black/white
-//        const color = this.id.charAt(0) === 'b' ? 'black' : 'white'
-//        super.createPiece(`${color}_king`, this.isLeft)
-//    }
-//
-//    isVailedMove(positionStart: number[], positionEnd: number[]): boolean {
-//        if ((Math.abs(positionEnd[0] - positionStart[0]) <= 1 && (Math.abs(positionStart[1] - positionEnd[1]) <= 1))) {
-//            if (!Cell.isUnderAttack(positionEnd, !this.isBlack, this.isLeft) && !Cell.isUnderAttack(positionEnd, !this.isBlack, !this.isLeft)) {
-//                return true
-//            }
-//        }
-//        return false
-//    }
-//
-//    isVailedCasteling(positionStart: number[], positionEnd: number[], isLeft: boolean, isBlack: boolean): boolean {
-//        if (!isBlack) {
-//            if (!this.isMoved && (positionEnd[0] === 2 || positionEnd[0] === 6)) {
-//                if (positionStart[1] === positionEnd[1]) {
-//                    if (positionEnd[0] === 2 && !Cell.isEmpty([0, positionStart[1]], isLeft)) {
-//                        if ((Cell.isEmpty([1, positionStart[1]], isLeft) && Cell.isEmpty([2, positionStart[1]], isLeft) && Cell.isEmpty([3, positionStart[1]], isLeft)) && Cell.isEmpty([2, positionStart[1]], !isLeft) && Cell.isEmpty([3, positionStart[1]], !isLeft)) {
-//                            if (!Cell.isUnderAttack([1, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([2, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([3, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([2, positionStart[1]], !isBlack, !isLeft)) {
-//                                return true
-//                            }
-//                        }
-//                    }
-//                    if (positionEnd[0] === 6 && !Cell.isEmpty([7, positionStart[1]], isLeft)) {
-//                        if ((Cell.isEmpty([5, positionStart[1]], isLeft) && Cell.isEmpty([6, positionStart[1]], isLeft)) && (Cell.isEmpty([5, positionStart[1]], !isLeft) && Cell.isEmpty([6, positionStart[1]], !isLeft))) {
-//                            if (!Cell.isUnderAttack([5, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([6, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([6, positionStart[1]], !isBlack, !isLeft)) {
-//                                return true
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        else {
-//            if (!this.isMoved && (positionEnd[0] === 1 || positionEnd[0] === 5)) {
-//                if (positionStart[1] === positionEnd[1]) {
-//                    if (positionEnd[0] === 5 && !Cell.isEmpty([7, positionStart[1]], isLeft)) {
-//                        if ((Cell.isEmpty([4, positionStart[1]], isLeft) && Cell.isEmpty([5, positionStart[1]], isLeft) && Cell.isEmpty([6, positionStart[1]], isLeft)) && (Cell.isEmpty([4, positionStart[1]], !isLeft) && Cell.isEmpty([5, positionStart[1]], !isLeft))) {
-//                            if (!Cell.isUnderAttack([4, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([5, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([6, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([5, positionStart[1]], !isBlack, !isLeft)) {
-//                                return true
-//                            }
-//                        }
-//                    }
-//                    if (positionEnd[0] === 1 && !Cell.isEmpty([0, positionStart[1]], isLeft)) {
-//                        if ((Cell.isEmpty([1, positionStart[1]], isLeft) && Cell.isEmpty([2, positionStart[1]], isLeft)) && (Cell.isEmpty([1, positionStart[1]], !isLeft) && Cell.isEmpty([2, positionStart[1]], !isLeft))) {
-//                            if (!Cell.isUnderAttack([1, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([2, positionStart[1]], !isBlack, isLeft) && !Cell.isUnderAttack([1, positionStart[1]], !isBlack, !isLeft)) {
-//                                return true
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        return false
-//    }
-//
-//    lightAllPossibleMove(isSecretly: boolean = false): void {
-//        this.numberPossibleMoves = 0;
-//        Cell.lightStartCell(this.position, this.isLeft, isSecretly)
-//        for (let i = 0; i < 8; i++) {
-//            for (let j = 0; j < 8; j++) {
-//                if (this.isVailedCasteling(this.position, [i, j], this.isLeft, this.isBlack)) {
-//                    Cell.lightMovableCell([i, j], this.isLeft, isSecretly)
-//                    Cell.lightCastelingCell([i, j], this.isLeft, isSecretly)
-//                    this.numberPossibleMoves += 1
-//                }
-//                if (this.isVailedMove(this.position, [i, j])) {
-//                    if ((ArrayBoards.L[j][i].length === 0) && (ArrayBoards.R[j][i].length === 0)) {
-//                        if (i !== this.position[0] || j !== this.position[1]) {
-//                            Cell.lightMovableCell([i, j], this.isLeft, isSecretly)
-//                            this.numberPossibleMoves += 1
-//                        }
-//                    }
-//                    if (this.position[0] !== i || this.position[1] !== j) {
-//                        if (this.isLeft === true) {
-//                            if (ArrayBoards.L[j][i].length !== 0 && ArrayBoards.R[j][i].length === 0 && ArrayBoards.L[j][i][0].isBlack !== this.isBlack) {
-//                                Cell.lightEatableCell([i, j], this.isLeft, isSecretly)
-//                                this.numberPossibleMoves += 1
-//                            }
-//                        }
-//                        else {
-//                            if (ArrayBoards.R[j][i].length !== 0 && ArrayBoards.L[j][i].length === 0 && ArrayBoards.R[j][i][0].isBlack !== this.isBlack) {
-//                                Cell.lightEatableCell([i, j], this.isLeft, isSecretly)
-//                                this.numberPossibleMoves += 1
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}

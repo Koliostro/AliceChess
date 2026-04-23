@@ -1,2 +1,9 @@
 # Ignore compiced js files.
-*.js
+code/js/*
+out/*
+docs/**/*
+node_modules/*
+*.txt
+*/**/*.swp
+dist/*.js
+static/chessJS/*

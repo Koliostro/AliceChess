@@ -1,0 +1,49 @@
+.piece {
+    height: 100%;
+    width: 100%;
+
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.white_rock {
+    background-color: goldenrod;
+}
+.black_pawn {
+    background-image: url(/static/img/black_pawn.svg);
+} 
+.white_pawn {
+    background-image: url(/static/img/white_pawn.svg);
+}
+.black_rock {
+    background-image: url(/static/img/black_rock.svg);
+}
+.black_knight{
+    background-image: url(/static/img/black_knight.svg);
+} 
+.white_knight {
+    background-image: url(/static/img/white_knight.svg);
+}
+.black_bishop {
+    background-image: url(/static/img/black_bishop.svg);
+} 
+.white_bishop {
+    background-image: url(/static/img/white_bishop.svg);
+}
+.black_queen {
+    background-image: url(/static/img/black_queen.svg);
+}
+.white_queen {
+    background-image: url(/static/img/white_queen.svg);
+}
+.black_king{
+    background-image: url(/static/img/black_king.svg);
+} 
+.white_king {
+    background-image: url(/static/img/white_king.svg);
+}

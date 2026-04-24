@@ -12,14 +12,16 @@ export interface GameState {
     Right : string
 }
 
-// TODO:
-//      Need to make game by default in listening mode and only if there is 
-//      their turn go into talking mode. Because for now we are in shit position.
+interface BoardState {
+    currentTurn : string
+    turnNumber : number
+}
 
 export class WEB {
     // 5 sec
     private timeBetweenFetch = 5000;
     private board : GameState 
+    private boardState : BoardState
     private localLink : string = LINK.substring(-1, LINK.length - 8);
 
     // NOTE: I can't get it working with proper types
@@ -33,6 +35,12 @@ export class WEB {
             Left : "",
             Right: "" 
         } 
+
+        this.boardState = {
+            currentTurn : "",
+            turnNumber : 0,
+        }
+
         this.GAME = GAME
         window.addEventListener("turnDone", () => {this.TurnHandler()})
 
@@ -68,16 +76,45 @@ export class WEB {
         }, this.timeBetweenFetch) 
     }
 
+    private Parser(rawBoardState : string) : BoardState | null {
+        if (rawBoardState.length < 15) { 
+            return null;
+        }
+
+        let counter = 0;
+        let counterTurn : string = ""
+        let currentTurn : string = ""
+        for (let i = 0; i < rawBoardState.length; i++) {
+            if (rawBoardState[i] === " ") {
+                counter++;
+                continue
+            } 
+            switch (counter) {
+                case 1:
+                    currentTurn += rawBoardState[i];
+                break; 
+                case 2:
+                    counterTurn += rawBoardState[i];
+                break;
+            }
+        }
+
+        let result : BoardState = {
+            currentTurn : currentTurn,
+            turnNumber : Number(counterTurn),
+        }
+
+        return result
+    }
+
     private TurnHandler() {
         console.log("Turn done");
 
         let currentTurn : string = "";
 
-        console.log(`Res : ${this.board.Left.substring(this.board.Left.indexOf(" ") + 1 ) === "w"}`)
-        console.log(`Index of space : ${this.board.Left.indexOf(" ")}`)
-        console.log(`String : ${this.board.Left}`)
-
-        if (this.board.Left.substring(this.board.Left.indexOf(" ") + 1) === "w") {
+        console.log(this.board.Left);
+        
+        if (this.boardState.currentTurn === "w") {
             currentTurn = "b";
         }
         else {
@@ -86,9 +123,15 @@ export class WEB {
 
         // TODO: Need to check what is wrong. Because system are working, but it sometimes
         //       corrupt itself.
+        //
+        //       Adding a numbering aren't helping. Maybe somthing is wrong with function
+        //       that clear board for new packet.
 
-        this.board.Left = this.GAME.generateNotation(true) + ` ${currentTurn}`
-        this.board.Right = this.GAME.generateNotation(false) + ` ${currentTurn}`
+        this.board.Left = `${this.GAME.generateNotation(true)} ${currentTurn} ${this.boardState.turnNumber + 1}`
+        this.board.Right = `${this.GAME.generateNotation(false)} ${currentTurn} ${this.boardState.turnNumber + 1}`
+
+        // TODO: Test if this fix the issue.
+        this.boardState.turnNumber++
 
         console.log(`Sended board = ${this.board.Left}`)
 
@@ -146,6 +189,20 @@ export class WEB {
                 return "";
             }
             const state : GameState = JSON.parse(text)
+            let isNewState : boolean = false;
+
+            let newBoardState = this.Parser(state.Left)
+
+            if (newBoardState != null ) {
+
+                console.log(`Parsed state: ${newBoardState}`);
+                console.log(`Old number = ${this.boardState.turnNumber}, New number = ${newBoardState.turnNumber}`)
+
+                if (newBoardState.turnNumber === this.boardState.turnNumber + 1) {
+                    isNewState = true
+                    this.boardState = newBoardState
+                }
+            }
 
             if (state.IsGameStarted) {
                 this.ModifyCurtain()
@@ -154,7 +211,8 @@ export class WEB {
                 this.board.Right = state.Right
 
                 // TODO: Need chenge to smh 'cause before first turn black has no image.
-                if (state.IsYourTurn) {
+                console.log(`Is new state? : ${isNewState}`);
+                if (state.IsYourTurn && isNewState) {
                     this.updateGameState(state, this.GAME)
                 }
             }

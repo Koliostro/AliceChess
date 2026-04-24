@@ -29,6 +29,7 @@ export class RealPiece {
 
     public destructor() {
         this.areaListener.abort()
+        this.HTMLPiece?.remove()
     }
 
     private removeAllPossibleMoves() {

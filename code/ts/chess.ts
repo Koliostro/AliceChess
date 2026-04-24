@@ -25,6 +25,7 @@ export class Chess {
 
     public clearBoards() {
         console.log(this.allBlackPieces);
+        console.log(this.allWhitePieces);
         console.log(this.leftField);
         this.allBlackPieces.forEach((value) => {
             value.destructor()                            
@@ -379,13 +380,7 @@ export class Chess {
             board[i] = new Array(8);
         }
 
-        console.log(`Before : ${stateString}`)
-
-        // NOTE: this regex are simple remove all other part of FEN that not 
-        //       describe positions.
-
         stateString = stateString.substring(0, stateString.indexOf(" "))
-        console.log(`After : ${stateString}`)
         
         for (let i = 0; i < stateString.length; i++) {
             if (stateString[i] === '/') {

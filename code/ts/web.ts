@@ -12,6 +12,8 @@ export interface GameState {
     Right : string
 }
 
+// TODO: Need to think how to invert notation for black player
+//       and how to check that it should be inversed.
 interface BoardState {
     currentTurn : string
     turnNumber : number
@@ -113,24 +115,24 @@ export class WEB {
         let currentTurn : string = "";
 
         console.log(this.board.Left);
+
+        let LeftNotation : string;
+        let RightNotation : string;
         
         if (this.boardState.currentTurn === "w") {
             currentTurn = "b";
+            LeftNotation = this.GAME.generateNotation(true)
+            RightNotation = this.GAME.generateNotation(false)
         }
         else {
             currentTurn = "w"; 
+            LeftNotation = this.GAME.generateNotation(true).split('/').reverse().join('/')
+            RightNotation = this.GAME.generateNotation(false).split('/').reverse().join('/')
         }
 
-        // TODO: Need to check what is wrong. Because system are working, but it sometimes
-        //       corrupt itself.
-        //
-        //       Adding a numbering aren't helping. Maybe somthing is wrong with function
-        //       that clear board for new packet.
+        this.board.Left = `${LeftNotation} ${currentTurn} ${this.boardState.turnNumber + 1}`
+        this.board.Right= `${RightNotation} ${currentTurn} ${this.boardState.turnNumber + 1}`
 
-        this.board.Left = `${this.GAME.generateNotation(true)} ${currentTurn} ${this.boardState.turnNumber + 1}`
-        this.board.Right = `${this.GAME.generateNotation(false)} ${currentTurn} ${this.boardState.turnNumber + 1}`
-
-        // TODO: Test if this fix the issue.
         this.boardState.turnNumber++
 
         console.log(`Sended board = ${this.board.Left}`)
@@ -153,25 +155,14 @@ export class WEB {
         }
     }
 
-    public updateGameState(state : GameState, Game : Chess) {
-        const leftState = Game.generateNotation(true)
-        const rightState = Game.generateNotation(false)
-        let isUpdate = false
-
-        if (state.Left != leftState) {
-            Game.generateBoardSetUp(state.Left, true);
-            isUpdate = true
-        }
-        if (state.Right != rightState) {
-            Game.generateBoardSetUp(state.Right, false);
-            isUpdate = true
-        }
-        if (isUpdate) {
-            Game.clearBoards()
-            Game.visualCreationOfPieces();
-
-            this.StopWaiting();
-        }
+    public updateGameState(state : GameState, Game : Chess, isInvers : boolean = false) {
+        Game.generateBoardSetUp(state.Left, true, isInvers);
+        Game.generateBoardSetUp(state.Right, false, isInvers);
+        Game.clearBoards()
+        
+        // TODO: Here need to add events listener only to own color pieces.
+        Game.visualCreationOfPieces();
+        this.StopWaiting();
     }
 
     public async getValue() {
@@ -193,15 +184,9 @@ export class WEB {
 
             let newBoardState = this.Parser(state.Left)
 
-            if (newBoardState != null ) {
-
-                console.log(`Parsed state: ${newBoardState}`);
-                console.log(`Old number = ${this.boardState.turnNumber}, New number = ${newBoardState.turnNumber}`)
-
-                if (newBoardState.turnNumber === this.boardState.turnNumber + 1) {
-                    isNewState = true
-                    this.boardState = newBoardState
-                }
+            if (newBoardState?.turnNumber === this.boardState.turnNumber + 1) {
+                this.boardState = newBoardState
+                isNewState = true
             }
 
             if (state.IsGameStarted) {
@@ -211,9 +196,14 @@ export class WEB {
                 this.board.Right = state.Right
 
                 // TODO: Need chenge to smh 'cause before first turn black has no image.
-                console.log(`Is new state? : ${isNewState}`);
                 if (state.IsYourTurn && isNewState) {
-                    this.updateGameState(state, this.GAME)
+                    console.log(`Current letter = ${this.boardState.currentTurn}`)
+                    if (this.boardState.currentTurn === "b") {
+                        this.updateGameState(state, this.GAME, true)
+                    }
+                    else {
+                        this.updateGameState(state, this.GAME)
+                    }
                 }
             }
         })

@@ -347,8 +347,10 @@ export class Chess {
 
             position_string = position_string.concat('/');
         }
-        
-        return position_string.slice(0, position_string.length - 1); 
+
+        let prepeareString = position_string.slice(0, position_string.length - 1); 
+
+        return prepeareString
     }
 
     private checkIfTitled(str : string) : boolean {
@@ -356,20 +358,12 @@ export class Chess {
         return regex.test(str);
     }
 
-    /**
-     * Generate full board with one selected piece. Need to mention that this
-     * method normally works only when array are empty.
-     * @param stateString - State of string in FEH notation
-     * @param isLeft - Flag to check if this is left or right board 
-     */
-    public generateBoardSetUp(stateString : string, isLeft : boolean) : number {
+    public generateBoardSetUp(stateString : string, isLeft : boolean, isInvers : boolean) : number {
         let rowCount = 0;
         let colCount = 0;
         let countPieces = 0;
         
         const board = this.getBoard(isLeft)
-
-        const lowercase = stateString.toLowerCase();
 
         let EMPTY_CELL : GamePiece = {
             type : Piece.EMPTY,
@@ -378,11 +372,21 @@ export class Chess {
 
         for (let i = 0; i < 8 ; i++) {
             board[i] = new Array(8);
-        }
+       }
 
         stateString = stateString.substring(0, stateString.indexOf(" "))
+
+        if (isInvers) {
+            console.log(`Original array = ${stateString}`)
+            console.log(`Reversed array = ${stateString.split("/").reverse().join("/")}`)
+            stateString = stateString.split("/").reverse().join("/")
+        }
         
-        for (let i = 0; i < stateString.length; i++) {
+        const lowercase = stateString.toLowerCase();
+
+        // TODO: will need to create inversion system. 
+        const size = stateString.length
+        for (let i = 0; i < size; i++) {
             if (stateString[i] === '/') {
                 rowCount++;
                 colCount = 0;
@@ -413,9 +417,11 @@ export class Chess {
                         typeOfPiece = Piece.QUEEN;
                         break;
                 }
+                let isTilred = this.checkIfTitled(stateString[i]) 
+                let color = isTilred ? Color.WHITE : Color.BLACK
                 board[rowCount][colCount] = { 
                     type : typeOfPiece, 
-                    color : this.checkIfTitled(stateString[i]) ? Color.WHITE : Color.BLACK 
+                    color : color
                 };
                 colCount++;
                 countPieces++;

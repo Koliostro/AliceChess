@@ -9,5 +9,3 @@ let MPHandler = new WEB(GAME)
 GAME.createBoard();
 
 console.log("FIRST :", WAITING);
-
-// TODO: Make lock presistent white between refresh.

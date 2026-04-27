@@ -106,7 +106,9 @@ export class RealPiece {
             }
 
             Board.lightupCell(BoardCell, cellStates.moveble);
-            BoardCell.addEventListener("click", () => { this.movement(moves[index], isEating) }, {signal : this.areaListener.signal} )
+            BoardCell.addEventListener("click", () => { 
+                this.movement(moves[index], isEating) 
+            }, {signal : this.areaListener.signal} )
         }
     }
 
@@ -250,7 +252,9 @@ export class RealPiece {
             return -1;
         }
         visual_position.appendChild(visual_piece);
-        visual_piece.addEventListener("click", () => { this.highlightAllpossibleMoves() } )
+        visual_piece.addEventListener("click", () => {
+            this.highlightAllpossibleMoves() 
+        })
 
         this.HTMLPiece = visual_piece;
 
@@ -269,7 +273,9 @@ export class RealPiece {
             return -1;
         }
         visual_position.appendChild(visual_piece);
-        visual_piece.addEventListener("click", () => { this.highlightAllpossibleMoves() } )
+        visual_piece.addEventListener("click", () => {
+            this.highlightAllpossibleMoves() 
+        })
 
         this.HTMLPiece = visual_piece;
 

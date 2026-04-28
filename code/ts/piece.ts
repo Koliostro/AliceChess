@@ -240,7 +240,7 @@ export class RealPiece {
     
     /* For coordinates: number at index 0 is x 
      *                  number at index 1 are y*/
-    private createPieceLeft(position : number[]) : number {
+    private createPieceLeft(position : number[], isBlackTurn: boolean) : number {
         const visual_piece : HTMLElement = document.createElement('div');
 
         visual_piece.classList.add("piece");
@@ -252,9 +252,20 @@ export class RealPiece {
             return -1;
         }
         visual_position.appendChild(visual_piece);
-        visual_piece.addEventListener("click", () => {
-            this.highlightAllpossibleMoves() 
-        })
+        if (isBlackTurn) {
+            if (this.PieceName.color === Color.BLACK) {
+                visual_piece.addEventListener("click", () => {
+                    this.highlightAllpossibleMoves() 
+                })
+            }
+        }
+        else {
+            if (this.PieceName.color !== Color.BLACK) {
+                visual_piece.addEventListener("click", () => {
+                    this.highlightAllpossibleMoves() 
+                })
+            }
+        }
 
         this.HTMLPiece = visual_piece;
 
@@ -262,7 +273,7 @@ export class RealPiece {
     }
     
     /* Creating and adding div decorated as piece to selected cell */
-    private createPieceRight(position : number[]) : number {
+    private createPieceRight(position : number[], isBlackTurn : boolean) : number {
         const visual_piece : HTMLElement = document.createElement('div');
         visual_piece.classList.add("piece");
         visual_piece.classList.add(this.getStyleFromPieceType(this.PieceName));
@@ -273,9 +284,21 @@ export class RealPiece {
             return -1;
         }
         visual_position.appendChild(visual_piece);
-        visual_piece.addEventListener("click", () => {
-            this.highlightAllpossibleMoves() 
-        })
+
+        if (isBlackTurn) {
+            if (this.PieceName.color === Color.BLACK) {
+                visual_piece.addEventListener("click", () => {
+                    this.highlightAllpossibleMoves() 
+                })
+            }
+        }
+        else {
+            if (this.PieceName.color !== Color.BLACK) {
+                visual_piece.addEventListener("click", () => {
+                    this.highlightAllpossibleMoves() 
+                })
+            }
+        }
 
         this.HTMLPiece = visual_piece;
 
@@ -288,7 +311,7 @@ export class RealPiece {
      * @param {boolean} isLeft - flag to toggle placment on left or right board
      * @returns {number} At end return 0 if succes or -1 if error occure
      */
-    public createPiece(position : number[], isLeft : boolean) : number {
+    public createPiece(position : number[], isLeft : boolean, isBlackTurn : boolean) : number {
         if (position.length !== 2) {
             return -1;
         }
@@ -298,10 +321,10 @@ export class RealPiece {
         }
 
         if (isLeft) {
-            return this.createPieceLeft(position);
+            return this.createPieceLeft(position, isBlackTurn);
         }
         else {
-            return  this.createPieceRight(position);
+            return  this.createPieceRight(position, isBlackTurn);
         }
     }
 

@@ -3,7 +3,6 @@ import {RealPiece} from "./piece";
 import { Color, GamePiece, Piece } from "./types";
 
 export class Chess {
-    private isBlackTurn : boolean
     private isGameEnd : boolean;
     private leftField : GamePiece[][] = []
     private rightField : GamePiece[][] = []
@@ -18,8 +17,7 @@ export class Chess {
      * @param [isBlackTurn=false] - Flag that signals which turn is it. By
      * default it is white's turn
      */
-    constructor(isBlackTurn : boolean = false, isGameEnd : boolean = false) {
-        this.isBlackTurn = isBlackTurn;
+    constructor(isGameEnd : boolean = false) {
         this.isGameEnd = isGameEnd
     }
 
@@ -39,19 +37,19 @@ export class Chess {
      * Iterate over all boards and create visual pieces at board
      * @returns void
      */
-    public visualCreationOfPieces() {
+    public visualCreationOfPieces(isBlackTurn : boolean) {
         const leftboard = this.getBoard(true);
         const rightboard = this.getBoard(false);
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
                 // Need check and DON'T run createPiece on damn empty cell!!!!
                 if (leftboard[j][i].type !== Piece.EMPTY) {
-                    this.createPiece(leftboard[j][i], [i,j], true); 
+                    this.createPiece(leftboard[j][i], [i,j], true, isBlackTurn); 
                 }
                 
                 // Need check and DON'T run createPiece on damn empty cell!!!!
                 if (rightboard[j][i].type !== Piece.EMPTY) {
-                    this.createPiece(rightboard[j][i], [i,j], false); 
+                    this.createPiece(rightboard[j][i], [i,j], false, isBlackTurn); 
                 } 
             }
         }
@@ -128,9 +126,9 @@ export class Chess {
      * @param isLeft - Logical flag to represent on which board piece are
      * placed 
      */
-    public createPiece(Piece : GamePiece, position : number[], isLeft : boolean) {
+    public createPiece(Piece : GamePiece, position : number[], isLeft : boolean, isBlackTurn : boolean) {
         let new_Piece : RealPiece = new RealPiece(Piece, position, isLeft, this.leftField, this.rightField)
-        let result = new_Piece.createPiece(position, isLeft);
+        let result = new_Piece.createPiece(position, isLeft, isBlackTurn);
         
         if (result !== -1) {
             if (Piece.color === Color.WHITE ) {
@@ -217,14 +215,6 @@ export class Chess {
      */
     private prepeareBoard() : void {
         this.boardObject = new Board()
-    }
-
-
-    /**
-     * Method for getting which turn are now
-     */
-    public getIsBlackTurn() : boolean {
-        return this.isBlackTurn;
     }
 
     /**
@@ -384,7 +374,6 @@ export class Chess {
         
         const lowercase = stateString.toLowerCase();
 
-        // TODO: will need to create inversion system. 
         const size = stateString.length
         for (let i = 0; i < size; i++) {
             if (stateString[i] === '/') {

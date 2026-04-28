@@ -12,8 +12,6 @@ export interface GameState {
     Right : string
 }
 
-// TODO: Need to think how to invert notation for black player
-//       and how to check that it should be inversed.
 interface BoardState {
     currentTurn : string
     turnNumber : number
@@ -161,7 +159,12 @@ export class WEB {
         Game.clearBoards()
         
         // TODO: Here need to add events listener only to own color pieces.
-        Game.visualCreationOfPieces();
+        if (this.boardState.currentTurn === "w") {
+            Game.visualCreationOfPieces(false)
+        }
+        else {
+            Game.visualCreationOfPieces(true)
+        }
         this.StopWaiting();
     }
 

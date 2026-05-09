@@ -1,7 +1,8 @@
-import {GamePiece, Color, Piece, ROCK_VECTOR, BISHOP_VECTOR, QUEEN_VECTOR, TurnDone } from "./types";
+import {GamePiece, Color, Piece, ROCK_VECTOR, BISHOP_VECTOR, QUEEN_VECTOR, TurnDone, PAWN_ATTACK_VECTOR } from "./types";
 import { Board } from "./field";
 import { cellStates } from "./types";
-import {WAITING, WEB} from "./web";
+import { WAITING } from "./web";
+import {Chess} from "./chess";
 
 export class RealPiece {
     private PieceName : GamePiece;
@@ -12,19 +13,24 @@ export class RealPiece {
     private HTMLPiece : HTMLElement | null = null;
     private areaListener : AbortController = new AbortController;
 
+    private GAME : Chess    
+
     /**
      * Constructor for creating visual representation of Piece
      * @param PieceName - GamePiece object that fully describe piece
      */
     constructor(PieceName : GamePiece, Pos : number[], 
                 isLeft : boolean, leftBoard : GamePiece[][],
-                rightBoard : GamePiece[][]) {
+                rightBoard : GamePiece[][],
+                GAME : Chess) {
         this.PieceName = PieceName;
         this.Position = Pos;
 		this.isLeft = isLeft;
 
         this.BoardLeft = leftBoard;
         this.BoardRight = rightBoard;
+
+        this.GAME = GAME
     }
 
     public destructor() {
@@ -54,10 +60,7 @@ export class RealPiece {
      * @returns nothing
      */
     private highlightAllpossibleMoves() : void {
-        console.log(WAITING);
-        if (WAITING) {
-            return;
-        }
+        if (WAITING) return;
 
         let BoardCell : HTMLElement | null;
         let isEating : boolean = false;
@@ -68,41 +71,62 @@ export class RealPiece {
         let board, opposite_board : GamePiece[][];
 
         if (this.isLeft) {
-            moves = this.generateAllMoves(this.BoardLeft);
-            board = this.BoardLeft
             opposite_board = this.BoardRight;
+            board = this.BoardLeft
+            moves = this.generateAllMoves(board, opposite_board);
         }
         else {
-            moves = this.generateAllMoves(this.BoardRight);
-            board = this.BoardRight;
             opposite_board = this.BoardLeft
+            board = this.BoardRight;
+            moves = this.generateAllMoves(board, opposite_board);
         }
 
         for (let index = 0; index < moves.length; index++) {
             let currentMove = moves[index];
             BoardCell = Board.getCellbyPosition(currentMove, this.isLeft);
 
-            if (BoardCell === null) {
-                continue
-            }
+            if (BoardCell === null) continue
 
-            // NOTES: Piece can't move to position if this cell is occupied on another
-            //        board.
-            if (opposite_board[currentMove[1]][currentMove[0]].type !== Piece.EMPTY) {
-                continue
-            }
-            //NOTES: This logic aren't working with pawn. For them wa generate another
-            //       list os possitions for attack
+            // NOTES: Piece can't move to position if this cell is occupied on
+            // another board.
+            // NOTES: This logic aren't working with pawn. For them wa generate
+            // another list os possitions for attack
+            
             if (this.PieceName.type !== Piece.PAWN) {
                 // NOTES: I guess that in move generation we are get [y,x],
                 //        so for the rest of system we should revers this.
-                if (board[currentMove[1]][currentMove[0]].type !== Piece.EMPTY) {
-                    Board.lightupCell(BoardCell, cellStates.underAttack);
-                    isEating = true;
+                let currentCell = board[currentMove[1]][currentMove[0]]
+                let oppositCell = opposite_board[currentMove[1]][currentMove[0]]
+
+                if (currentCell.color === this.getPieceName().color) continue
+                if (currentCell.type !== Piece.EMPTY) {
+                    if (oppositCell.type === Piece.EMPTY) {
+                        Board.lightupCell(BoardCell, cellStates.underAttack);
+                        isEating = true;
+                    }
                 }
             }
             else {
-                // TODO: Create generation of attack for PAWNs.
+                const vector = PAWN_ATTACK_VECTOR;
+
+                for (let index = 0; index < PAWN_ATTACK_VECTOR.length; index++) {
+                    let y = this.Position[0] + vector[index][0]
+                    let x = this.Position[1] + vector[index][1]
+
+                    let attackCell = Board.getCellbyPosition([y,x], this.isLeft)
+
+                    if (attackCell === null) continue
+                    if (opposite_board[x][y].type !== Piece.EMPTY) continue 
+                    if (board[x][y].type === Piece.EMPTY) continue
+                    if (board[x][y].color !== this.PieceName.color) {
+                        Board.lightupCell(attackCell, cellStates.underAttack)
+                        isEating = true
+                        Board.lightupCell(attackCell, cellStates.moveble);
+                        attackCell.addEventListener("click", () => { 
+                            this.movement([y,x], isEating) 
+                        }, {signal : this.areaListener.signal} )
+                    }
+                }
             }
 
             Board.lightupCell(BoardCell, cellStates.moveble);
@@ -113,9 +137,7 @@ export class RealPiece {
     }
 
     private movement(endPos : number[], isEating : boolean) {
-        if (WAITING) {
-            return
-        }
+        if (WAITING) return;
 
         const EMPTY_CELL = {
             type : Piece.EMPTY,
@@ -144,9 +166,11 @@ export class RealPiece {
                 // NOTES: enemyPiece is never null in this circumstances.
                 enemyPiece?.remove();
 
-                // TODO: Need create system that update and remove pieces that are
-                //       was eaten, so the system for mate can be accurate. But 
-                //       this should be done when we'll create multiplayer.
+                // DONE: Need create system that update and remove pieces that 
+                //       are was eaten, so the system for mate can be accurate.
+                //       But this should be done when we'll create multiplayer.
+                // NOTE: I think now it works fine, because we recreate game 
+                //       after every turn.
                 board[endPos[1]][endPos[0]] = EMPTY_CELL;
             }
             if (endCell !== null) {
@@ -335,20 +359,6 @@ export class RealPiece {
         
         return false;
     }
-    
-    /*
-     * Here we check if cell is empty or not.
-     */
-   private checkColide(Position : number[], board : GamePiece[][]) : boolean {
-       const x = Position[0];
-       const y = Position[1];
-       
-       if (board[y][x].color !== Color.NONE) {
-           return true
-       }
-
-       return false;
-   } 
 
    /**
     * Generation all moves using vectors.
@@ -356,114 +366,122 @@ export class RealPiece {
     *
     * Maybe later should add litle changes but for now it's ok
     */
-   private generateMovesFromVectors(vectors : number[][], board : GamePiece[][]) : number[][] {
-       const result : number[][] = []; 
-       let calculated : number[] = [];
-       let isEnd : boolean = false; 
-       const opposite_color = this.PieceName.color === Color.BLACK ? Color.WHITE : Color.BLACK
+    private generateMovesFromVectors(vectors : number[][], board : GamePiece[][], opposBoard : GamePiece[][]) : number[][] {
+        const result : number[][] = []; 
+        let selfPos : number[] = this.Position
+        let isEnd : boolean = false; 
+        const selfColor = this.PieceName.color
+        let x_temp : number
+        let y_temp : number
 
+        // Iterate over all vectors
+        for (let index = 0; index < vectors.length; index++) {
+            x_temp = selfPos[0] + vectors[index][0];
+            y_temp = selfPos[1] + vectors[index][1];
 
-       // Iterate over all vectors
-       for (let index = 0; index < vectors.length; index++) {
+            isEnd = false;
 
-           // We copy position for future calculation and don't mess with real position
-           calculated = [];
-           this.Position.map(item => (calculated.push(item)));
+            if (!this.checkIfOnBoard(x_temp) || !this.checkIfOnBoard(y_temp)) {
+                continue
+            }
 
-           const x_temp = calculated[0] += vectors[index][0];
-           const y_temp = calculated[1] += vectors[index][1];
+            if(board[y_temp][x_temp].type !== Piece.EMPTY) {
+                if(board[y_temp][x_temp].color !== selfColor) {
+                    if(opposBoard[y_temp][x_temp].type === Piece.EMPTY) {
+                        result.push([]);
+                        result[result.length - 1].push(x_temp)
+                        result[result.length - 1].push(y_temp)
+                        isEnd = true
+                    }
+                }
+                else {
+                    isEnd = true
+                }
+            }
+            else {
+                if(opposBoard[y_temp][x_temp].type === Piece.EMPTY) {
+                    result.push([]);
+                    result[result.length - 1].push(x_temp)
+                    result[result.length - 1].push(y_temp)
+                }
+            }
 
-           isEnd = false;
+            while (!isEnd) {
 
-           if (this.checkIfOnBoard(calculated[0]) && this.checkIfOnBoard(calculated[1])) {
-               if (this.checkColide(calculated, board)) {
-                   if (board[y_temp][x_temp].color === opposite_color) {
-                       result.push([]);
-                       calculated.map(item => (result[result.length - 1].push(item)));
-                       isEnd = true;
-                   }
-                   else {
-                       isEnd = true;
-                   }
-               }
-           }
-           else {
-                isEnd = true;
-           }
+                // We add an empty place for new pair.  Then we put x and y
+                // coord at the end of array This isn't readable at all. Maybe I
+                // should to rewrite it later
 
-           while (!isEnd) {
+                x_temp += vectors[index][0];
+                y_temp += vectors[index][1];
 
-               // We add an empty place for new pair.
-               // Then we put x and y coord at the end of array
-               // This isn't readable at all. Maybe I should to rewrite it later
+                console.log("x,y = ",[x_temp,y_temp])
 
-               result.push([]);
-               calculated.map(item => (result[result.length - 1].push(item)));
+                // Exit the loop if any of coord are invalid
+                if (!this.checkIfOnBoard(x_temp) || !this.checkIfOnBoard(y_temp)) {
+                    console.log("Broke a loop, not at board");
+                    break
+                }
 
-               const x_temp = calculated[0] += vectors[index][0];
-               const y_temp = calculated[1] += vectors[index][1];
-
-               // Exit the loop if any of coord are invalid
-               if (!this.checkIfOnBoard(calculated[0]) || !this.checkIfOnBoard(calculated[1])) {
-                   break
-               }
-
-               // Check colide
-               if (this.checkColide(calculated, board)) {
-                   if (board[y_temp][x_temp].color === opposite_color) {
-                       result.push([]);
-                       calculated.map(item => (result[result.length - 1].push(item)));
-                       isEnd = true;
-                   }
-                   else {
-                       isEnd = true;
-                   }
-               }
-           }
-       }
-
-       return result;
-   }
+                if(board[y_temp][x_temp].type !== Piece.EMPTY) {
+                    if(board[y_temp][x_temp].color !== selfColor) {
+                        if(opposBoard[y_temp][x_temp].type === Piece.EMPTY) {
+                            result.push([]);
+                            result[result.length - 1].push(x_temp)
+                            result[result.length - 1].push(y_temp)
+                            isEnd = true
+                        }
+                    }
+                    else {
+                        isEnd = true
+                    }
+                }
+                else {
+                    if(opposBoard[y_temp][x_temp].type === Piece.EMPTY) {
+                        result.push([]);
+                        result[result.length - 1].push(x_temp)
+                        result[result.length - 1].push(y_temp)
+                    }
+                }
+            }
+        }
+        return result
+    }
 
     /*
      * Generate movment for Pieces that can be calculated via equasion
      */ 
 
-    private generatePawnMoves(board : GamePiece[][]): number[][] {
-        /* TODO: It should be chenged when i'll create a multiplayer because
-        * player's pieces will be always at the bottom, so right equation for
-        * them is [x_movable, y_start + 1]. But for now it should be :
-                * [x_movable, y_start +- 1]*/
-        let all_moves = [];
-        if (this.PieceName.color == Color.WHITE) {
-            let x_temp = this.Position[0];
-            let y_temp = this.Position[1] - 1;
+    private generatePawnMoves(board : GamePiece[][], opposBoard : GamePiece[][]): number[][] {
+        let all_moves : number[][] = [];
+        let x_temp = this.Position[0];
+        let y_temp = this.Position[1] - 1;
 
-            if (board[x_temp][y_temp].color !== Color.NONE) {
-                all_moves.push([]);
+        if (board[y_temp][x_temp].type !== Piece.EMPTY) {
+            all_moves.push([]);
+            return all_moves;
+        } 
+
+        if (opposBoard[y_temp][x_temp].type === Piece.EMPTY) {
+            all_moves.push([x_temp, y_temp]);
+        }
+
+        if (this.Position[1] === 6) {
+            y_temp -= 1
+
+            if (board[y_temp][x_temp].type !== Piece.EMPTY) {
                 return all_moves;
             } 
-
-            all_moves.push([x_temp, y_temp]);
-            return all_moves;
+            if (opposBoard[y_temp][x_temp].type === Piece.EMPTY) {
+                all_moves.push([x_temp, y_temp]);
+            }
         }
-        if (this.PieceName.color === Color.BLACK) {
-            let x_temp = this.Position[0];
-            let y_temp = this.Position[1] + 1;
 
-            if (board[x_temp][y_temp].color !== Color.NONE) {
-                all_moves.push([]);
-                return all_moves;
-            } 
-
-            all_moves.push([x_temp, y_temp]);
-            return all_moves;
-        }
-        // Return error if color is NONE. But it shouldn't happend
-        return [[-1, -1]] 
+        return all_moves;
     }
 
-    private generateKingMoves(board : GamePiece[][]): number[][] {
+    private generateKingMoves(board : GamePiece[][],
+                              oposBoard : GamePiece[][]): number[][] {
         let all_moves = [];
 
         // Here we generate all moves by iterating over all cell and check if there needed move.
@@ -471,16 +489,26 @@ export class RealPiece {
         // 1) | x_end - x_start | <= 1
         // 2) | y_end - y_start | <= 1
 
-        for (let y_temp = 0; y_temp < 8; y_temp++) {
-            for (let x_temp = 0; x_temp < 8; x_temp++) {
-                if (x_temp === this.Position[0] && y_temp === this.Position[1]) {
+        const selfColor = this.getPieceName().color
+        for (let y = 0; y < 8; y++) {
+            for (let x = 0; x < 8; x++) {
+                if (x === this.Position[0] && y === this.Position[1]) {
                     continue
                 }
-                if (Math.abs(x_temp - this.Position[0]) <= 1 && Math.abs(y_temp - this.Position[1]) <= 1) {
-                    if (board[y_temp][x_temp].color === this.getPieceName().color) {
-                        continue
+                if (Math.abs(x - this.Position[0]) <= 1 && Math.abs(y - this.Position[1]) <= 1) {
+                    if (board[y][x].color === selfColor) continue;
+
+                    let isWhiteTurn :boolean 
+                    if (selfColor === Color.WHITE) {
+                        isWhiteTurn = true
                     }
-                    all_moves.push([x_temp, y_temp])
+                    else {
+                        isWhiteTurn = false
+                    }
+                    if (oposBoard[y][x].type !== Piece.EMPTY) continue
+                    if (!this.GAME.isUnderCheck([x, y], this.isLeft, isWhiteTurn)) {
+                        all_moves.push([x, y])
+                    }
                 }
             }
         }
@@ -488,7 +516,8 @@ export class RealPiece {
         return all_moves;
     }
 
-    private generateKnightMoves(board : GamePiece[][]) : number[][] {
+    private generateKnightMoves(board : GamePiece[][],
+                                oposBoard : GamePiece[][]) : number[][] {
         let all_moves : number[][] = [];
 
         // Here we geberate all moves for knight via iterating
@@ -498,16 +527,17 @@ export class RealPiece {
         // 2) | x_end - x_start | = 2
         //    | y_end - y_start | = 1
 
-        for (let y_temp = 0; y_temp < 8 ; y_temp++) {
-            for (let x_temp = 0; x_temp < 8; x_temp++) {
-                if (board[y_temp][x_temp].color === this.getPieceName().color) {
-                    continue
+        const selfColor = this.getPieceName().color
+        for (let y = 0; y < 8 ; y++) {
+            for (let x = 0; x < 8; x++) {
+                if (board[y][x].color === selfColor) continue;
+                if (oposBoard[y][x].type !== Piece.EMPTY) continue;
+
+                if (Math.abs(x - this.Position[0]) === 1 && Math.abs(y - this.Position[1]) === 2) {
+                    all_moves.push([x, y])
                 }
-                if (Math.abs(x_temp - this.Position[0]) === 1 && Math.abs(y_temp - this.Position[1]) === 2) {
-                    all_moves.push([x_temp, y_temp])
-                }
-                if (Math.abs(x_temp - this.Position[0]) === 2 && Math.abs(y_temp - this.Position[1]) === 1) {
-                    all_moves.push([x_temp, y_temp])
+                if (Math.abs(x - this.Position[0]) === 2 && Math.abs(y - this.Position[1]) === 1) {
+                    all_moves.push([x, y])
                 }
             }
         }
@@ -521,22 +551,22 @@ export class RealPiece {
      * @param GameState game object for getting needed information about game
      * @returns Array of positions that are theoreticaly avaible for movment
      */
-    public generateAllMoves(board : GamePiece[][]) : number[][] {
+    public generateAllMoves(board : GamePiece[][], oppositeBoard : GamePiece[][]) : number[][] {
         switch (this.PieceName.type) {
             case Piece.PAWN:
-                return this.generatePawnMoves(board);
+                return this.generatePawnMoves(board, oppositeBoard);
             case Piece.ROCK:
-                return this.generateMovesFromVectors(ROCK_VECTOR, board);
+                return this.generateMovesFromVectors(ROCK_VECTOR, board, oppositeBoard);
             case Piece.KING:
                 // TODO Casteling position for King
-                let moves = this.generateKingMoves(board);
+                let moves = this.generateKingMoves(board, oppositeBoard);
                 return moves;
             case Piece.KNIGHT:
-                return this.generateKnightMoves(board)
+                return this.generateKnightMoves(board, oppositeBoard)
             case Piece.BISHOP:
-                return this.generateMovesFromVectors(BISHOP_VECTOR, board);
+                return this.generateMovesFromVectors(BISHOP_VECTOR, board, oppositeBoard);
             case Piece.QUEEN:
-                return this.generateMovesFromVectors(QUEEN_VECTOR, board);
+                return this.generateMovesFromVectors(QUEEN_VECTOR, board, oppositeBoard);
             // This varian SHOULD never be happend.
 			default:
 				return [[]];

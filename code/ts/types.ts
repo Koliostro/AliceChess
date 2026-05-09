@@ -62,6 +62,11 @@ export const QUEEN_VECTOR = [
     [-1, 1]
 ]
 
+export const PAWN_ATTACK_VECTOR = [
+    [ 1, -1],
+    [-1, -1]
+]
+
 export enum HEADER {
     START = "START",
     SET = "SET",

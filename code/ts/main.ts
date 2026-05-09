@@ -8,4 +8,3 @@ let MPHandler = new WEB(GAME)
 // Generate a visual board for game
 GAME.createBoard();
 
-console.log("FIRST :", WAITING);

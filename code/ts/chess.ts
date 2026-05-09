@@ -21,20 +21,74 @@ export class Chess {
         this.isGameEnd = isGameEnd
     }
 
+    /**
+     * Remove all pieces from board so new pieces can be created.
+     */
     public clearBoards() {
-        console.log(this.allBlackPieces);
-        console.log(this.allWhitePieces);
-        console.log(this.leftField);
         this.allBlackPieces.forEach((value) => {
             value.destructor()                            
         })
         this.allWhitePieces.forEach((value) => {
             value.destructor()                            
         })
+
+        this.allBlackPieces = []
+        this.allWhitePieces = []
+
+        this.rightField = []
+        this.leftField = []
+    }
+
+    // TODO:
+    //      Need to check is this working, 'cause i still can confuse x and y
+    //      and next i need to set way to filter moves in case of check. 
+    // NOTE:
+    //      I've rewrite it a little and now it can check any square. So I can
+    //      use it in king's movement to not let him step under check.
+    
+   /**
+    * Check is cell is under attack
+    * @param {number[]} Position - position of checking cell
+    * @param {boolean} isLeft - determent which of two boards are used
+    * @param {boolean} isWhiteTurn - Flag that change who used as enemy
+    * @returns {boolean} boolean
+    */ 
+    public isUnderCheck(Position : number[], isLeft : boolean, isWhiteTurn : boolean) : boolean {
+        /**
+         *  1) Get position of king 
+         *  2) get all enemy pieces
+         *  3) iterate over all pieces and skip thouse that not on the same 
+         *     board as king
+         *  4) If at least some of possible cells are king's position, king are
+         *     under check.
+         */
+
+        let EnemyPieces : RealPiece[]
+
+        if (isWhiteTurn) {
+            EnemyPieces = this.allBlackPieces
+        }
+        else {
+            EnemyPieces = this.allWhitePieces 
+        }
+        
+        for (let i = 0; i < EnemyPieces.length; i++) {
+            let currentPiece = EnemyPieces[i]
+
+            if (currentPiece.getSide() !== isLeft) {
+                continue
+            }
+
+            if (currentPiece.getPos() === Position) {
+                return true
+            }
+        }
+        return false
     }
 
     /**
      * Iterate over all boards and create visual pieces at board
+     * @param isBlackTurn - select which turn to flip board
      * @returns void
      */
     public visualCreationOfPieces(isBlackTurn : boolean) {
@@ -47,7 +101,7 @@ export class Chess {
                     this.createPiece(leftboard[j][i], [i,j], true, isBlackTurn); 
                 }
                 
-                // Need check and DON'T run createPiece on damn empty cell!!!!
+                // TODO: Fix error of render on right board
                 if (rightboard[j][i].type !== Piece.EMPTY) {
                     this.createPiece(rightboard[j][i], [i,j], false, isBlackTurn); 
                 } 
@@ -127,7 +181,7 @@ export class Chess {
      * placed 
      */
     public createPiece(Piece : GamePiece, position : number[], isLeft : boolean, isBlackTurn : boolean) {
-        let new_Piece : RealPiece = new RealPiece(Piece, position, isLeft, this.leftField, this.rightField)
+        let new_Piece : RealPiece = new RealPiece(Piece, position, isLeft, this.leftField, this.rightField, this)
         let result = new_Piece.createPiece(position, isLeft, isBlackTurn);
         
         if (result !== -1) {
@@ -193,6 +247,11 @@ export class Chess {
         }
     }
 
+    /**
+     * Set board with selected state [2d array], now deprecated in favor of FEH
+     * @param isLeft - select for which board state are
+     * @param state - 2d array that describe new state
+     */
     public setBoard(isLeft : boolean, state : GamePiece[][]) : void {
         if (isLeft) {
            for (let y = this.leftField.length; y < 8; y++) {
@@ -348,12 +407,18 @@ export class Chess {
         return regex.test(str);
     }
 
+    /**
+     * Generate game state from feh notation
+     * @param isLeft - select to shich board this state are
+     * @param isInvers - flag that determen do we need to invers board
+     * @param stateString - string with feh notation (NOTE: I use obly part of it)
+     */
     public generateBoardSetUp(stateString : string, isLeft : boolean, isInvers : boolean) : number {
         let rowCount = 0;
         let colCount = 0;
         let countPieces = 0;
         
-        const board = this.getBoard(isLeft)
+        let board = this.getBoard(isLeft)
 
         let EMPTY_CELL : GamePiece = {
             type : Piece.EMPTY,
@@ -376,6 +441,8 @@ export class Chess {
 
         const size = stateString.length
         for (let i = 0; i < size; i++) {
+
+            // Move to new line
             if (stateString[i] === '/') {
                 rowCount++;
                 colCount = 0;
@@ -385,7 +452,6 @@ export class Chess {
 
             if (isNaN(Number(stateString[i]))) {
                 let typeOfPiece : Piece;
-
                 switch (lowercase[i]) {
                     case 'b':
                         typeOfPiece = Piece.BISHOP;
@@ -406,20 +472,26 @@ export class Chess {
                         typeOfPiece = Piece.QUEEN;
                         break;
                 }
-                let isTilred = this.checkIfTitled(stateString[i]) 
-                let color = isTilred ? Color.WHITE : Color.BLACK
+
+                let isTilted = this.checkIfTitled(stateString[i]) 
+                let color = isTilted ? Color.WHITE : Color.BLACK
+
                 board[rowCount][colCount] = { 
                     type : typeOfPiece, 
                     color : color
                 };
+
                 colCount++;
                 countPieces++;
             }
             else {
-                for (let count = 0; count < Number(stateString[i]); count++) {
+                const AmountEmpty = Number(stateString[i])
+
+                for (let count = 0; count < AmountEmpty; count++) {
                     board[rowCount][colCount + count] = EMPTY_CELL;
                 }
-                colCount = Number(stateString[i]) + countPieces;
+
+                colCount = AmountEmpty + colCount
             }
         }
 

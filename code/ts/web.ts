@@ -45,11 +45,9 @@ export class WEB {
         window.addEventListener("turnDone", () => {this.TurnHandler()})
 
         if (!this.board.IsGameStarted) {
-            console.log("constr: START WAITING");
             this.SetWaiting() 
         }
         else {
-            console.log("constr: STOP WAITING");
             this.StopWaiting()
         }
     }
@@ -112,7 +110,8 @@ export class WEB {
 
         let currentTurn : string = "";
 
-        console.log(this.board.Left);
+        console.log("Own setup left : ", this.board.Left);
+        console.log("Own setup right : ", this.board.Right);
 
         let LeftNotation : string;
         let RightNotation : string;
@@ -133,7 +132,8 @@ export class WEB {
 
         this.boardState.turnNumber++
 
-        console.log(`Sended board = ${this.board.Left}`)
+        console.log(`Sended board left = ${this.board.Left}`)
+        console.log(`Sended board right = ${this.board.Right}`)
 
         this.sendNewState()
         console.log("NOW WAIT");
@@ -154,11 +154,16 @@ export class WEB {
     }
 
     public updateGameState(state : GameState, Game : Chess, isInvers : boolean = false) {
+        console.log("State left before clean", Game.getBoard(true))
+        console.log("State right before clean", Game.getBoard(false))
+
+        Game.clearBoards()
         Game.generateBoardSetUp(state.Left, true, isInvers);
         Game.generateBoardSetUp(state.Right, false, isInvers);
-        Game.clearBoards()
         
-        // TODO: Here need to add events listener only to own color pieces.
+        console.log("State left after clean", Game.getBoard(true))
+        console.log("State right after clean", Game.getBoard(false))
+        
         if (this.boardState.currentTurn === "w") {
             Game.visualCreationOfPieces(false)
         }
@@ -183,13 +188,11 @@ export class WEB {
                 return "";
             }
             const state : GameState = JSON.parse(text)
-            let isNewState : boolean = false;
 
             let newBoardState = this.Parser(state.Left)
 
             if (newBoardState?.turnNumber === this.boardState.turnNumber + 1) {
                 this.boardState = newBoardState
-                isNewState = true
             }
 
             if (state.IsGameStarted) {
@@ -199,8 +202,7 @@ export class WEB {
                 this.board.Right = state.Right
 
                 // TODO: Need chenge to smh 'cause before first turn black has no image.
-                if (state.IsYourTurn && isNewState) {
-                    console.log(`Current letter = ${this.boardState.currentTurn}`)
+                if (state.IsYourTurn) {
                     if (this.boardState.currentTurn === "b") {
                         this.updateGameState(state, this.GAME, true)
                     }

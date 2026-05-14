@@ -1,5 +1,4 @@
 .board__cell {
-    border: 1.9px solid darkgray;
     display: flex;
     align-items: center;
 }
@@ -23,9 +22,9 @@
 }
 
 .board__cell_white {
-    background-color: crimson;
+    background-color: var(--color-red, white);
 }
 
 .board__cell_black {
-    background-color: white;
+    background-color: var(--color-cyan, crimson);
 }

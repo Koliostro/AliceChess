@@ -1,0 +1,12 @@
+@import "./__button/manu__button.css";
+
+.menu {
+    width: 80%;
+    aspect-ratio: 1.5/1;
+    
+    align-items: center;
+    background-image: url("../../img/formBack.webp");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+}

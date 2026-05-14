@@ -53,7 +53,7 @@ export class Chess {
     * @param {boolean} isWhiteTurn - Flag that change who used as enemy
     * @returns {boolean} boolean
     */ 
-    public isUnderCheck(Position : number[], isLeft : boolean, isWhiteTurn : boolean) : boolean {
+    public isUnderCheck(Position : number[], isLeft : boolean, isWhiteTurn : boolean) : [boolean, RealPiece | null, number[][] | null] {
         /**
          *  1) Get position of king 
          *  2) get all enemy pieces
@@ -73,17 +73,24 @@ export class Chess {
         }
         
         for (let i = 0; i < EnemyPieces.length; i++) {
-            let currentPiece = EnemyPieces[i]
+            let curPiece = EnemyPieces[i]
 
-            if (currentPiece.getSide() !== isLeft) {
-                continue
+            if (curPiece.getSide() !== isLeft) continue;
+            if (curPiece.getPieceName().type === Piece.KING) continue; 
+
+            let allMoves = curPiece.generateAllMoves(this.getBoard(isLeft), this.getBoard(!isLeft), true)
+
+            if (allMoves.length < 1) continue;
+            
+            for (let j = 0; j < allMoves.length; j++) {
+                if (allMoves[j].length === 0) break;
+                if (allMoves[j][0] !== Position[0]) continue;
+                if (allMoves[j][1] !== Position[1]) continue;
+                return [true, curPiece, allMoves]
             }
 
-            if (currentPiece.getPos() === Position) {
-                return true
-            }
         }
-        return false
+        return [false, null, null]
     }
 
     /**
@@ -101,7 +108,6 @@ export class Chess {
                     this.createPiece(leftboard[j][i], [i,j], true, isBlackTurn); 
                 }
                 
-                // TODO: Fix error of render on right board
                 if (rightboard[j][i].type !== Piece.EMPTY) {
                     this.createPiece(rightboard[j][i], [i,j], false, isBlackTurn); 
                 } 

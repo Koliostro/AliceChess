@@ -1,5 +1,13 @@
+@import "./__mainMenu/main__mainMenu.css";
+
 .main {
     display: flex;
+
+    width: 60lvw;
+    aspect-ratio: 1.5/1;
+
+    justify-self: center;
+    align-items: center;
 
     justify-content: center;
 }

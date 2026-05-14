@@ -12,7 +12,7 @@
 }
 
 .white_rock {
-    background-color: goldenrod;
+    background-image: url(/static/img/white_rock.svg);
 }
 .black_pawn {
     background-image: url(/static/img/black_pawn.svg);

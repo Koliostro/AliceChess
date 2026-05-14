@@ -1,0 +1,21 @@
+.background {
+    display: flex;
+
+    justify-content: center;
+
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    background-position: center;
+
+    width: auto;
+    height: 100lvh;
+}
+
+.background_game {
+    background-image: url(../../img/background.webp);
+}
+
+.background_login, .background_main-menu {
+    background-image: url(../../img/connectionMenu_back.webp);
+}

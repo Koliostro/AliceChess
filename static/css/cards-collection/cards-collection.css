@@ -1,0 +1,11 @@
+@import url(__element/cards-collection__element.css);
+
+.cards-collection {
+    width: 70%;
+    text-align: justify; 
+    text-align-last: center;
+
+    gap: 0.5svh;
+
+    justify-content: center;
+}

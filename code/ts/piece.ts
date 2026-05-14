@@ -415,11 +415,8 @@ export class RealPiece {
                 x_temp += vectors[index][0];
                 y_temp += vectors[index][1];
 
-                console.log("x,y = ",[x_temp,y_temp])
-
                 // Exit the loop if any of coord are invalid
                 if (!this.checkIfOnBoard(x_temp) || !this.checkIfOnBoard(y_temp)) {
-                    console.log("Broke a loop, not at board");
                     break
                 }
 
@@ -505,8 +502,12 @@ export class RealPiece {
                     else {
                         isWhiteTurn = false
                     }
-                    if (oposBoard[y][x].type !== Piece.EMPTY) continue
-                    if (!this.GAME.isUnderCheck([x, y], this.isLeft, isWhiteTurn)) {
+
+                    if (oposBoard[y][x].type !== Piece.EMPTY) continue;
+
+                    let isAttacked = this.GAME.isUnderCheck([x, y], this.isLeft, isWhiteTurn)
+
+                    if (!isAttacked[0]) {
                         all_moves.push([x, y])
                     }
                 }
@@ -551,25 +552,146 @@ export class RealPiece {
      * @param GameState game object for getting needed information about game
      * @returns Array of positions that are theoreticaly avaible for movment
      */
-    public generateAllMoves(board : GamePiece[][], oppositeBoard : GamePiece[][]) : number[][] {
+    public generateAllMoves(board : GamePiece[][], oppositeBoard : GamePiece[][], noCheck : boolean = false) : number[][] {
+        let ownPieces : RealPiece[]
+        let isWhiteTurn : boolean
+        if (this.getPieceName().color === Color.WHITE) {
+            ownPieces = this.GAME.getAllWhitePieces()
+            isWhiteTurn = true
+        } else {
+            ownPieces = this.GAME.getAllBlackPieces()
+            isWhiteTurn = false
+        }
+
+        let moves;
         switch (this.PieceName.type) {
             case Piece.PAWN:
-                return this.generatePawnMoves(board, oppositeBoard);
+                moves = this.generatePawnMoves(board, oppositeBoard);
+                break;
             case Piece.ROCK:
-                return this.generateMovesFromVectors(ROCK_VECTOR, board, oppositeBoard);
+                moves = this.generateMovesFromVectors(ROCK_VECTOR, board, oppositeBoard);
+                break;
             case Piece.KING:
-                // TODO Casteling position for King
-                let moves = this.generateKingMoves(board, oppositeBoard);
-                return moves;
+                moves = this.generateKingMoves(board, oppositeBoard);
+                break;
             case Piece.KNIGHT:
-                return this.generateKnightMoves(board, oppositeBoard)
+                moves = this.generateKnightMoves(board, oppositeBoard)
+                break;
             case Piece.BISHOP:
-                return this.generateMovesFromVectors(BISHOP_VECTOR, board, oppositeBoard);
+                moves = this.generateMovesFromVectors(BISHOP_VECTOR, board, oppositeBoard);
+                break;
             case Piece.QUEEN:
-                return this.generateMovesFromVectors(QUEEN_VECTOR, board, oppositeBoard);
+                moves = this.generateMovesFromVectors(QUEEN_VECTOR, board, oppositeBoard);
+                break;
             // This varian SHOULD never be happend.
-			default:
-				return [[]];
+            default:
+                console.log("Default piece type :", this.PieceName.type);
+                moves = [[]];
+                break;
         }
+
+        if (noCheck) return moves;
+        
+        let ownKing : RealPiece | null = null;
+        for (let i = 0; i < ownPieces.length; i++) {
+            if (ownPieces[i].getPieceName().type !== Piece.KING) continue;
+            ownKing = ownPieces[i]
+        }
+        
+        if (ownKing === null) return moves;
+
+        const ownPos = ownKing.Position;
+        const ownSide = ownKing.getSide();
+
+        let [isAttacked, attacker] = this.GAME.isUnderCheck(ownPos, ownSide, isWhiteTurn)
+
+        if (isAttacked) {
+            if (attacker === null) return moves;
+
+            let isSliding : boolean = false;
+
+            switch (attacker.PieceName.type) {
+                case Piece.ROCK:
+                case Piece.BISHOP:
+                case Piece.QUEEN:
+                    isSliding = true
+                    break;
+                default:
+                    isSliding = false
+                    break;
+            }
+            
+            // TODO: Need to create a mate check. 
+
+            let filtered : number[][] = [];
+            let attackerPos : number[] = attacker.getPos();
+
+            if (isSliding) {
+                let vec = [ownPos[1] - attackerPos[1], ownPos[0] - attackerPos[0]]
+                let temp_vec = [vec[0], vec[1]]
+                
+                for (let i = 0; i < vec.length; i++) {
+                    if (vec[i] === 0) vec[i] = 0;
+                    if (vec[i] < 0) {
+                        if (vec[i] < -1) {
+                            vec[i] = -1
+                        }
+                    } 
+                    else {
+                        if (vec[i] > 1) {
+                            vec[i] = 1
+                        }
+                    }
+                }
+
+                let maxIter = 0;
+                for (let j = 0; j < temp_vec.length; j++) {
+                    if (temp_vec[j] === 0) continue;
+                    maxIter = Math.abs(temp_vec[j])
+                }
+
+                let allowedMoves : number[][] = [];
+                let tempPos = ownPos;
+                for (let j = 1; j < maxIter; j++) {
+                    allowedMoves.push([])
+                    allowedMoves[j-1][0] = tempPos[0] += vec[0] 
+                    allowedMoves[j-1][1] = tempPos[1] += vec[1] 
+                }
+
+                let curMov : number[]
+                for (let i = 0; i < moves.length; i++) {
+                    curMov = moves[i] 
+
+                    if (attackerPos[0] === curMov[0]) {
+                        if (attackerPos[1] === curMov[1]) {
+                            filtered.push(attackerPos)
+                        } 
+                    }
+                    
+                    for (let j = 0; j < allowedMoves.length; j++) {
+                        if (curMov[0] !== allowedMoves[i][0]) continue;
+                        if (curMov[1] !== allowedMoves[i][1]) continue;
+                        filtered.push(curMov) 
+                        break;
+                    }
+                }
+            } else {
+                let curMov : number[]
+                for (let i = 0; i < moves.length; i++) {
+                    curMov = moves[i] 
+
+                    if (attackerPos[0] === curMov[0]) {
+                        if (attackerPos[1] === curMov[1]) {
+                            filtered.push(attackerPos)
+                        } 
+                    } 
+                }
+            }
+                
+            return filtered 
+        }
+
+
+        return moves
     }
 }

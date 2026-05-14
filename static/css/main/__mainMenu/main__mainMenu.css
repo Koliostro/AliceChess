@@ -1,0 +1,8 @@
+.main__mainMenu {
+    display: flex;
+
+    gap: 0.5svh;
+
+    align-items: center;
+    justify-content: center;
+}

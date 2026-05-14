@@ -1,0 +1,15 @@
+.menu__button {
+    color: var(--color-red) ;
+    background-color: var(--color-cyan);
+
+    text-decoration: none;
+
+    padding: 1svh;
+
+    transition: all linear 0.35s;
+}
+
+.menu__button:hover {
+    color: var(--color-cyan) ;
+    background-color: var(--color-red);
+}

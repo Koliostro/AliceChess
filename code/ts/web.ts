@@ -53,17 +53,15 @@ export class WEB {
     }
 
     private ModifyCurtain(isRemove : boolean = true) {
-        let value
-        if (isRemove) {
-            value = -1
-        }
-        else {
-            value = 999
-        }
         const element = document.querySelector(".curtain") as HTMLElement;
         if (element != null) {
-            element.style.setProperty("z-index", `${value}`)
-        } 
+            if (isRemove) {
+                element.style.setProperty("display", "none")
+            }
+            else {
+                element.style.setProperty("display", "flex")
+            }
+        }
     }
 
     private WaitingPender() {

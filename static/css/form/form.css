@@ -1,0 +1,10 @@
+@import "./__input/form__input.css";
+
+.form {
+    width: 100%;
+    height: auto;
+
+    padding: 5vh;
+
+    gap: 0.5svh;
+}

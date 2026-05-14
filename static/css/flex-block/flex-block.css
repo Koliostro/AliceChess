@@ -2,7 +2,15 @@
     display:flex;
 }
 
+.flex-block_wrap {
+    flex-wrap: wrap;
+}
+
 .flex-block_all-center {
     align-content: center;
     justify-content: center;
+}
+
+.flex-block_vertical {
+    flex-direction: column;
 }

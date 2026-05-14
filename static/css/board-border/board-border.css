@@ -1,0 +1,4 @@
+.board-border {
+    border: 2.5vh solid var(--black-color, red);
+    outline: 1vh solid black;
+}

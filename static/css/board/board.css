@@ -2,9 +2,13 @@
 
 .board {
     display: inline-grid;
-    border: 3px solid darkgray;
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
-    width: 500px;
-    height: 500px;
+    width: 50svh;
+    aspect-ratio: 1/1;
+
+    max-width: 500px;
+
+    border: 0.25svb solid var(--color-red, black);
+    outline: 1svb solid var(--color-cyan, white);
 }

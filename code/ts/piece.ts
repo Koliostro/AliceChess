@@ -178,6 +178,7 @@ export class RealPiece {
             }
         }
         this.removeAllPossibleMoves();
+        this.RemoveSelectionFromPiece();
         // NOTES: This little line are my savier! 
         //        Because it can remove all eventListeners at once!
         this.areaListener.abort();
@@ -278,15 +279,29 @@ export class RealPiece {
         visual_position.appendChild(visual_piece);
         if (isBlackTurn) {
             if (this.PieceName.color === Color.BLACK) {
-                visual_piece.addEventListener("click", () => {
+                visual_piece.addEventListener("click", (event) => {
+                    if (WAITING) return 
+                    if (this.GAME.getIsGameEnd()) return;
                     this.highlightAllpossibleMoves() 
+                    let target = event.target;
+                    if (target !== null) {
+                        let cell = target as HTMLElement
+                        this.LigthSelectedPiece(true, cell)
+                    }
                 })
             }
         }
         else {
             if (this.PieceName.color !== Color.BLACK) {
-                visual_piece.addEventListener("click", () => {
+                visual_piece.addEventListener("click", (event) => {
+                    if (WAITING) return 
+                    if (this.GAME.getIsGameEnd()) return;
                     this.highlightAllpossibleMoves() 
+                    let target = event.target;
+                    if (target !== null) {
+                        let cell = target as HTMLElement
+                        this.LigthSelectedPiece(false, cell)
+                    }
                 })
             }
         }
@@ -294,6 +309,28 @@ export class RealPiece {
         this.HTMLPiece = visual_piece;
 
         return 0;
+    }
+    private LigthSelectedPiece(isBlack : boolean, cell : HTMLElement) : void {
+        this.RemoveSelectionFromPiece()
+
+        if (isBlack) {
+            cell.classList.add("lightUp-white")
+        }
+        else {
+            cell.classList.add("lightUp-black")
+        }
+    }
+
+    private RemoveSelectionFromPiece() : void {
+        let PrevSelected_white = document.querySelectorAll(".lightUp-white")
+        let PrevSelected_black = document.querySelectorAll(".lightUp-black")
+
+        for (let i = 0; i < PrevSelected_black.length; i++) {
+            PrevSelected_black[i].classList.remove("lightUp-black")
+        }
+        for (let i = 0; i < PrevSelected_white.length; i++) {
+            PrevSelected_white[i].classList.remove("lightUp-white")
+        }
     }
     
     /* Creating and adding div decorated as piece to selected cell */
@@ -311,15 +348,29 @@ export class RealPiece {
 
         if (isBlackTurn) {
             if (this.PieceName.color === Color.BLACK) {
-                visual_piece.addEventListener("click", () => {
+                visual_piece.addEventListener("click", (event) => {
+                    if (WAITING) return 
+                    if (this.GAME.getIsGameEnd()) return;
                     this.highlightAllpossibleMoves() 
+                    let target = event.target;
+                    if (target !== null) {
+                        let cell = target as HTMLElement
+                        this.LigthSelectedPiece(true, cell)
+                    }
                 })
             }
         }
         else {
             if (this.PieceName.color !== Color.BLACK) {
-                visual_piece.addEventListener("click", () => {
+                visual_piece.addEventListener("click", (event) => {
+                    if (WAITING) return;
+                    if (this.GAME.getIsGameEnd()) return;
                     this.highlightAllpossibleMoves() 
+                    let target = event.target;
+                    if (target !== null) {
+                        let cell = target as HTMLElement
+                        this.LigthSelectedPiece(false, cell)
+                    }
                 })
             }
         }
@@ -555,6 +606,14 @@ export class RealPiece {
     public generateAllMoves(board : GamePiece[][], oppositeBoard : GamePiece[][], noCheck : boolean = false) : number[][] {
         let ownPieces : RealPiece[]
         let isWhiteTurn : boolean
+
+        if (this.GAME.getIsGameEnd()) {
+            // TODO: Remove active event listeners and send end game request.
+            // TODO: TEST THIS MREDE!
+            return [[]]
+        }
+
+
         if (this.getPieceName().color === Color.WHITE) {
             ownPieces = this.GAME.getAllWhitePieces()
             isWhiteTurn = true
@@ -620,8 +679,6 @@ export class RealPiece {
                     isSliding = false
                     break;
             }
-            
-            // TODO: Need to create a mate check. 
 
             let filtered : number[][] = [];
             let attackerPos : number[] = attacker.getPos();
@@ -659,20 +716,33 @@ export class RealPiece {
                 }
 
                 let curMov : number[]
+                const LenAllowed = allowedMoves.length
                 for (let i = 0; i < moves.length; i++) {
                     curMov = moves[i] 
+
+                    for (let j = 0; j < LenAllowed; j++) {
+                        if (curMov[0] !== allowedMoves[j][0]) continue;
+                        if (curMov[1] !== allowedMoves[j][1]) continue;
+                        filtered.push(curMov) 
+                        break;
+                    }
+
+                    if (this.isLeft !== isWhiteTurn) continue;
+                    
+                    //TODO: make custom check for that figures.
+                    if (this.getPieceName().type !== Piece.PAWN) {
+                        console.log("PAWN")
+                        continue
+                    }
+                    if (this.getPieceName().type !== Piece.KING) {
+                        console.log("King");
+                        continue;    
+                    };
 
                     if (attackerPos[0] === curMov[0]) {
                         if (attackerPos[1] === curMov[1]) {
                             filtered.push(attackerPos)
                         } 
-                    }
-                    
-                    for (let j = 0; j < allowedMoves.length; j++) {
-                        if (curMov[0] !== allowedMoves[i][0]) continue;
-                        if (curMov[1] !== allowedMoves[i][1]) continue;
-                        filtered.push(curMov) 
-                        break;
                     }
                 }
             } else {
@@ -680,6 +750,16 @@ export class RealPiece {
                 for (let i = 0; i < moves.length; i++) {
                     curMov = moves[i] 
 
+                    //TODO: make custom check for that figures.
+                    if (this.getPieceName().type !== Piece.PAWN) {
+                        console.log("PAWN")
+                        continue
+                    }
+                    if (this.getPieceName().type !== Piece.KING) {
+                        console.log("King");
+                        continue;    
+                    };
+                    
                     if (attackerPos[0] === curMov[0]) {
                         if (attackerPos[1] === curMov[1]) {
                             filtered.push(attackerPos)

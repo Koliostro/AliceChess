@@ -161,13 +161,18 @@ export class WEB {
         
         console.log("State left after clean", Game.getBoard(true))
         console.log("State right after clean", Game.getBoard(false))
+
+        // Check for mate. 
+        const CurrTurn = this.boardState.currentTurn;
+        let isWhiteTurn = CurrTurn === "w" ? true : false;
         
-        if (this.boardState.currentTurn === "w") {
+        if (isWhiteTurn) {
             Game.visualCreationOfPieces(false)
         }
         else {
             Game.visualCreationOfPieces(true)
         }
+        console.log("IS mate : ", this.GAME.isMate(isWhiteTurn));
         this.StopWaiting();
     }
 

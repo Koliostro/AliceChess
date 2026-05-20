@@ -20,7 +20,17 @@
 @import url(./game-card/game-card.css);
 @import url(./cards-collection/cards-collection.css);
 
+.lightUp-white {
+    background-color: var(--color-selPiece-white);
+}
+
+.lightUp-black {
+    background-color: var(--color-selPiece-black);
+}
+
 :root {
+    --color-selPiece-black: #f52844;
+    --color-selPiece-white: #37e6f8;
     --color-red : #450118;
     --color-cyan: #cefbfe;
 }

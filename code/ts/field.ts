@@ -1,4 +1,4 @@
-import { cellStates, GamePiece, Piece, Color } from "./types";
+import { cellStates } from "./types";
 
 export class Board {
 

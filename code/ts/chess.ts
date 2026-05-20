@@ -21,6 +21,10 @@ export class Chess {
         this.isGameEnd = isGameEnd
     }
 
+    public getIsGameEnd() {
+        return this.isGameEnd
+    }
+
     /**
      * Remove all pieces from board so new pieces can be created.
      */
@@ -45,6 +49,70 @@ export class Chess {
     // NOTE:
     //      I've rewrite it a little and now it can check any square. So I can
     //      use it in king's movement to not let him step under check.
+
+    public isMate(isWhiteTurn : boolean) : boolean {
+        let AllMoves : number[][] = []
+        let ownPieces : RealPiece[]
+        let ownKing : RealPiece | null = null
+
+        if (this.isGameEnd) {
+            return true
+        }
+
+        if (isWhiteTurn) {
+            ownPieces = this.getAllWhitePieces()           
+        }
+        else {
+            ownPieces = this.allBlackPieces            
+        }
+
+        // King search.
+        for (let i = 0; i < ownPieces.length; i++) {
+            console.log(ownPieces[i].getPieceName().type, " == ", Piece.KING)
+            if (ownPieces[i].getPieceName().type !== Piece.KING) continue;
+            ownKing = ownPieces[i]
+            break;
+        }
+
+        if (ownKing === null) return false; 
+
+        let res = this.isUnderCheck(ownKing.getPos(), ownKing.getSide(), isWhiteTurn)
+
+        if (!res[0]) return false;
+
+        const KingLeft = ownKing.getSide()
+        const ownBoard = this.getBoard(KingLeft)
+        const opoBoard = this.getBoard(!KingLeft)
+
+        let KingMoves = ownKing.generateAllMoves(ownBoard, opoBoard, true)
+
+        for (let i = 0; i < KingMoves.length; i++) {
+            AllMoves.push(KingMoves[i])
+        }
+
+        if (AllMoves.length > 0) return false;
+
+        for (let i = 0; i < ownPieces.length; i++) {
+            let selPiece = ownPieces[i];
+            if (selPiece.getPieceName().type === Piece.KING) continue;
+            let tempMoves : number[][]
+            if (selPiece.getSide()) {
+                tempMoves = selPiece.generateAllMoves(ownBoard, opoBoard)
+            }
+            else {
+                tempMoves = selPiece.generateAllMoves(opoBoard, ownBoard)
+            }
+
+            for (let j = 0; j < tempMoves.length; j++) {
+                AllMoves.push(tempMoves[j])
+            }
+
+            if (AllMoves.length > 0) return false;
+        }
+
+        this.isGameEnd = true;
+        return true
+    }
     
    /**
     * Check is cell is under attack

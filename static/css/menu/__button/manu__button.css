@@ -1,4 +1,8 @@
 .menu__button {
+    width: 70%;
+
+    max-height: 25%;
+
     color: var(--color-red) ;
     background-color: var(--color-cyan);
 
@@ -7,6 +11,8 @@
     padding: 1svh;
 
     transition: all linear 0.35s;
+
+    text-align: center;
 }
 
 .menu__button:hover {
